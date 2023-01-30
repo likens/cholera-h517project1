@@ -42,11 +42,6 @@ img {
   	pointer-events: none;
 }
 
-html {
-	font-size: 62.5%;
-	text-size-adjust: 100%;
-}
-
 body {
 	line-height: 1;
 	background: var(--white);
@@ -55,14 +50,41 @@ body {
 	padding: 0;
 	width: 100%;
 	height: 100vh;
-	font-size: 1.6rem;
 }
 
 .master {
 	position: relative;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
 }
 
+.tooltip {
+	position: absolute;
+	left: 10px;
+	top: -20px;
+	font-size: 14px;
+	background: rgba(0,0,0, .75);
+	padding: 10px;
+	color: #fff;
+	pointer-events: none;
+	opacity: 0;
+}
 
 .map {
-	border: 2px solid red;
+	background: #fff;
+	width: 100%;
+	height: 100%;
+	/* transform: scaleX(-1); */
+}
+
+.map g {
+	/* transform: translate(-140px, -120px); */
+}
+
+.streets {
+}
+
+.streets path {
+	stroke: #999;
 }

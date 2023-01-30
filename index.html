@@ -11,7 +11,8 @@
 	<body>
 
         <div class="master">
-            <svg class="map" width="1000" height="1000"></svg>
+            <svg id="svg" class="map"></svg>
+			<div id="tooltip" class="tooltip"></div>
         </div>
 		
 	</body>
@@ -23,21 +24,52 @@
 
     <script>
 
-		const multiplier = 40;
-		const map = d3.select(".map");
+		const multiplier = 50;
+		const offsetX = 1000;
+		const offsetY = 950;
+		const svg = d3.select("#svg");
+		const tooltip = d3.select("#tooltip");
 
         setupStreets();
 		setupPumps();
+		setupDeaths();
+
+		const onMouseOver = function(e) {
+			let html;
+			if (this.dataset.type === "Pump") {
+				html = this.dataset.type;
+			} else if (this.dataset.type === "Death") {
+				html = `${this.dataset.type}<br />${this.dataset.gender}, aged ${this.dataset.age}`;
+			}
+			tooltip.html(html).style("opacity", 1)
+			d3.select(this)
+				.style("cursor", "pointer")
+				.style("stroke", "red")
+				.style("opacity", 1)
+		}
+
+		const onMouseMove = function(e)  {
+			tooltip.style("transform", `translate(${d3.pointer(e)[0]}px, ${d3.pointer(e)[1]}px)`)
+		}
+
+		const onMouseLeave = function(e) {
+			tooltip.html("").style("opacity", 0);
+			d3.select(this)
+				.style("cursor", "pointer")
+				.style("stroke", "none")
+				.style("opacity", 0.8)
+		}
+
 
         function setupStreets() {
 
             d3.json("/data/streets.json").then(data => {
 
-				const g = map.append("g").attr("class", "streets");
+				const g = svg.append("g").attr("class", "streets");
 
-				data.map(street => {
-					const streetX = street.map(s => (s.x * multiplier));
-					const streetY = street.map(s => (s.y * multiplier));
+				data.map(d => {
+					const streetX = d.map(s => ((1 - s.x) * multiplier + offsetX));
+					const streetY = d.map(s => ((1 - s.y) * multiplier + offsetY));
 					const line = d3.line()
 						.x(d => streetX[d])
 						.y(d => streetY[d]);
@@ -54,18 +86,76 @@
         }
 
 		function setupPumps() {
+
 			d3.csv("/data/pumps.csv").then(data => {
 				
-				const g = map.append("g").attr("class", "pumps");
+				const g = svg.append("g").attr("class", "pumps");
 
-				data.map(pump => {
-					g.append("circle")
-						.attr("cx", pump.x * multiplier)
-						.attr("cy", pump.y * multiplier)
-						.attr("r", 4)
+				data.map(d => {
+					g.append("rect")
+						.attr("data-type", "Pump")
+						.attr("x", (1 - d.x) * multiplier + offsetX)
+						.attr("y", (1 - d.y) * multiplier + offsetY)
+						.attr("width", 8)
+						.attr("height", 8)
+						.style("transform", "translate(-4px, -4px)")
+						.attr("fill", "blue")
+						.on("mouseover", onMouseOver)
+						.on("mousemove", onMouseMove)
+						.on("mouseleave", onMouseLeave)
 				});
 
-			})
+			});
+
+		}
+
+		function setupDeaths() {
+
+			d3.csv("/data/deaths_age_sex.csv").then(data => {
+				
+				const g = svg.append("g").attr("class", "deaths");
+
+				data.map(d => {
+					let age;
+					const gender = parseInt(d.gender) ? "Female" : "Male";
+					switch(parseInt(d.age)) {
+						case 0:
+							age = "0-10"
+							break;
+						case 1:
+							age = "11-20"
+							break;
+						case 2:
+							age = "21-40"
+							break;
+						case 3:
+							age = "41-60"
+							break;
+						case 4:
+							age = "61-80"
+							break;
+						case 5:
+							age = "> 80"
+							break;
+						default:
+							age = "0-10"
+							break;
+					}
+					g.append("circle")
+						.attr("data-type", "Death")
+						.attr("data-age", age)
+						.attr("data-gender", gender)
+						.attr("cx", (1 - d.x) * multiplier + offsetX)
+						.attr("cy", (1 - d.y) * multiplier + offsetY)
+						.attr("r", 2)
+						.style("opacity", ".5")
+						.on("mouseover", onMouseOver)
+						.on("mousemove", onMouseMove)
+						.on("mouseleave", onMouseLeave)
+				});
+
+			});
+			
 		}
 
 
