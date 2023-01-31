@@ -13,8 +13,45 @@
         <div class="master">
             <svg id="svg" class="map"></svg>
 			<div id="tooltip" class="tooltip"></div>
+			<div id="filters" class="filters">
+				<label for="male">
+					<input type="checkbox" id="male" checked />
+					Male
+				</label>
+				<label for="female">
+					<input type="checkbox" id="female" checked />
+					Female
+				</label>
+				<label for="age0">
+					<input type="checkbox" id="age0" checked />
+					Age 0-10
+				</label>
+				<label for="age1">
+					<input type="checkbox" id="age1" checked />
+					Age 21-40
+				</label>
+				<label for="age2">
+					<input type="checkbox" id="age2" checked />
+					Age 41-60
+				</label>
+				<label for="age3">
+					<input type="checkbox" id="age3" checked />
+					Age 61-80
+				</label>
+				<label for="age4">
+					<input type="checkbox" id="age4" checked />
+					Age > 80
+				</label>
+				<label for="pump">
+					<input type="checkbox" id="pump" checked />
+					Pumps
+				</label>
+				<label for="street">
+					<input type="checkbox" id="street" checked />
+					Streets
+				</label>
+			</div>
         </div>
-		
 	</body>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.2/d3.min.js" 
@@ -25,14 +62,29 @@
     <script>
 
 		const multiplier = 50;
-		const offsetX = 1000;
-		const offsetY = 950;
+		const offsetDataX = multiplier * 0;
+		const offsetDataY = multiplier * 20;
+		const offsetStreet = 20;
 		const svg = d3.select("#svg");
 		const tooltip = d3.select("#tooltip");
+		const transform = false;
 
-        setupStreets();
-		setupPumps();
-		setupDeaths();
+		let minXStreet;
+		let minYStreet;
+
+		document.addEventListener("DOMContentLoaded", function(event) {
+        	setupSVG();
+			const filters = Array.from(document.querySelectorAll("#filters input"));
+			filters.forEach(f => {
+				f.addEventListener('change', function() {
+					const checked = this.checked;
+					const clazz = `${this.id}--hide`;
+					const items = Array.from(document.querySelectorAll(`#svg .${this.id}`));
+					console.log(items);
+					items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
+				});
+			})
+		});
 
 		const onMouseOver = function(e) {
 			let html;
@@ -42,72 +94,66 @@
 				html = `${this.dataset.type}<br />${this.dataset.gender}, aged ${this.dataset.age}`;
 			}
 			tooltip.html(html).style("opacity", 1)
-			d3.select(this)
-				.style("cursor", "pointer")
-				.style("stroke", "red")
-				.style("opacity", 1)
 		}
 
 		const onMouseMove = function(e)  {
-			tooltip.style("transform", `translate(${d3.pointer(e)[0]}px, ${d3.pointer(e)[1]}px)`)
+			const translateX = transform ? d3.pointer(e)[0] - (minXStreet + offsetStreet) : d3.pointer(e)[0];
+			const translateY = transform ? d3.pointer(e)[1] - (minYStreet + offsetStreet) : d3.pointer(e)[1];
+			tooltip.style("transform", `translate(${translateX}px, ${translateY}px)`)
 		}
 
 		const onMouseLeave = function(e) {
 			tooltip.html("").style("opacity", 0);
-			d3.select(this)
-				.style("cursor", "pointer")
-				.style("stroke", "none")
-				.style("opacity", 0.8)
+		}
+
+		const toggleGender = (gender) => {
+			const points = document.querySelectorAll(`.${gender}`);
+			console.log(points);
+		}
+
+		function setupSVG() {
+			setupStreets();
 		}
 
 
         function setupStreets() {
 
-            d3.json("/data/streets.json").then(data => {
+            d3.json("/data/streets.json").then(streets => {
 
 				const g = svg.append("g").attr("class", "streets");
 
-				data.map(d => {
-					const streetX = d.map(s => ((1 - s.x) * multiplier + offsetX));
-					const streetY = d.map(s => ((1 - s.y) * multiplier + offsetY));
+				streets.map(street => {
+
+					const streetXCoords = street.map(s => s.x * multiplier + offsetDataX);
+					const minX = Math.min.apply(Math, streetXCoords);
+					if (minXStreet > minX || !minXStreet) {
+						minXStreet = minX;
+					}
+
+					const streetYCoords = street.map(s => ((1 - s.y) * multiplier + offsetDataY));
+					const minY = Math.min.apply(Math, streetYCoords);
+					if (minYStreet > minY || !minYStreet) {
+						minYStreet = minY;
+					}
+
 					const line = d3.line()
-						.x(d => streetX[d])
-						.y(d => streetY[d]);
+						.x(d => streetXCoords[d])
+						.y(d => streetYCoords[d]);
 					g.append("path")
-						.datum(d3.range(streetX.length))
-						.attr("fill", "none")
+						.datum(d3.range(streetXCoords.length))
 						.attr("stroke", "black")
+						.attr("fill", "none")
+						.attr("class", "street")
 						.attr("d", line);
 				});
 
+				transform ? svg.attr("transform", `translate(-${minXStreet - offsetStreet}, -${minYStreet - offsetStreet})`) : ``;
+
+				setupDeaths();
 
             });
         
         }
-
-		function setupPumps() {
-
-			d3.csv("/data/pumps.csv").then(data => {
-				
-				const g = svg.append("g").attr("class", "pumps");
-
-				data.map(d => {
-					g.append("rect")
-						.attr("data-type", "Pump")
-						.attr("x", (1 - d.x) * multiplier + offsetX)
-						.attr("y", (1 - d.y) * multiplier + offsetY)
-						.attr("width", 8)
-						.attr("height", 8)
-						.style("transform", "translate(-4px, -4px)")
-						.attr("fill", "blue")
-						.on("mouseover", onMouseOver)
-						.on("mousemove", onMouseMove)
-						.on("mouseleave", onMouseLeave)
-				});
-
-			});
-
-		}
 
 		function setupDeaths() {
 
@@ -145,17 +191,40 @@
 						.attr("data-type", "Death")
 						.attr("data-age", age)
 						.attr("data-gender", gender)
-						.attr("cx", (1 - d.x) * multiplier + offsetX)
-						.attr("cy", (1 - d.y) * multiplier + offsetY)
-						.attr("r", 2)
-						.style("opacity", ".5")
+						.attr("cx", (d.x) * multiplier + offsetDataX)
+						.attr("cy", (1 - d.y) * multiplier + offsetDataY)
+						.attr("r", 4)
+						.attr("class", `death ${gender.toLocaleLowerCase()} age${d.age}`)
 						.on("mouseover", onMouseOver)
 						.on("mousemove", onMouseMove)
 						.on("mouseleave", onMouseLeave)
 				});
 
 			});
+
+			setupPumps();
 			
+		}
+
+		function setupPumps() {
+
+			d3.csv("/data/pumps.csv").then(data => {
+				
+				const g = svg.append("g").attr("class", "pumps");
+
+				data.map(d => {
+					g.append("rect")
+						.attr("data-type", "Pump")
+						.attr("x", (d.x) * multiplier + offsetDataX)
+						.attr("y", (1 - d.y) * multiplier + offsetDataY)
+						.attr("class", "pump")
+						.on("mouseover", onMouseOver)
+						.on("mousemove", onMouseMove)
+						.on("mouseleave", onMouseLeave)
+				});
+
+			});
+
 		}
 
 

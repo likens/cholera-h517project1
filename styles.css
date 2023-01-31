@@ -64,18 +64,49 @@ body {
 	left: 10px;
 	top: -20px;
 	font-size: 14px;
-	background: rgba(0,0,0, .75);
+	background: rgba(0,0,0, .8);
 	padding: 10px;
 	color: #fff;
 	pointer-events: none;
 	opacity: 0;
+	z-index: 30;
+}
+
+.filters {
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding: 10px;
+	z-index: 20;
+	border: 2px solid black;
+	border-width: 0 2px 2px 0;
+	display: grid;
+	gap: 10px;
+	background: #fff;
+}
+
+.filters label {
+	cursor: pointer;
 }
 
 .map {
 	background: #fff;
 	width: 100%;
 	height: 100%;
-	/* transform: scaleX(-1); */
+	position: relative;
+	z-index: 10;
+}
+
+.map .female--hide,
+.map .male--hide,
+.map .age0--hide,
+.map .age1--hide,
+.map .age2--hide,
+.map .age3--hide,
+.map .age4--hide,
+.map .pump--hide,
+.map .street--hide {
+	display: none;
 }
 
 .map g {
@@ -87,4 +118,31 @@ body {
 
 .streets path {
 	stroke: #999;
+}
+
+.map .pump {
+	position: relative;
+	z-index: 10;
+	fill: blue;
+	width: 8px;
+	height: 8px;
+	transform: translate(-4px, -4px);
+	cursor: pointer;
+}
+
+.map .death {
+	cursor: pointer;
+}
+
+.map .death:hover {
+	stroke: black;
+	stroke-width: 2px;
+}
+
+.map .female {
+	fill: hotpink;
+}
+
+.map .male {
+	fill: steelblue
 }
