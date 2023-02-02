@@ -1,7 +1,14 @@
 :root {
 	--transparent: rgba(0,0,0,0);
+
 	--white: rgba(255,255,255,1);
 	--black: rgba(0,0,0,1);
+
+	--male: steelblue;
+	--female: hotpink;
+	--pump: blue;
+	--street: #ccc;
+
 	font-family: sans-serif;
 	font-size: 16px;
 	line-height: 24px;
@@ -16,6 +23,7 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
+	
 }
 
 @media (prefers-color-scheme: light) {
@@ -61,36 +69,74 @@ body {
 
 .tooltip {
 	position: absolute;
-	left: 10px;
+	left: 20px;
 	top: -20px;
 	font-size: 14px;
-	background: rgba(0,0,0, .8);
+	background: var(--black);
 	padding: 10px;
-	color: #fff;
+	color: var(--white);
 	pointer-events: none;
 	opacity: 0;
 	z-index: 30;
 }
 
-.filters {
+.controls {
 	position: fixed;
 	top: 0;
 	left: 0;
 	padding: 10px;
 	z-index: 20;
-	border: 2px solid black;
-	border-width: 0 2px 2px 0;
 	display: grid;
 	gap: 10px;
-	background: #fff;
+	background: var(--white);
+	border: 1px solid var(--street);
+	box-shadow: 0 0 10px var(--street);
+	border-width: 0 1px 1px 0;
+}
+
+.filters {
+	display: grid;
+	gap: 10px;
 }
 
 .filters label {
 	cursor: pointer;
+	font-size: 14px;
+}
+
+.filters label[class] {
+	padding: 3px 6px;
+}
+
+.filters .male {
+	background: var(--male);
+	color: var(--white);
+}
+
+.filters .female {
+	background: var(--female);
+}
+
+.filters .pump {
+	background: var(--pump);
+	color: var(--white);
+}
+
+.filters .street {
+	background: var(--street);
+}
+
+.filters .snowmap {
+	border: 1px solid var(--black);
+}
+
+.ages {
+	display: grid;
+	gap: 10px;
 }
 
 .map {
-	background: #fff;
+	background: var(--white);
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -105,25 +151,22 @@ body {
 .map .age3--hide,
 .map .age4--hide,
 .map .pump--hide,
-.map .street--hide {
+.map .street--hide,
+.map .snowmap--hide {
 	display: none;
 }
 
-.map g {
-	/* transform: translate(-140px, -120px); */
-}
+/* .map .streets {
+	transform: rotate(1deg);
+} */
 
-.streets {
-}
-
-.streets path {
-	stroke: #999;
+.map .streets path {
+	stroke: var(--street);
 }
 
 .map .pump {
 	position: relative;
 	z-index: 10;
-	fill: blue;
 	width: 8px;
 	height: 8px;
 	transform: translate(-4px, -4px);
@@ -135,14 +178,41 @@ body {
 }
 
 .map .death:hover {
-	stroke: black;
-	stroke-width: 2px;
-}
-
-.map .female {
-	fill: hotpink;
+	stroke: var(--black);
+	stroke-width: 1px;
 }
 
 .map .male {
-	fill: steelblue
+	fill: var(--male);
+}
+
+.map .female {
+	fill: var(--female);
+}
+
+.map .label {
+	text-transform: uppercase;
+	transform-origin: center center;
+	font-weight: 700;
+	fill: var(--street);
+	font-style:italic;
+}
+
+.map .snowmap {
+	opacity: .5;
+	transform: rotate(-2deg);
+	transform-origin: center center;
+}
+
+.map .credit {
+	font-weight: 700;
+	font-style: italic;
+	font-size:14px;
+	text-transform: lowercase;
+	fill: var(--street);
+	cursor: pointer;
+}
+
+.map .credit:hover {
+	fill: red;
 }
