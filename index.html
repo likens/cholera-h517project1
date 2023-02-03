@@ -30,8 +30,10 @@
 		-->
 
         <div class="master">
+			<div class="header">London's 1854 Cholera Epidemic<div>visualized by Dr. John Snow</div></div>
             <svg id="svg" class="map"></svg>
 			<div id="tooltip" class="tooltip"></div>
+			<div id="charts" class="charts"></div>
 			<div class="controls">
 				<div id="filters" class="filters">
 					<label for="male" class="filter male">
@@ -54,7 +56,7 @@
 						<input type="checkbox" id="snowmap" />
 						Snow's Map
 					</label>
-					<div class="ages">
+					<div class="groups">
 						<div class="title">Ages</div>
 						<label for="age0">
 							<input type="checkbox" id="age0" checked />
@@ -91,18 +93,29 @@
 
     <script>
 
+		const STRING_MALE = "Male";
+		const STRING_FEMALE = "Female";
+		const STRING_AGE_0 = "0-10";
+		const STRING_AGE_1 = "11-20";
+		const STRING_AGE_2 = "21-40";
+		const STRING_AGE_3 = "41-60";
+		const STRING_AGE_4 = "61-80";
+		const STRING_AGE_5 = "> 80";
+
 		const multiplier = 50;
 		const offsetDataX = multiplier * 0;
 		const offsetDataY = multiplier * 20;
 		const offsetStreet = 20;
 		const svg = d3.select("#svg");
 		const tooltip = document.getElementById("tooltip");
+		const pies = d3.select("#pies");
 
 		let map;
 
 		document.addEventListener("DOMContentLoaded", function(event) {
 
         	setupSVG();
+			setupCredits();
 
 			document.addEventListener("mousemove", (e) => onMouseMove(e));
 
@@ -210,30 +223,50 @@
 		function setupDeaths() {
 			d3.csv("/data/deaths_age_sex.csv").then(data => {
 				const g = map.append("g").attr("class", "deaths");
+				const genders = { m: 0, f: 0 };
+				const ages = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 				data.map(d => {
+					
+					let gender;
+					const gVal = parseInt(d.gender);
+					if (gVal) {
+						gender = "Female";
+						genders.f++;
+					} else {
+						gender = "Male";
+						genders.m++;
+					}
+
 					let age;
-					const gender = parseInt(d.gender) ? "Female" : "Male";
-					switch(parseInt(d.age)) {
-						case 0:
+					const aVal = d.age;
+					switch(aVal) {
+						case "0":
 							age = "0-10"
+							ages[aVal]++;
 							break;
-						case 1:
+						case "1":
 							age = "11-20"
+							ages[aVal]++;
 							break;
-						case 2:
+						case "2":
 							age = "21-40"
+							ages[aVal]++;
 							break;
-						case 3:
+						case "3":
 							age = "41-60"
+							ages[aVal]++;
 							break;
-						case 4:
+						case "4":
 							age = "61-80"
+							ages[aVal]++;
 							break;
-						case 5:
+						case "5":
 							age = "> 80"
+							ages[aVal]++;
 							break;
 						default:
 							age = "0-10"
+							ages["0"]++;
 							break;
 					}
 					g.append("circle")
@@ -247,8 +280,82 @@
 						.on("mouseover", onMouseOver)
 						.on("mouseleave", onMouseLeave)
 				});
+
+				setupPieChart(genders, ["steelblue", "hotpink"], "Genders");
+				setupPieChart(ages, ["red", "orange", "yellow", "green", "blue", "purple"], "Ages");
+
 			});
+			
 			setupPumps();
+		}
+
+		function setupPieChart(data, swatch, id) {
+
+			const size = 180;
+			const translate = size / 2;
+			const radius = translate - 5;
+			const colors = d3.scaleOrdinal().range(swatch);
+			const pieVal = d3.pie().value((d) => d[1]);
+			const arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+			const getPieLabel = (key) => {
+				switch(key) {
+					case "m":
+						return STRING_MALE;
+					case "f":
+						return STRING_FEMALE;
+					case "0":
+						return STRING_AGE_0;
+					case "1":
+						return STRING_AGE_1;
+					case "2":
+						return STRING_AGE_2;
+					case "3":
+						return STRING_AGE_3;
+					case "4":
+						return STRING_AGE_4;
+					case "5":
+						return STRING_AGE_5;
+				}
+			}
+			
+			const pie = d3.select("#charts")
+							.append("svg")
+							.attr("width", size)
+							.attr("height", size + 20)
+							.attr("class", `${id.toLocaleLowerCase()} pie`)
+							.attr("id", id.toLocaleLowerCase())
+							.append("g")
+							.attr("transform", `translate(${translate}, ${translate + 20})`)
+
+			pie.selectAll()
+				.data(pieVal(Object.entries(data)))
+				.enter()
+				.append('path')
+				.attr('d', arc)	
+				.attr('fill', (d) => colors(d.data[1]))
+
+			pie.selectAll()
+				.data(pieVal(Object.entries(data)))
+				.enter()
+				.append('text')
+				.attr("y", -15)
+				.html((d) => {
+					return `
+						<tspan x="0" dy="15">${getPieLabel(d.data[0])}</tspan>
+						<tspan x="0" dy="15">(${d.data[1]})</tspan>
+					`
+				})
+				.attr("class", "label")
+				.attr('transform', (d) => `translate(${arc.centroid(d)})`)
+			
+			d3.select(`#${id.toLocaleLowerCase()} g`)
+				.append("text")
+				.attr("x", `0`)
+				.attr("y", `-${size/2+5}` )
+				.attr("class", "title")
+				.html(id)
+
 		}
 
 		function setupPumps() {
@@ -265,7 +372,6 @@
 						.on("mouseleave", onMouseLeave)
 				});
 			});
-			setupCredits()
 		}
 
 		function setupCredits() {
@@ -273,10 +379,10 @@
 			const g = map.append("g").attr("class", "credits");
 				
 			const credits = [
-				{ provided: "Street layout", href: "streets.json", x: 190, y: 920 },
-				{ provided: "Pump placement", href: "pumps.csv", x: 190, y: 945 },
-				{ provided: "Death age, gender, and location", href: "deaths_age_sex.csv", x: 190, y: 970 },
-				{ provided: "Original map from John Snow, 1854", href: "https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak", x: 190, y: 995 },
+				{ provided: "Street layout", href: "streets.json", x: 190, y: 905 },
+				{ provided: "Pump placement", href: "pumps.csv", x: 190, y: 920 },
+				{ provided: "Death age, gender, and location", href: "deaths_age_sex.csv", x: 190, y: 935 },
+				{ provided: "Original map from John Snow, 1854", href: "https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak", x: 190, y: 950 },
 			];
 
 			credits.map(c => {

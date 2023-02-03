@@ -80,10 +80,37 @@ body {
 	z-index: 30;
 }
 
-.controls {
+.header {
+	font-weight: 700;
+	display: grid;
+	align-items: center;
+	justify-content: center;
+	background: var(--white);
+	border-bottom: 1px solid var(--street);
+	box-shadow: 0 0 10px var(--street);
+	padding: 10px 20px;
 	position: fixed;
+	font-size: 24px;
 	top: 0;
 	left: 0;
+	width: 100%;
+	z-index: 30;
+	gap: 10px;
+}
+
+.header div {
+	display: block;
+	font-style: italic;
+	font-size: 18px;
+	font-weight: 400;
+	text-align: center;
+}
+
+.controls {
+	position: fixed;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
 	padding: 10px;
 	z-index: 20;
 	display: grid;
@@ -91,7 +118,7 @@ body {
 	background: var(--white);
 	border: 1px solid var(--street);
 	box-shadow: 0 0 10px var(--street);
-	border-width: 0 1px 1px 0;
+	border-width: 1px 1px 1px 0;
 }
 
 .filters {
@@ -130,7 +157,45 @@ body {
 	border: 1px solid var(--black);
 }
 
-.ages {
+.charts {
+	position: fixed;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
+	z-index: 30;
+	background: var(--white);
+	border: 1px solid var(--street);
+	box-shadow: 0 0 10px var(--street);
+	border-width: 1px 0 1px 1px;
+	display: grid;
+	gap: 10px;
+	padding: 10px;
+	align-items: center;
+	justify-content: center;
+}
+
+.charts .chart {
+	text-align: center;
+	font-weight: 700;
+}
+
+.pie path {
+	stroke: var(--black);
+	stroke-width: 1px;
+}
+
+.pie .title {
+	font-size: 20px;
+	font-weight: 700;
+	text-anchor: middle;
+}
+
+.pie .label {
+	font-size: 12px;
+	text-anchor: middle;
+}
+
+.groups {
 	display: grid;
 	gap: 10px;
 }
@@ -201,14 +266,13 @@ body {
 
 .map .snowmap {
 	opacity: .5;
-	transform: rotate(-2deg);
-	transform-origin: center center;
+	/* transform: rotate(-2deg);
+	transform-origin: center center; */
 }
 
 .map .credit {
-	font-weight: 700;
 	font-style: italic;
-	font-size:14px;
+	font-size: 10px;
 	text-transform: lowercase;
 	fill: var(--street);
 	cursor: pointer;
