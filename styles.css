@@ -15,8 +15,6 @@
 	font-weight: 400;
 
 	color-scheme: light dark;
-	color: rgba(255, 255, 255, 0.87);
-	background-color: #242424;
 
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
@@ -81,49 +79,50 @@ body {
 }
 
 .header {
-	font-weight: 700;
 	display: grid;
-	align-items: center;
-	justify-content: center;
-	background: var(--white);
-	border-bottom: 1px solid var(--street);
-	box-shadow: 0 0 10px var(--street);
-	padding: 10px 20px;
+	align-items: flex-end;
+	font-weight: 700;
+	background: var(--black);
+	color: var(--white);
+	box-shadow: 0 0 10px var(--black);
+	padding: 10px 15px;
 	position: fixed;
 	font-size: 24px;
 	top: 0;
 	left: 0;
 	width: 100%;
 	z-index: 30;
-	gap: 10px;
+	gap: 5px;
 }
 
-.header div {
+.header em {
 	display: block;
-	font-style: italic;
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 400;
-	text-align: center;
+}
+
+.header a {
+	color: var(--white);
+	font-weight: 700;
+	font-size: 12px;
 }
 
 .controls {
 	position: fixed;
-	top: 50%;
+	top: 64px;
 	left: 0;
-	transform: translateY(-50%);
+	width: 100%;
 	padding: 10px;
 	z-index: 20;
-	display: grid;
-	gap: 10px;
-	background: var(--white);
-	border: 1px solid var(--street);
-	box-shadow: 0 0 10px var(--street);
-	border-width: 1px 1px 1px 0;
+	background: var(--black);
+	color: var(--white);
+	border-bottom: 1px solid var(--street);
 }
 
 .filters {
-	display: grid;
+	display: flex;
 	gap: 10px;
+	justify-content: center;
 }
 
 .filters label {
@@ -153,20 +152,15 @@ body {
 	background: var(--street);
 }
 
-.filters .snowmap {
-	border: 1px solid var(--black);
-}
-
 .charts {
 	position: fixed;
-	top: 50%;
+	bottom: 0;
 	right: 0;
-	transform: translateY(-50%);
 	z-index: 30;
-	background: var(--white);
+	/* background: var(--black);
 	border: 1px solid var(--street);
 	box-shadow: 0 0 10px var(--street);
-	border-width: 1px 0 1px 1px;
+	border-width: 1px 0 1px 1px; */
 	display: grid;
 	gap: 10px;
 	padding: 10px;
@@ -188,6 +182,7 @@ body {
 	font-size: 20px;
 	font-weight: 700;
 	text-anchor: middle;
+	fill: var(--white);
 }
 
 .pie .label {
@@ -195,13 +190,8 @@ body {
 	text-anchor: middle;
 }
 
-.groups {
-	display: grid;
-	gap: 10px;
-}
-
 .map {
-	background: var(--white);
+	background: var(--black);
 	width: 100%;
 	height: 100%;
 	position: relative;
@@ -279,5 +269,12 @@ body {
 }
 
 .map .credit:hover {
-	fill: red;
+	fill: var(--black);
+}
+
+#my_dataviz {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index:500;
 }

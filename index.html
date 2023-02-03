@@ -30,7 +30,7 @@
 		-->
 
         <div class="master">
-			<div class="header">London's 1854 Cholera Epidemic<div>visualized by Dr. John Snow</div></div>
+			<div class="header">London's 1854 Cholera Epidemic<em>visualized by Dr. John Snow <a href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak">more info</a></em></div>
             <svg id="svg" class="map"></svg>
 			<div id="tooltip" class="tooltip"></div>
 			<div id="charts" class="charts"></div>
@@ -56,33 +56,30 @@
 						<input type="checkbox" id="snowmap" />
 						Snow's Map
 					</label>
-					<div class="groups">
-						<div class="title">Ages</div>
-						<label for="age0">
-							<input type="checkbox" id="age0" checked />
-							0-10
-						</label>
-						<label for="age1">
-							<input type="checkbox" id="age1" checked />
-							11-20
-						</label>
-						<label for="age2">
-							<input type="checkbox" id="age2" checked />
-							21-40
-						</label>
-						<label for="age3">
-							<input type="checkbox" id="age3" checked />
-							41-60
-						</label>
-						<label for="age4">
-							<input type="checkbox" id="age4" checked />
-							61-80
-						</label>
-						<label for="age5">
-							<input type="checkbox" id="age5" checked />
-							> 80
-						</label>
-					</div>
+					<label for="age0" class="filter">
+						<input type="checkbox" id="age0" checked />
+						0-10
+					</label>
+					<label for="age1" class="filter">
+						<input type="checkbox" id="age1" checked />
+						11-20
+					</label>
+					<label for="age2" class="filter">
+						<input type="checkbox" id="age2" checked />
+						21-40
+					</label>
+					<label for="age3" class="filter">
+						<input type="checkbox" id="age3" checked />
+						41-60
+					</label>
+					<label for="age4" class="filter">
+						<input type="checkbox" id="age4" checked />
+						61-80
+					</label>
+					<label for="age5" class="filter">
+						<input type="checkbox" id="age5" checked />
+						> 80
+					</label>
 				</div>
 			</div>
         </div>
@@ -109,13 +106,15 @@
 		const svg = d3.select("#svg");
 		const tooltip = document.getElementById("tooltip");
 		const pies = d3.select("#pies");
+		
+		const dataGenders = { m: 0, f: 0 };
+		const dataAges = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
 		let map;
 
 		document.addEventListener("DOMContentLoaded", function(event) {
 
         	setupSVG();
-			setupCredits();
 
 			document.addEventListener("mousemove", (e) => onMouseMove(e));
 
@@ -140,12 +139,10 @@
 			tooltip.style.opacity = 1;
 			tooltip.innerHTML = html;
 		}
-
 		const onMouseLeave = function(e) {
 			tooltip.style.opacity = 0;
 			tooltip.innerHTML = "";
 		}
-
 		const onZoom = (e) => map.attr('transform', e.transform);
 		const onCreditClick = (href) => {
 			if (href.includes('http')) {
@@ -160,11 +157,14 @@
 			map = svg.append('g').attr('class', 'container');
 			svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
 			setupStreets();
+			setupDeaths();
+			setupPumps();
+			setupTimeline();
+			setupCredits();
 		}
 
         function setupStreets() {
             d3.json("/data/streets.json").then(streets => {
-
 				const g = map.append("g").attr("class", "streets");
 				streets.map(street => {
 					const streetXCoords = street.map(s => s.x * multiplier + offsetDataX);
@@ -179,7 +179,6 @@
 						.attr("class", "street")
 						.attr("d", line);
 				});
-
 				const labels = [
 					{ name: "Oxford Street", x: 250, y: 315, rotate: -10, spacing: 25, size: 14 },
 					{ name: "Regent Street", x: 520, y: -85, rotate: 61, spacing: 25, size: 14 },
@@ -206,7 +205,6 @@
 						.attr("class", "label street")
 						.attr("style", `letter-spacing:${l.spacing}px;font-size:${l.size}px`)
 				});
-
 				const sg = g.append("g").attr("class", "snowmap snowmap--hide")
 				sg.append("image")
 					.attr("href", "/img/snowmap.png")
@@ -214,59 +212,63 @@
 					.attr("height", 774)
 					.attr("x", 165)
 					.attr("y", 110)
-
-				setupDeaths();
             });
-        
         }
+
+		function setupPumps() {
+			d3.csv("/data/pumps.csv").then(data => {
+				const g = map.append("g").attr("class", "pumps");
+				data.map(d => {
+					g.append("image")
+						.attr("href", "/img/pump.svg")
+						.attr("data-type", "Pump")
+						.attr("x", (d.x) * multiplier + offsetDataX)
+						.attr("y", (1 - d.y) * multiplier + offsetDataY)
+						.attr("class", "pump")
+						.on("mouseover", onMouseOver)
+						.on("mouseleave", onMouseLeave)
+				});
+			});
+		}
 
 		function setupDeaths() {
 			d3.csv("/data/deaths_age_sex.csv").then(data => {
 				const g = map.append("g").attr("class", "deaths");
-				const genders = { m: 0, f: 0 };
-				const ages = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 				data.map(d => {
-					
 					let gender;
 					const gVal = parseInt(d.gender);
 					if (gVal) {
 						gender = "Female";
-						genders.f++;
+						dataGenders.f++;
 					} else {
 						gender = "Male";
-						genders.m++;
+						dataGenders.m++;
 					}
-
 					let age;
 					const aVal = d.age;
+					dataAges[aVal]++;
 					switch(aVal) {
 						case "0":
 							age = "0-10"
-							ages[aVal]++;
 							break;
 						case "1":
 							age = "11-20"
-							ages[aVal]++;
 							break;
 						case "2":
 							age = "21-40"
-							ages[aVal]++;
 							break;
 						case "3":
 							age = "41-60"
-							ages[aVal]++;
 							break;
 						case "4":
 							age = "61-80"
-							ages[aVal]++;
 							break;
 						case "5":
 							age = "> 80"
-							ages[aVal]++;
 							break;
 						default:
 							age = "0-10"
-							ages["0"]++;
+							dataAges["0"]++;
 							break;
 					}
 					g.append("circle")
@@ -280,13 +282,9 @@
 						.on("mouseover", onMouseOver)
 						.on("mouseleave", onMouseLeave)
 				});
-
-				setupPieChart(genders, ["steelblue", "hotpink"], "Genders");
-				setupPieChart(ages, ["white"], "Ages");
-
+				setupPieChart(dataGenders, ["steelblue", "hotpink"], "Genders");
+				setupPieChart(dataAges, ["white"], "Ages");
 			});
-			
-			setupPumps();
 		}
 
 		function setupPieChart(data, swatch, id) {
@@ -318,7 +316,7 @@
 						return STRING_AGE_5;
 				}
 			}
-			
+
 			const pie = d3.select("#charts")
 							.append("svg")
 							.attr("width", size)
@@ -327,14 +325,12 @@
 							.attr("id", id.toLocaleLowerCase())
 							.append("g")
 							.attr("transform", `translate(${translate}, ${translate + 20})`)
-
 			pie.selectAll()
 				.data(pieVal(Object.entries(data)))
 				.enter()
 				.append('path')
 				.attr('d', arc)	
 				.attr('fill', (d) => colors(d.data[1]))
-
 			pie.selectAll()
 				.data(pieVal(Object.entries(data)))
 				.enter()
@@ -348,30 +344,29 @@
 				})
 				.attr("class", "label")
 				.attr('transform', (d) => `translate(${arc.centroid(d)})`)
-			
 			d3.select(`#${id.toLocaleLowerCase()} g`)
 				.append("text")
 				.attr("x", `0`)
 				.attr("y", `-${size/2+5}` )
 				.attr("class", "title")
-				.html(id)
-
+				.html(id);
 		}
 
-		function setupPumps() {
-			d3.csv("/data/pumps.csv").then(data => {
-				const g = map.append("g").attr("class", "pumps");
-				data.map(d => {
-					g.append("image")
-						.attr("href", "/img/pump.svg")
-						.attr("data-type", "Pump")
-						.attr("x", (d.x) * multiplier + offsetDataX)
-						.attr("y", (1 - d.y) * multiplier + offsetDataY)
-						.attr("class", "pump")
-						.on("mouseover", onMouseOver)
-						.on("mouseleave", onMouseLeave)
-				});
-			});
+		function setupTimeline() {
+			// d3.csv("/data/deathdays.csv").then(data => {
+
+				// console.log(data);
+
+				// const bar = d3.select("#charts")
+				// 			.append("svg")
+				// 			.attr("width", size)
+				// 			.attr("height", size + 20)
+				// 			.attr("class", `${id.toLocaleLowerCase()} pie`)
+				// 			.attr("id", id.toLocaleLowerCase())
+				// 			.append("g")
+				// 			.attr("transform", `translate(${translate}, ${translate + 20})`)
+
+			// });
 		}
 
 		function setupCredits() {
