@@ -8,18 +8,18 @@ const STRING_AGE_4 = "61-80";
 const STRING_AGE_5 = "> 80";
 
 const multiplier = 50;
-const offsetDataX = multiplier * 0;
-const offsetDataY = multiplier * 20;
+const offsetDataX = 0;
+const offsetDataY = 1000;
 const svg = d3.select("#svg");
 const tooltip = document.getElementById("tooltip");
 const slider = document.getElementById("slider");
-const bubble = document.getElementById("bubble");
 
 let dataStreets =[];
 let dataLabels = [];
 let dataPumps = [];
 let dataDeathsByDemo = [];
 let dataDeathsByDay = [];
+const dataDeaths = [];
 
 const dataGenders = { m: 0, f: 0 };
 const dataAges = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
@@ -48,7 +48,7 @@ const onMouseOver = function(e) {
     if (this.dataset.type === "Pump") {
         html = this.dataset.type;
     } else if (this.dataset.type === "Death") {
-        html = `${this.dataset.type}<br />${this.dataset.gender}, aged ${this.dataset.age}`;
+        html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
     }
     tooltip.style.opacity = 1;
     tooltip.innerHTML = html;
@@ -68,6 +68,7 @@ const onCreditClick = (href) => {
 const onMouseMove = (e) => tooltip.style.transform = `translate(${e.pageX}px, ${e.pageY}px)`;
 
 function loadData() {
+    console.log("loadData");
     const streets = d3.json("/data/streets.json").then(streets => dataStreets = streets);
     const labels = d3.json("/data/labels.json").then(labels => dataLabels = labels);
     const pumps = d3.csv("/data/pumps.csv").then(pumps => dataPumps = pumps);
@@ -78,10 +79,27 @@ function loadData() {
             deaths: parseInt(d.deaths) 
         }
     }).then(deaths => dataDeathsByDay = deaths);
+
     Promise.all([streets, labels, pumps, deathsByDemo, deathsDays]).then(v => setupSVG());
 }
 
 function setupSVG() {
+
+    dataDeathsByDay.forEach((date, idx) => {
+        if (date.deaths > 0) {
+            const full = dataDeathsByDemo.splice(0, date.deaths).map(death => {
+                return {
+                    ...death,
+                    date: date.date,
+                    step: idx
+                };
+            });
+            dataDeaths.push(...full);
+        }
+    });
+
+    console.log(dataDeathsByDemo);
+
     map = svg.append('g').attr('class', 'container');
     svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
     setupStreets();
@@ -141,7 +159,7 @@ function setupPumps() {
 
 function setupDeaths() {
     const g = map.append("g").attr("class", "deaths");
-    dataDeathsByDemo.map(d => {
+    dataDeaths.map(d => {
         let gender;
         const gVal = parseInt(d.gender);
         if (gVal) {
@@ -182,6 +200,8 @@ function setupDeaths() {
             .attr("data-type", "Death")
             .attr("data-age", age)
             .attr("data-gender", gender)
+            .attr("data-date", d.date)
+            .attr("data-step", d.step)
             .attr("cx", (d.x) * multiplier + offsetDataX)
             .attr("cy", (1 - d.y) * multiplier + offsetDataY)
             .attr("r", 2)
@@ -250,12 +270,6 @@ function setupPieChart(data, swatch, id) {
         })
         .attr("class", "label")
         .attr('transform', (d) => `translate(${arc.centroid(d)})`)
-    // d3.select(`#${id.toLocaleLowerCase()} g`)
-    //     .append("text")
-    //     .attr("x", `0`)
-    //     .attr("y", `-${size/2+5}` )
-    //     .attr("class", "title")
-    //     .html(id);
 }
 
 // function setupTimeline() {
@@ -316,47 +330,33 @@ function setupSlider() {
 
     let totalDeaths = dataDeathsByDay[0].deaths;
     slider.max = dataDeathsByDay.length - 1;
-
-    const g1 = map.append("g").attr("class", "date");
-    const g2 = map.append("g").attr("class", "deathcount");
     
-    g1.append("text")
-        .attr("x", 170)
-        .attr("y", 80)
-        .attr("id", "date")
-        .html(parseDate(dataDeathsByDay[0].date))
-        
-    g2.append("text")
-        .attr("x", 170)
-        .attr("y", 110)
-        .attr("id", "deaths")
-        .html(deathString(dataDeathsByDay[0].deaths, dataDeathsByDay[0].deaths))
-    
-    bubble.innerHTML = `${dataDeathsByDay[0].date} - ${totalDeaths}`;
+    updateMap(dataDeathsByDay[0].date);
+    updateDate(dateString(dataDeathsByDay[0].date));
+    updateDeathCount(deathString(dataDeathsByDay[0].deaths, totalDeaths));
+    updateBubble(`${dataDeathsByDay[0].date}`);
 
     slider.addEventListener("input", (e) => {
 
         const val = parseInt(e.target.value);
+        totalDeaths = dataDeathsByDay.slice(0, val + 1).map(d => d.deaths).reduce((a, b) => a + b, 0);      
+        const date = dataDeathsByDay[val].date;
         
-        const date = parseDate(dataDeathsByDay[val].date);
-        const deaths = dataDeathsByDay[val].deaths;
+        updateMap(val);
+        updateDate(dateString(date));
+        updateDeathCount(deathString(dataDeathsByDay[val].deaths, totalDeaths));
+        updateBubble(`${date}`);
 
-        totalDeaths = dataDeathsByDay.slice(0, val + 1).map(d => d.deaths).reduce((a, b) => a + b, 0);
-        
-        bubble.innerHTML = `${dataDeathsByDay[val].date} - ${totalDeaths}`;
         // const pos = Number(((slider.value - slider.min) * 100) / (slider.max - slider.min));
         // bubble.style.left = `calc(${pos}% + (${10 - pos * 0.15}px))`;
-
-        document.getElementById("date").innerHTML = date;
-        document.getElementById("deaths").innerHTML = deathString(deaths, totalDeaths);
 
     })
 
     function deathString(current, total) {
-        return `${current} death${current === 1 ? `` : `s`} today, ${total} total death${total === 1 ? `` : `s`}`;
+        return `(${current} death${current === 1 ? `` : `s`}, ${total} total)`;
     }
 
-    function parseDate(val) {
+    function dateString(val) {
         let date;
         if (val.includes("Aug")) {
             date = `August ${val.replace("-Aug", "")}`
@@ -366,6 +366,24 @@ function setupSlider() {
         date = `${date}, 1854`;
         return date;
     }
+
+    function updateDate(date) {
+        document.getElementById("date").innerHTML = date;
+    }
+
+    function updateDeathCount(deaths) {
+        document.getElementById("deaths").innerHTML = deaths;
+    }
+
+    function updateBubble(bubble) {
+        document.getElementById("bubble").innerHTML = bubble;
+    }
+
+    function updateMap(step) {
+        const items = Array.from(document.querySelectorAll(`#svg .death`));
+        items.forEach(item => parseInt(item.dataset.step) < step ? item.classList.add("show") : item.classList.remove("show"));
+    }
+
 }
 
 function setupCredits() {

@@ -23,7 +23,7 @@
 			✔️ 9. more data to the map - major street names and the location of the brewery and the work house
 			✔️ 10. ability to easily see on the map whether each victim was male or female
 			✔️ 11. ability to easily see on the map the age of each victim
-			❌ 12. additional graphs showing the distribution of deaths by sex and age overall
+			✔️ 12. additional graphs showing the distribution of deaths by sex and age overall
 			❌ 13. ability to cluster the data on the map into a grid that shows the number of dead in each grid cell (even with this small amount of data the points are starting to overwhelm) and the user should be able to vary the size of the clusters.
 			❌ 14. ability to show data from a window of days on the timeline graph
 			✔️ 15. ability to zoom in/out and pan around the map
@@ -31,8 +31,17 @@
 
         <div class="master">
 			<div class="header control">
-				London's 1854 Cholera Epidemic
-				<em>visualized by Dr. John Snow</em>
+				<div class="info">
+					<div class="title">London's Cholera Epidemic</div>
+					<div class="stats">
+						<div id="date" class="date"></div>
+						<div id="deaths" class="deaths"></div>
+					</div>
+				</div>
+				<div class="slider">
+					<input type="range" id="slider" name="slider" value="0" min="0" />
+					<div id="bubble" class="bubble"></div>
+				</div>
 			</div>
 
             <svg id="svg" class="map"></svg>
@@ -40,11 +49,6 @@
 			<div id="tooltip" class="tooltip"></div>
 
 			<div id="charts" class="charts"></div>
-
-			<div class="slider control">
-				<input type="range" id="slider" name="slider" value="0" min="0" />
-				<div id="bubble" class="bubble"></div>
-			</div>
 			
 			<div id="genders" class="genders control">
 				<div class="control-title">Gender Distribution</div>
@@ -54,58 +58,69 @@
 			</div>
 			
 			<div id="filters" class="filters control">
+
 				<div class="control-title">Filters</div>
-				<div class="control-subtitle">Gender</div>
-				<label for="male" class="filter male">
-					<input type="checkbox" id="male" checked />
-					Male
-				</label>
-				<label for="female" class="filter female">
-					<input type="checkbox" id="female" checked />
-					Female
-				</label>
-				<div class="control-subtitle">Age</div>
-				<label for="age0" class="filter">
-					<input type="checkbox" id="age0" checked />
-					0-10
-				</label>
-				<label for="age1" class="filter">
-					<input type="checkbox" id="age1" checked />
-					11-20
-				</label>
-				<label for="age2" class="filter">
-					<input type="checkbox" id="age2" checked />
-					21-40
-				</label>
-				<label for="age3" class="filter">
-					<input type="checkbox" id="age3" checked />
-					41-60
-				</label>
-				<label for="age4" class="filter">
-					<input type="checkbox" id="age4" checked />
-					61-80
-				</label>
-				<label for="age5" class="filter">
-					<input type="checkbox" id="age5" checked />
-					> 80
-				</label>
-				<div class="control-subtitle">Map</div>
-				<label for="pump" class="filter pump">
-					<input type="checkbox" id="pump" checked />
-					Pumps
-				</label>
-				<label for="street" class="filter street">
-					<input type="checkbox" id="street" checked />
-					Streets
-				</label>
-				<label for="label" class="filter label">
-					<input type="checkbox" id="label" checked />
-					Labels
-				</label>
-				<label for="snowmap" class="filter snowmap">
-					<input type="checkbox" id="snowmap" />
-					Snow's Map
-				</label>
+
+				<div class="group">
+					<div class="subtitle">Gender</div>
+					<label for="male" class="filter male">
+						<input type="checkbox" id="male" checked />
+						Male
+					</label>
+					<label for="female" class="filter female">
+						<input type="checkbox" id="female" checked />
+						Female
+					</label>
+				</div>
+
+				<div class="group">
+					<div class="subtitle">Age</div>
+					<label for="age0" class="filter">
+						<input type="checkbox" id="age0" checked />
+						0-10
+					</label>
+					<label for="age1" class="filter">
+						<input type="checkbox" id="age1" checked />
+						11-20
+					</label>
+					<label for="age2" class="filter">
+						<input type="checkbox" id="age2" checked />
+						21-40
+					</label>
+					<label for="age3" class="filter">
+						<input type="checkbox" id="age3" checked />
+						41-60
+					</label>
+					<label for="age4" class="filter">
+						<input type="checkbox" id="age4" checked />
+						61-80
+					</label>
+					<label for="age5" class="filter">
+						<input type="checkbox" id="age5" checked />
+						> 80
+					</label>
+				</div>
+				
+				<div class="group">
+					<div class="subtitle">Map</div>
+					<label for="pump" class="filter pump">
+						<input type="checkbox" id="pump" checked />
+						Pumps
+					</label>
+					<label for="street" class="filter street">
+						<input type="checkbox" id="street" checked />
+						Streets
+					</label>
+					<label for="label" class="filter label">
+						<input type="checkbox" id="label" checked />
+						Labels
+					</label>
+					<label for="snowmap" class="filter snowmap">
+						<input type="checkbox" id="snowmap" />
+						Snow's Map
+					</label>
+				</div>
+				
 			</div>
 				
         </div>

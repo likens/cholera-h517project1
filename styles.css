@@ -79,27 +79,8 @@ body {
 	z-index: 30;
 }
 
-.header {
-	display: flex;
-	align-items: center;
-	font-weight: 700;
-	padding: 10px 15px;
-	position: fixed;
-	font-size: 24px;
-	top: 0;
-	left: 0;
-	z-index: 30;
-	gap: 5px;
-}
-
-.header em {
-	display: block;
-	font-size: 16px;
-	font-weight: 400;
-}
-
 .control {
-	backdrop-filter: blur(5px);
+	backdrop-filter: blur(10px);
 	color: var(--black);
 	display: grid;
 	gap: 10px;
@@ -116,9 +97,52 @@ body {
 	font-size:18px;
 }
 
+.header {
+	display: grid;
+	grid-template-columns: 400px minmax(200px, 1fr);
+	justify-content: space-between;
+	align-items: center;
+	padding: 10px 15px;
+	position: fixed;
+	font-size: 24px;
+	top: 0;
+	left: 0;
+	z-index: 30;
+	gap: 20px;
+	width: 100%;
+	border-width: 0 0 1px;
+}
+
+.title {
+	font-size: 26px;
+}
+
+.info {
+	font-size: 20px;
+	font-weight: 700;
+	display: grid;
+	gap: 10px;
+	width: 400px;
+}
+
+.stats {
+	display: flex;
+	gap: 10px;
+}
+
 .filters {
-	right: 0;
+	left: 20px;
 	bottom: 0;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-template-rows: min-content 1fr;
+	align-content: flex-start;
+	border-bottom-width: 0;
+	height: 230px;
+}
+
+.filters .control-title {
+	grid-column: 1 / -1;
 }
 
 .filters label {
@@ -148,19 +172,29 @@ body {
 	background: var(--street);
 }
 
+.group {
+	display: grid;
+	gap: 10px;
+	align-content: flex-start;
+}
+
 .genders {
 	bottom: 0;
-	left: 0;
+	left: 350px;
 }
 
 .ages {
 	bottom: 0;
-	left: 215px;
+	left: 560px;
 }
 
 .slider {
-	left: 0;
-	bottom: 250px;
+	width: 100%;
+}
+
+.slider input {
+	display: block;
+	width: 100%;
 }
 
 .bubble {
@@ -219,21 +253,6 @@ body {
 	z-index: 10;
 }
 
-.map .female--hide,
-.map .male--hide,
-.map .age0--hide,
-.map .age1--hide,
-.map .age2--hide,
-.map .age3--hide,
-.map .age4--hide,
-.map .age5--hide,
-.map .pump--hide,
-.map .street--hide,
-.map .snowmap--hide,
-.map .label--hide {
-	display: none;
-}
-
 /* .map .streets {
 	transform: rotate(1deg);
 } */
@@ -253,11 +272,31 @@ body {
 
 .map .death {
 	cursor: pointer;
+	display: none;
+}
+
+.map .death.show {
+	display: block;
 }
 
 .map .death:hover {
 	stroke: var(--black);
 	stroke-width: 1px;
+}
+
+.map .death.female--hide,
+.map .death.male--hide,
+.map .death.age0--hide,
+.map .death.age1--hide,
+.map .death.age2--hide,
+.map .death.age3--hide,
+.map .death.age4--hide,
+.map .death.age5--hide,
+.map .pump--hide,
+.map .street--hide,
+.map .snowmap--hide,
+.map .label--hide {
+	display: none;
 }
 
 .map .male {
@@ -292,15 +331,4 @@ body {
 
 .map .credit:hover {
 	fill: var(--black);
-}
-
-.date {
-	font-weight: 700;
-	color: var(--black);
-	fill: var(--black);
-	font-size: 22px;
-}
-
-.deathcount {
-	font-size: 18px;
 }
