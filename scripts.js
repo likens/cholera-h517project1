@@ -34,21 +34,37 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     const filters = Array.from(document.querySelectorAll("#filters input"));
     filters.forEach(f => {
-        f.addEventListener('change', function() {
-            const checked = this.checked;
-            const clazz = `${this.id}--hide`;
-            const items = Array.from(document.querySelectorAll(`#svg .${this.id}`));
+        f.addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            const clazz = `${e.target.id}--hide`;
+            const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
             items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
         });
     })
+
+    const drawers = Array.from(document.querySelectorAll("#drawers .drawer"));
+    const drawerOpen = Array.from(document.querySelectorAll(".open"));
+    const drawerClose = Array.from(document.querySelectorAll(".close"));
+
+    drawerOpen.forEach(b => {
+        b.addEventListener("click", () => {
+            drawers.forEach(d => d.classList.remove("active"));
+            document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
+        });
+    });
+    
+    drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
+
 });
 
 const onMouseOver = function(e) {
-    let html;
-    if (this.dataset.type === "Pump") {
-        html = this.dataset.type;
-    } else if (this.dataset.type === "Death") {
-        html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
+    let html = "";
+    if (this.dataset.type) {
+        if (this.dataset.type === "Pump") {
+            html = this.dataset.type;
+        } else if (this.dataset.type === "Death") {
+            html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
+        }
     }
     tooltip.style.opacity = 1;
     tooltip.innerHTML = html;
@@ -58,13 +74,6 @@ const onMouseLeave = function(e) {
     tooltip.innerHTML = "";
 }
 const onZoom = (e) => map.attr('transform', e.transform);
-const onCreditClick = (href) => {
-    if (href.includes('http')) {
-        window.open(href);
-    } else {
-        window.open(`${window.location.href}data/${href}`);
-    }
-};
 const onMouseMove = (e) => tooltip.style.transform = `translate(${e.pageX}px, ${e.pageY}px)`;
 
 function loadData() {
@@ -146,14 +155,32 @@ function setupStreets() {
 function setupPumps() {
     const g = map.append("g").attr("class", "pumps");
     dataPumps.map(d => {
-        g.append("image")
-            .attr("href", "/img/pump.svg")
+        g.append("rect")
             .attr("data-type", "Pump")
             .attr("x", (d.x) * multiplier + offsetDataX)
             .attr("y", (1 - d.y) * multiplier + offsetDataY)
-            .attr("class", "pump")
+            .attr("width", 8)
+            .attr("height", 8)
+            .attr("class", `pump`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
+        // g.append("circle")
+        //     .attr("data-type", "Pump")
+        //     .attr("cx", (d.x) * multiplier + offsetDataX)
+        //     .attr("cy", (1 - d.y) * multiplier + offsetDataY)
+        //     .attr("r", 4)
+        //     .attr("class", `pump`)
+        //     .on("mouseover", onMouseOver)
+        //     .on("mouseleave", onMouseLeave)
+
+        // g.append("image")
+        //     .attr("href", "/img/pump.svg")
+        //     .attr("data-type", "Pump")
+        //     .attr("x", (d.x) * multiplier + offsetDataX)
+        //     .attr("y", (1 - d.y) * multiplier + offsetDataY)
+        //     .attr("class", "pump")
+        //     .on("mouseover", onMouseOver)
+        //     .on("mouseleave", onMouseLeave)
     });
 }
 
@@ -209,7 +236,7 @@ function setupDeaths() {
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
     });
-    setupPieChart(dataGenders, ["steelblue", "hotpink"], "Genders");
+    setupPieChart(dataGenders, [getComputedStyle(document.body).getPropertyValue('--male'), getComputedStyle(document.body).getPropertyValue('--female')], "Genders");
     setupPieChart(dataAges, ["white"], "Ages");
 }
 
@@ -334,7 +361,7 @@ function setupSlider() {
     updateMap(dataDeathsByDay[0].date);
     updateDate(dateString(dataDeathsByDay[0].date));
     updateDeathCount(deathString(dataDeathsByDay[0].deaths, totalDeaths));
-    updateBubble(`${dataDeathsByDay[0].date}`);
+    // updateBubble(`${dataDeathsByDay[0].date}`);
 
     slider.addEventListener("input", (e) => {
 
@@ -345,7 +372,7 @@ function setupSlider() {
         updateMap(val);
         updateDate(dateString(date));
         updateDeathCount(deathString(dataDeathsByDay[val].deaths, totalDeaths));
-        updateBubble(`${date}`);
+        // updateBubble(`${date}`);
 
         // const pos = Number(((slider.value - slider.min) * 100) / (slider.max - slider.min));
         // bubble.style.left = `calc(${pos}% + (${10 - pos * 0.15}px))`;
@@ -406,4 +433,12 @@ function setupCredits() {
             .attr("class", "credit")
             .on("click", () => onCreditClick(c.href))
     });
+
+    const onCreditClick = (href) => {
+        if (href.includes('http')) {
+            window.open(href);
+        } else {
+            window.open(`${window.location.href}data/${href}`);
+        }
+    };
 }

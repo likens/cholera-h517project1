@@ -1,13 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
 	--transparent: rgba(0,0,0,0);
 
 	--white: rgba(255,255,255,1);
 	--black: rgba(0,0,0,1);
+	--nearWhite: #f2f2f2;
+	--nearBlack: #222222;
 
-	--male: steelblue;
-	--female: hotpink;
-	--pump: blue;
-	--street: #ccc;
+	/* --male: #0E56F2;
+	--female: #FF1492; */
+	--male: #255EDB;
+	--female: #E62A8E;
+	--pump: #523500;
+	--street: #e5e5e5;
+	--label: #ccc;
 
 	font-family: sans-serif;
 	font-size: 16px;
@@ -24,24 +33,10 @@
 	
 }
 
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
-	}
-	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #f9f9f9;
-	}
-}
-
 *, 
 *:before, 
 *:after {
 	box-sizing: border-box;
-	user-select: none;
 }
 
 img {
@@ -50,95 +45,12 @@ img {
 
 body {
 	line-height: 1;
-	background: var(--black);
-	color: var(--white);
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100vh;
 	font-size: 16px;
-}
-
-.master {
-	position: relative;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-}
-
-.tooltip {
-	position: absolute;
-	left: 20px;
-	top: -20px;
-	font-size: 14px;
-	background: var(--black);
-	padding: 10px;
-	color: var(--white);
-	pointer-events: none;
-	opacity: 0;
-	z-index: 30;
-}
-
-.control {
-	backdrop-filter: blur(10px);
-	color: var(--black);
-	display: grid;
-	gap: 10px;
-	justify-content: center;
-	position: absolute;
-	z-index: 20;
-	border: 1px solid var(--street);
-	padding: 10px;
-}
-
-.control-title {
-	font-weight: 700;
-	text-align: center;
-	font-size:18px;
-}
-
-.header {
-	display: grid;
-	grid-template-columns: 400px minmax(200px, 1fr);
-	justify-content: space-between;
-	align-items: center;
-	padding: 10px 15px;
-	position: fixed;
-	font-size: 24px;
-	top: 0;
-	left: 0;
-	z-index: 30;
-	gap: 20px;
-	width: 100%;
-	border-width: 0 0 1px;
-}
-
-.title {
-	font-size: 26px;
-}
-
-.info {
-	font-size: 20px;
-	font-weight: 700;
-	display: grid;
-	gap: 10px;
-	width: 400px;
-}
-
-.stats {
-	display: flex;
-	gap: 10px;
-}
-
-.filters {
-	left: 20px;
-	bottom: 0;
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	grid-template-rows: min-content 1fr;
-	align-content: flex-start;
-	border-bottom-width: 0;
-	height: 230px;
+	font-family: 'Inter', sans-serif;
 }
 
 .filters .control-title {
@@ -172,85 +84,15 @@ body {
 	background: var(--street);
 }
 
-.group {
-	display: grid;
-	gap: 10px;
-	align-content: flex-start;
-}
-
-.genders {
-	bottom: 0;
-	left: 350px;
-}
-
-.ages {
-	bottom: 0;
-	left: 560px;
-}
-
-.slider {
-	width: 100%;
-}
-
-.slider input {
-	display: block;
-	width: 100%;
-}
-
-.bubble {
-	/* position: absolute;
-	left: 50%;
-	transform: translateX(-50%);
-	background: var(--black);
-	color: var(--white); */
-	font-size: 14px;
-	text-align: center;
-}
-
-.charts {
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	z-index: 30;
-	/* background: var(--black);
-	border: 1px solid var(--street);
-	box-shadow: 0 0 10px var(--street);
-	border-width: 1px 0 1px 1px; */
-	display: grid;
-	gap: 10px;
-	padding: 10px;
-	align-items: center;
-	justify-content: center;
-}
-
-.charts .chart {
-	text-align: center;
-	font-weight: 700;
-}
-
 .pie path {
 	stroke: var(--black);
 	stroke-width: 1px;
 }
 
-.pie .title {
-	font-size: 20px;
-	font-weight: 700;
-	text-anchor: middle;
-	fill: var(--white);
-}
-
 .pie .label {
 	font-size: 12px;
+	font-weight: 700;
 	text-anchor: middle;
-}
-
-.map {
-	background: var(--white);
-	width: 100%;
-	height: 100%;
-	position: relative;
-	z-index: 10;
 }
 
 /* .map .streets {
@@ -264,10 +106,11 @@ body {
 .map .pump {
 	position: relative;
 	z-index: 10;
-	width: 8px;
-	height: 8px;
+	/* width: 8px;
+	height: 8px; */
 	transform: translate(-4px, -4px);
 	cursor: pointer;
+	fill: var(--pump);
 }
 
 .map .death {
@@ -311,12 +154,12 @@ body {
 	text-transform: uppercase;
 	transform-origin: center center;
 	font-weight: 700;
-	fill: var(--street);
+	fill: var(--label);
 	font-style:italic;
 }
 
 .map .snowmap {
-	opacity: .5;
+	opacity: .3;
 	/* transform: rotate(-2deg);
 	transform-origin: center center; */
 }
@@ -325,10 +168,14 @@ body {
 	font-style: italic;
 	font-size: 10px;
 	text-transform: lowercase;
-	fill: var(--street);
+	fill: var(--label);
 	cursor: pointer;
 }
 
 .map .credit:hover {
 	fill: var(--black);
+}
+
+.drawer.active {
+	transform: translateX(0);
 }
