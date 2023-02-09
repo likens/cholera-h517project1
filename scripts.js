@@ -28,10 +28,6 @@ const dataAges = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 document.addEventListener("DOMContentLoaded", function(event) {
 
     loadData();
-    setupDrawers();
-    setupDraggables();
-    setupFilters();
-    setupColorblind();
 
     document.addEventListener("mousemove", (e) => onMouseMove(e));
 
@@ -83,16 +79,16 @@ function setupFilters() {
 function setupColorblind() {
     const colorBlindArea = document.querySelector("#colorblind .content .grid");
     const colorBlindFilters = [
-        'None',
-        'Protanopia',
-        'Protanomaly',
-        'Deuteranopia',
-        'Deuteranomaly',
-        'Tritanopia',
-        'Tritanomaly',
-        'Achromatopsia',
-        'Achromatomaly'
-    ]
+        "None",
+        "Protanopia",
+        "Protanomaly",
+        "Deuteranopia",
+        "Deuteranomaly",
+        "Tritanopia",
+        "Tritanomaly",
+        "Achromatopsia",
+        "Achromatomaly"
+    ];
 
     colorBlindFilters.forEach(c => {
         const id = c.toLocaleLowerCase();
@@ -119,9 +115,10 @@ function setupColorblind() {
     const options = Array.from(document.querySelectorAll("#colorblind input"));
     options.forEach(o => {
         o.addEventListener('click', (e) => {
-            document.body.className = "";
-            if (e != "none") {
-                document.body.classList.add("emulation", e.target.value);
+            document.body.removeAttribute("style");
+            if (e.target.value != "none") {
+                document.body.style.filter = `url('/img/filters.svg#${e.target.value}')`;
+                document.body.style.overflow = "hidden";
             }
         });
     });
@@ -149,7 +146,6 @@ const onZoom = (e) => map.attr('transform', e.transform);
 const onMouseMove = (e) => tooltip.style.transform = `translate(${e.pageX}px, ${e.pageY}px)`;
 
 function loadData() {
-    console.log("loadData");
     const streets = d3.json("/data/streets.json").then(streets => dataStreets = streets);
     const labels = d3.json("/data/labels.json").then(labels => dataLabels = labels);
     const pumps = d3.csv("/data/pumps.csv").then(pumps => dataPumps = pumps);
@@ -163,6 +159,7 @@ function loadData() {
 
     Promise.all([streets, labels, pumps, deathsByDemo, deathsDays]).then(v => {
         combineData();
+        setupLayout();
         setupSVG();
     });
 }
@@ -182,14 +179,19 @@ function combineData() {
     });
 }
 
-function setupSVG() {
+function setupLayout() {
+    setupDrawers();
+    setupDraggables();
+    setupFilters();
+    setupColorblind();
+}
 
+function setupSVG() {
     setupZoom();
     setupStreets();
     setupDeaths();
     setupPumps();
     setupSlider();
-    setupCredits();
 }
 
 function setupZoom() {
@@ -232,23 +234,14 @@ function setupStreets() {
 function setupPumps() {
     const g = map.append("g").attr("class", "pumps");
     dataPumps.map(d => {
-        g.append("rect")
+        const symbol = d3.symbol().type(d3.symbolTriangle, 32);
+        g.append("path")
             .attr("data-type", "Pump")
-            .attr("x", (d.x) * multiplier + offsetDataX)
-            .attr("y", (1 - d.y) * multiplier + offsetDataY)
-            .attr("width", 8)
-            .attr("height", 8)
+            .attr("d", symbol)
+            .attr("transform", `translate(${(d.x) * multiplier + offsetDataX}, ${(1 - d.y) * multiplier + offsetDataY})`)
             .attr("class", `pump`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
-        // g.append("circle")
-        //     .attr("data-type", "Pump")
-        //     .attr("cx", (d.x) * multiplier + offsetDataX)
-        //     .attr("cy", (1 - d.y) * multiplier + offsetDataY)
-        //     .attr("r", 4)
-        //     .attr("class", `pump`)
-        //     .on("mouseover", onMouseOver)
-        //     .on("mouseleave", onMouseLeave)
 
         // g.append("image")
         //     .attr("href", "/img/pump.svg")
@@ -460,8 +453,8 @@ function setupSlider() {
     
     function dayZero() {
         updateMap(0);
-        updateDate("Total Deaths:");
-        updateDeathCount(dataDeaths.length);
+        updateDate("");
+        updateDeathCount(`Total Deaths: ${dataDeaths.length}`);
     }
 
     function deathString(current, total) {
@@ -496,34 +489,4 @@ function setupSlider() {
         items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
     }
 
-}
-
-function setupCredits() {
-
-    const g = map.append("g").attr("class", "credits");
-        
-    const credits = [
-        { provided: "Street layout", href: "streets.json", x: 190, y: 905 },
-        { provided: "Street labels", href: "labels.json", x: 190, y: 920 },
-        { provided: "Pump placement", href: "pumps.csv", x: 190, y: 935 },
-        { provided: "Death age, gender, and location", href: "deaths_age_sex.csv", x: 190, y: 950 },
-        { provided: "Original map from John Snow, 1854", href: "https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak", x: 190, y: 965 },
-    ];
-
-    credits.map(c => {
-        g.append("text")
-            .attr("x", c.x)
-            .attr("y", c.y)
-            .html(`${c.provided} provided by ${c.href}`)
-            .attr("class", "credit")
-            .on("click", () => onCreditClick(c.href))
-    });
-
-    const onCreditClick = (href) => {
-        if (href.includes('http')) {
-            window.open(href);
-        } else {
-            window.open(`${window.location.href}data/${href}`);
-        }
-    };
 }

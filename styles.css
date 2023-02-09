@@ -53,42 +53,6 @@ body {
 	font-family: 'Inter', sans-serif;
 }
 
-.emulation {
-	overflow: hidden;
-}
-
-.protanopia {
-	filter: url('/img/filters.svg#protanopia');
-}
-
-.protanomaly {
-	filter: url('/img/filters.svg#protanomaly');
-}
-
-.deuteranopia {
-	filter: url('/img/filters.svg#deuteranopia');
-}
-
-.deuteranomaly {
-	filter: url('/img/filters.svg#deuteranomaly');
-}
-
-.tritanopia {
-	filter: url('/img/filters.svg#tritanopia');
-}
-
-.tritanomaly {
-	filter: url('/img/filters.svg#tritanomaly');
-}
-
-.achromatopsia {
-	filter: url('/img/filters.svg#achromatopsia');
-}
-
-.achromatomaly {
-	filter: url('/img/filters.svg#achromatomaly');
-}
-
 .legend label {
 	cursor: pointer;
 }
@@ -165,9 +129,6 @@ body {
 .map .pump {
 	position: relative;
 	z-index: 10;
-	/* width: 8px;
-	height: 8px; */
-	transform: translate(-4px, -4px);
 	cursor: pointer;
 	fill: var(--pump);
 }
@@ -220,18 +181,6 @@ body {
 	opacity: .3;
 	/* transform: rotate(-2deg);
 	transform-origin: center center; */
-}
-
-.map .credit {
-	font-style: italic;
-	font-size: 10px;
-	text-transform: lowercase;
-	fill: var(--label);
-	cursor: pointer;
-}
-
-.map .credit:hover {
-	fill: var(--black);
 }
 
 .drawer.active {

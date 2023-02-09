@@ -38,7 +38,7 @@
 					<div class="text-2xl">London's Cholera Epidemic</div>
 					<div class="text-lg">visualized by Dr. John Snow</div>
 				</div>
-				<div class="flex gap-5">
+				<div id="buttons" class="flex gap-5">
 					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnAbout" title="Open">About</button>
 					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnVideo" title="Open">Video</button>
 					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnDocs" title="Open">Docs</button>
@@ -70,7 +70,22 @@
 					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">Docs</div>
 					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
 					<div class="p-4">
-						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
+						<div class="font-bold text-lg">Data</div>
+						<ul>
+							<li>Street Layout: streets.json</li>
+							<li>Street Labels: labels.json</li>
+							<li>Pump Locations: pumps.csv</li>
+							<li>Death Age/Gender/Location: deaths_age_sex.csv</li>
+							<li>Death Count Per Day: deathdays.csv</li>
+							<li>John Snow's Original Map, 1854: https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</li>
+						</ul>
+						<div class="font-bold text-lg">Libraries</div>
+						<ul>
+							<li>D3: https://github.com/d3/d3</li>
+							<li>Draggabilly: https://github.com/desandro/draggabilly</li>
+							<li>Colorblind Filters: https://github.com/hail2u/color-blindness-emulation</li>
+							<li>Tailwind: https://github.com/tailwindlabs/tailwindcss</li>
+						</ul>
 					</div>
 				</div>
 			</div>
@@ -182,8 +197,8 @@
 					<div class="content active p-3 border-slate-900 border-t-2 border-solid">
 						<div class="grid gap-2">
 							<div class="w-80 whitespace-nowrap flex gap-1 font-bold text-center justify-center">
-								<span id="date" class="date">Total Deaths:</span>
-								<span id="deaths" class="deaths"></span>
+								<span id="date" class="date"></span>
+								<span id="deaths" class="deaths">Total Deaths:</span>
 							</div>
 							<input type="range" class="block w-80 m-auto" id="slider" name="slider" value="0" min="0" />
 							<!-- <div id="bubble" class="bubble"></div> -->
@@ -196,7 +211,6 @@
 	</body>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-	<script src="https://cdn.jsdelivr.net/npm/d3-zoom@3"></script>
 	<script src="https://cdn.jsdelivr.net/npm/draggabilly@3.0.0/dist/draggabilly.pkgd.min.js"></script>
     <script type="module" src="scripts.js"></script>
 
