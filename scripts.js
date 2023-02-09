@@ -11,6 +11,7 @@ const multiplier = 50;
 const offsetDataX = 0;
 const offsetDataY = 1000;
 const svg = d3.select("#svg");
+const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
 const slider = document.getElementById("slider");
 
@@ -24,14 +25,50 @@ const dataDeaths = [];
 const dataGenders = { m: 0, f: 0 };
 const dataAges = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
-let map;
-
 document.addEventListener("DOMContentLoaded", function(event) {
 
     loadData();
+    setupDrawers();
+    setupDraggables();
+    setupFilters();
+    setupColorblind();
 
     document.addEventListener("mousemove", (e) => onMouseMove(e));
 
+});
+
+function setupDrawers() {
+    const drawers = Array.from(document.querySelectorAll("#drawers .drawer"));
+    const drawerOpen = Array.from(document.querySelectorAll(".open"));
+    const drawerClose = Array.from(document.querySelectorAll(".close"));
+    drawerOpen.forEach(b => {
+        b.addEventListener("click", () => {
+            drawers.forEach(d => d.classList.remove("active"));
+            document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
+        });
+    });
+    drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
+}
+
+function setupDraggables() {
+    const dragElem = Array.from(document.querySelectorAll('.draggies'));
+    const draggies = dragElem.map(d => {
+        const handle = d.querySelector('.handle');
+        const content = d.querySelector('.content');
+        const toggle = handle.querySelector('.toggle');
+        toggle.addEventListener('click', () => {
+            content.classList.toggle('active');
+            content.className.includes("active") ? toggle.innerHTML = "-" : toggle.innerHTML = "+";
+        });
+        const draggie = new Draggabilly(d, {
+            containment: '#draggabilly',
+            handle: handle
+        });
+        return draggie;
+    });
+}
+
+function setupFilters() {
     const filters = Array.from(document.querySelectorAll("#filters input"));
     filters.forEach(f => {
         f.addEventListener('change', (e) => {
@@ -41,28 +78,63 @@ document.addEventListener("DOMContentLoaded", function(event) {
             items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
         });
     })
+}
 
-    const drawers = Array.from(document.querySelectorAll("#drawers .drawer"));
-    const drawerOpen = Array.from(document.querySelectorAll(".open"));
-    const drawerClose = Array.from(document.querySelectorAll(".close"));
+function setupColorblind() {
+    const colorBlindArea = document.querySelector("#colorblind .content .grid");
+    const colorBlindFilters = [
+        'None',
+        'Protanopia',
+        'Protanomaly',
+        'Deuteranopia',
+        'Deuteranomaly',
+        'Tritanopia',
+        'Tritanomaly',
+        'Achromatopsia',
+        'Achromatomaly'
+    ]
 
-    drawerOpen.forEach(b => {
-        b.addEventListener("click", () => {
-            drawers.forEach(d => d.classList.remove("active"));
-            document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
-        });
+    colorBlindFilters.forEach(c => {
+        const id = c.toLocaleLowerCase();
+        const lbl = document.createElement("label");
+        const input = document.createElement("input");
+        const span = document.createElement("span");
+
+        input.type = "radio";
+        input.id = id;
+        input.value = id;
+        input.name = "colorblind";
+        input.checked = id === "none";
+
+        span.textContent = c;
+
+        lbl.appendChild(input);
+        lbl.appendChild(span);
+
+        lbl.classList.add("flex", "gap-2", "text-sm", "cursor-pointer");
+
+        colorBlindArea.appendChild(lbl);
     });
     
-    drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
-
-});
+    const options = Array.from(document.querySelectorAll("#colorblind input"));
+    options.forEach(o => {
+        o.addEventListener('click', (e) => {
+            document.body.className = "";
+            if (e != "none") {
+                document.body.classList.add("emulation", e.target.value);
+            }
+        });
+    });
+}
 
 const onMouseOver = function(e) {
     let html = "";
     if (this.dataset.type) {
         if (this.dataset.type === "Pump") {
+            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${this.dataset.type.toLocaleLowerCase()}`);
             html = this.dataset.type;
         } else if (this.dataset.type === "Death") {
+            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${this.dataset.gender.toLocaleLowerCase()}`);
             html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
         }
     }
@@ -89,11 +161,13 @@ function loadData() {
         }
     }).then(deaths => dataDeathsByDay = deaths);
 
-    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays]).then(v => setupSVG());
+    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays]).then(v => {
+        combineData();
+        setupSVG();
+    });
 }
 
-function setupSVG() {
-
+function combineData() {
     dataDeathsByDay.forEach((date, idx) => {
         if (date.deaths > 0) {
             const full = dataDeathsByDemo.splice(0, date.deaths).map(death => {
@@ -106,17 +180,20 @@ function setupSVG() {
             dataDeaths.push(...full);
         }
     });
+}
 
-    console.log(dataDeathsByDemo);
+function setupSVG() {
 
-    map = svg.append('g').attr('class', 'container');
-    svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
+    setupZoom();
     setupStreets();
     setupDeaths();
     setupPumps();
-    // setupTimeline();
     setupSlider();
     setupCredits();
+}
+
+function setupZoom() {
+    svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
 }
 
 function setupStreets() {
@@ -190,10 +267,10 @@ function setupDeaths() {
         let gender;
         const gVal = parseInt(d.gender);
         if (gVal) {
-            gender = "Female";
+            gender = STRING_FEMALE;
             dataGenders.f++;
         } else {
-            gender = "Male";
+            gender = STRING_MALE;
             dataGenders.m++;
         }
         let age;
@@ -201,25 +278,25 @@ function setupDeaths() {
         dataAges[aVal]++;
         switch(aVal) {
             case "0":
-                age = "0-10"
+                age = STRING_AGE_0
                 break;
             case "1":
-                age = "11-20"
+                age = STRING_AGE_1
                 break;
             case "2":
-                age = "21-40"
+                age = STRING_AGE_2
                 break;
             case "3":
-                age = "41-60"
+                age = STRING_AGE_3
                 break;
             case "4":
-                age = "61-80"
+                age = STRING_AGE_4
                 break;
             case "5":
-                age = "> 80"
+                age = STRING_AGE_5
                 break;
             default:
-                age = "0-10"
+                age = STRING_AGE_0
                 dataAges["0"]++;
                 break;
         }
@@ -228,7 +305,7 @@ function setupDeaths() {
             .attr("data-age", age)
             .attr("data-gender", gender)
             .attr("data-date", d.date)
-            .attr("data-step", d.step)
+            .attr("data-step", d.step + 1)
             .attr("cx", (d.x) * multiplier + offsetDataX)
             .attr("cy", (1 - d.y) * multiplier + offsetDataY)
             .attr("r", 2)
@@ -270,13 +347,15 @@ function setupPieChart(data, swatch, id) {
         }
     }
 
-    const pie = d3.select(`#${id.toLocaleLowerCase()}`)
+    const pie = d3.select(`#${id.toLocaleLowerCase()} .content`)
                     .append("svg")
                     .attr("width", size)
                     .attr("height", size)
                     .attr("class", `${id.toLocaleLowerCase()} pie`)
                     .attr("id", id.toLocaleLowerCase())
                     .append("g")
+                    .on("mouseover", onMouseOver)
+                    .on("mouseleave", onMouseLeave)
                     .attr("transform", `translate(${translate}, ${translate})`)
     pie.selectAll()
         .data(pieVal(Object.entries(data)))
@@ -355,29 +434,35 @@ function setupPieChart(data, swatch, id) {
 
 function setupSlider() {
 
-    let totalDeaths = dataDeathsByDay[0].deaths;
-    slider.max = dataDeathsByDay.length - 1;
-    
-    updateMap(dataDeathsByDay[0].date);
-    updateDate(dateString(dataDeathsByDay[0].date));
-    updateDeathCount(deathString(dataDeathsByDay[0].deaths, totalDeaths));
+    let totalDeaths = dataDeaths.length;
+    slider.max = dataDeathsByDay.length;
+
+    dayZero();
     // updateBubble(`${dataDeathsByDay[0].date}`);
 
     slider.addEventListener("input", (e) => {
 
         const val = parseInt(e.target.value);
-        totalDeaths = dataDeathsByDay.slice(0, val + 1).map(d => d.deaths).reduce((a, b) => a + b, 0);      
-        const date = dataDeathsByDay[val].date;
-        
-        updateMap(val);
-        updateDate(dateString(date));
-        updateDeathCount(deathString(dataDeathsByDay[val].deaths, totalDeaths));
-        // updateBubble(`${date}`);
 
-        // const pos = Number(((slider.value - slider.min) * 100) / (slider.max - slider.min));
-        // bubble.style.left = `calc(${pos}% + (${10 - pos * 0.15}px))`;
+        if (val > 0) {
+            totalDeaths = dataDeathsByDay.slice(0, val).map(d => d.deaths).reduce((a, b) => a + b, 0);
+            updateMap(val);
+            updateDate(dateString(dataDeathsByDay[val - 1].date));
+            updateDeathCount(deathString(dataDeathsByDay[val - 1].deaths, totalDeaths));
+            // updateBubble(`${date}`);
+            // const pos = Number(((slider.value - slider.min) * 100) / (slider.max - slider.min));
+            // bubble.style.left = `calc(${pos}% + (${10 - pos * 0.15}px))`;
+        } else {
+            dayZero();
+        }
 
-    })
+    });
+    
+    function dayZero() {
+        updateMap(0);
+        updateDate("Total Deaths:");
+        updateDeathCount(dataDeaths.length);
+    }
 
     function deathString(current, total) {
         return `(${current} death${current === 1 ? `` : `s`}, ${total} total)`;
@@ -408,7 +493,7 @@ function setupSlider() {
 
     function updateMap(step) {
         const items = Array.from(document.querySelectorAll(`#svg .death`));
-        items.forEach(item => parseInt(item.dataset.step) < step ? item.classList.add("show") : item.classList.remove("show"));
+        items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
     }
 
 }

@@ -20,7 +20,7 @@
 			❌ 3. ability to move the mouse over the timeline graph to choose which day to visualize - this should affect the deaths visible on the map and in the graph - at minimum all cholera deaths prior to that date should be shown on the map and the graph
 			✔️ 4. the graph and the map should be stable (i.e., they should not move when new data is added or removed)
 			✔️ 5. the graph and the map should be well labeled
-			❌ 6. you should check your visualization with a color blindness simulation tool to see that its OK
+			✔️ 6. you should check your visualization with a color blindness simulation tool to see that its OK
 			✔️ 7. the map and graph should update quickly when the user interacts
 			❌ 8. an about screen with details on who wrote the project, where the data came from, etc.
 			✔️ 9. more data to the map - major street names and the location of the brewery and the work house
@@ -32,132 +32,172 @@
 			✔️ 15. ability to zoom in/out and pan around the map
 		-->
 
-        <div class="relative w-full h-full overflow-hidden">
-			<div class="flex justify-between items-center px-5 py-2.5 fixed top-0 left-0 z-30 gap-5 w-full border-b backdrop-blur">
-				<div class="text-xl font-bold">
-					<div class="text-3xl">London's Cholera Epidemic</div>
-					<div class="text-xl">visualized by Dr. John Snow</div>
+        <div id="master" class="relative w-full h-full overflow-hidden">
+			<div class="flex justify-between items-center px-4 py-2 fixed top-0 left-0 z-50 gap-5 w-full border-b-2 border-slate-900 backdrop-blur bg-slate-900/10">
+				<div class="font-bold text-slate-900">
+					<div class="text-2xl">London's Cholera Epidemic</div>
+					<div class="text-lg">visualized by Dr. John Snow</div>
 				</div>
 				<div class="flex gap-5">
-					<button type="button" class="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-sm leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition-all open" id="btnAbout" title="Open">About</button>
-					<button type="button" class="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-sm leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition-all open" id="btnVideo" title="Open">Video</button>
-					<button type="button" class="inline-block px-6 py-2 border-2 border-gray-800 text-gray-800 font-medium text-sm leading-tight uppercase rounded hover:bg-black hover:bg-opacity-5 focus:outline-none focus:ring-0 transition-all open" id="btnDocs" title="Open">Docs</button>
+					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnAbout" title="Open">About</button>
+					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnVideo" title="Open">Video</button>
+					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnDocs" title="Open">Docs</button>
 				</div>
 			</div>
 
             <svg id="svg" class="map bg-white w-full h-full relative z-10"></svg>
-			<div id="tooltip" class="tooltip absolute text-white bg-slate-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm"></div>
+			<div id="tooltip" class="tooltip absolute text-white bg-slate-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border rounded drop-shadow-lg"></div>
 			<div id="charts" class="charts"></div>
 
 			<div id="drawers">
-				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-lg z-40 backdrop-blur transition-all p-4 bg-white/50 translate-x-full border-l border-solid border-neutral-200">
-					<div class="font-bold text-3xl text-center pb-4">About</div>
-					<button class="close absolute top-4 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
-					<div class="drawer-desc">
+				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
+					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">About</div>
+					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
+					<div class="p-4">
 						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
 					</div>
 				</div>
 	
-				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-lg z-40 backdrop-blur transition-all p-4 bg-white/50 translate-x-full border-l border-solid border-neutral-200">
-					<div class="font-bold text-3xl text-center pb-4">Video</div>
-					<button class="close absolute top-4 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
-					<div class="drawer-desc">
+				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
+					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">Video</div>
+					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
+					<div class="p-4">
 						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
 					</div>
 				</div>
 	
-				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-lg z-40 backdrop-blur transition-all p-4 bg-white/50 translate-x-full border-l border-solid border-neutral-200">
-					<div class="font-bold text-3xl text-center pb-4">Docs</div>
-					<button class="close absolute top-4 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
-					<div class="drawer-desc">
+				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
+					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">Docs</div>
+					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
+					<div class="p-4">
 						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
+					</div>
+				</div>
+			</div>
+
+			<div id="draggabilly" class="draggabilly absolute top-0 left-0 right-0 bottom-0 w-full">
+
+				<div id="colorblind" class="colorblind draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">Colorblindness</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid">
+						<div class="grid gap-3"></div>
+					</div>
+				</div>
+
+				<div id="genders" class="genders draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">Gender</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
+				</div>
+	
+				<div id="ages" class="ages draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">Age</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
+				</div>
+	
+				<div id="filters" class="filters draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">Filters</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid">
+						<div class="flex gap-10">
+	
+							<div class="grid gap-3 content-start">
+								<div class="text-center font-bold">Gender</div>
+								<label for="male" class="male flex gap-2">
+									<input type="checkbox" id="male" checked />
+									<span>Male</span>
+								</label>
+								<label for="female" class="female flex gap-2">
+									<input type="checkbox" id="female" checked />
+									<span>Female</span>
+								</label>
+							</div>
+	
+							<div class="grid gap-3 content-start">
+								<div class="text-center font-bold">Age</div>
+								<label for="age0">
+									<input type="checkbox" id="age0" checked />
+									0-10
+								</label>
+								<label for="age1">
+									<input type="checkbox" id="age1" checked />
+									11-20
+								</label>
+								<label for="age2">
+									<input type="checkbox" id="age2" checked />
+									21-40
+								</label>
+								<label for="age3">
+									<input type="checkbox" id="age3" checked />
+									41-60
+								</label>
+								<label for="age4">
+									<input type="checkbox" id="age4" checked />
+									61-80
+								</label>
+								<label for="age5">
+									<input type="checkbox" id="age5" checked />
+									> 80
+								</label>
+							</div>
+	
+							<div class="grid gap-3 content-start">
+								<div class="text-center font-bold">Map</div>
+								<label for="pump" class="pump flex gap-2">
+									<input type="checkbox" id="pump" checked />
+									Pumps
+								</label>
+								<label for="street" class="street flex gap-2">
+									<input type="checkbox" id="street" checked />
+									Streets
+								</label>
+								<label for="label" class="label flex gap-2">
+									<input type="checkbox" id="label" checked />
+									Labels
+								</label>
+								<label for="snowmap" class="snowmap flex gap-2">
+									<input type="checkbox" id="snowmap" />
+									Snow's Map
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div id="timeline" class="timeline draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">-</button>
+						<div class="text-lg pr-6">Timeline</div>
+					</div>
+					<div class="content active p-3 border-slate-900 border-t-2 border-solid">
+						<div class="grid gap-2">
+							<div class="w-80 whitespace-nowrap flex gap-1 font-bold text-center justify-center">
+								<span id="date" class="date">Total Deaths:</span>
+								<span id="deaths" class="deaths"></span>
+							</div>
+							<input type="range" class="block w-80 m-auto" id="slider" name="slider" value="0" min="0" />
+							<!-- <div id="bubble" class="bubble"></div> -->
+						</div>
 					</div>
 				</div>
 			</div>
 			
-			<div id="timeline" class="w-full grid gap-2 justify-center absolute z-30 border border-solid border-neutral-200 backdrop-blur bottom-0 left-0 p-2">
-				<div class="w-96 flex gap-3 font-bold text-center justify-center text-lg">
-					<span id="date" class="date"></span>
-					<span id="deaths" class="deaths"></span>
-				</div>
-				<input type="range" class="block w-96" id="slider" name="slider" value="0" min="0" />
-				<!-- <div id="bubble" class="bubble"></div> -->
-			</div>
-
-			<div id="genders" class="grid gap-2 justify-center absolute z-20 border border-solid border-neutral-200 backdrop-blur top-32 left-0 content-start p-2">
-				<div class="font-bold text-center text-lg">Gender</div>
-			</div>
-
-			<div id="ages" class="grid gap-2 justify-center absolute z-20 border border-solid border-neutral-200 backdrop-blur top-96 left-0 content-start p-2">
-				<div class="font-bold text-center text-lg">Age</div>
-			</div>
-
-			<div id="filters" class="filters grid gap-2 justify-center absolute z-20 border border-solid border-neutral-200 backdrop-blur top-32 right-0 content-start p-2">
-				<div class="font-bold text-center text-lg">Filters</div>
-				<div class="grid gap-3 content-start">
-					<div class="subtitle">Gender</div>
-					<label for="male" class="filter male">
-						<input type="checkbox" id="male" checked />
-						Male
-					</label>
-					<label for="female" class="filter female">
-						<input type="checkbox" id="female" checked />
-						Female
-					</label>
-				</div>
-				<div class="grid gap-3 content-start">
-					<div class="subtitle">Age</div>
-					<label for="age0">
-						<input type="checkbox" id="age0" checked />
-						0-10
-					</label>
-					<label for="age1">
-						<input type="checkbox" id="age1" checked />
-						11-20
-					</label>
-					<label for="age2">
-						<input type="checkbox" id="age2" checked />
-						21-40
-					</label>
-					<label for="age3">
-						<input type="checkbox" id="age3" checked />
-						41-60
-					</label>
-					<label for="age4">
-						<input type="checkbox" id="age4" checked />
-						61-80
-					</label>
-					<label for="age5">
-						<input type="checkbox" id="age5" checked />
-						> 80
-					</label>
-				</div>
-				<div class="grid gap-3 content-start">
-					<div class="subtitle">Map</div>
-					<label for="pump" class="pump">
-						<input type="checkbox" id="pump" checked />
-						Pumps
-					</label>
-					<label for="street" class="street">
-						<input type="checkbox" id="street" checked />
-						Streets
-					</label>
-					<label for="label" class="label">
-						<input type="checkbox" id="label" checked />
-						Labels
-					</label>
-					<label for="snowmap" class="snowmap">
-						<input type="checkbox" id="snowmap" />
-						Snow's Map
-					</label>
-				</div>
-			</div>
-				
         </div>
 	</body>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 	<script src="https://cdn.jsdelivr.net/npm/d3-zoom@3"></script>
+	<script src="https://cdn.jsdelivr.net/npm/draggabilly@3.0.0/dist/draggabilly.pkgd.min.js"></script>
     <script type="module" src="scripts.js"></script>
 
 </html>

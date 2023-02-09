@@ -53,35 +53,48 @@ body {
 	font-family: 'Inter', sans-serif;
 }
 
-.filters .control-title {
-	grid-column: 1 / -1;
+.emulation {
+	overflow: hidden;
 }
 
-.filters label {
+.protanopia {
+	filter: url('/img/filters.svg#protanopia');
+}
+
+.protanomaly {
+	filter: url('/img/filters.svg#protanomaly');
+}
+
+.deuteranopia {
+	filter: url('/img/filters.svg#deuteranopia');
+}
+
+.deuteranomaly {
+	filter: url('/img/filters.svg#deuteranomaly');
+}
+
+.tritanopia {
+	filter: url('/img/filters.svg#tritanopia');
+}
+
+.tritanomaly {
+	filter: url('/img/filters.svg#tritanomaly');
+}
+
+.achromatopsia {
+	filter: url('/img/filters.svg#achromatopsia');
+}
+
+.achromatomaly {
+	filter: url('/img/filters.svg#achromatomaly');
+}
+
+.legend label {
 	cursor: pointer;
-	font-size: 14px;
 }
 
-.filters input {
+.legend input {
 	margin: 0;
-}
-
-.filters .male {
-	background: var(--male);
-	color: var(--white);
-}
-
-.filters .female {
-	background: var(--female);
-}
-
-.filters .pump {
-	background: var(--pump);
-	color: var(--white);
-}
-
-.filters .street {
-	background: var(--street);
 }
 
 .pie path {
@@ -93,6 +106,52 @@ body {
 	font-size: 12px;
 	font-weight: 700;
 	text-anchor: middle;
+}
+
+.draggabilly {
+	height: calc(100% - 78px);
+	transform: translateY(78px);
+	z-index: 40;
+	pointer-events: none;
+}
+
+.draggies {
+	left: 10px;
+	z-index: 30;
+	pointer-events: auto;
+}
+
+.draggies .handle {
+	cursor: move;
+	min-width: 150px;
+}
+
+.draggies .content {
+	display: none;
+}
+
+.draggies .active {
+	display: block;
+}
+
+.timeline {
+	top: 10px;
+}
+
+.filters {
+	top: 125px;
+}
+
+.genders {
+	top: 175px;
+}
+
+.ages {
+	top: 225px;
+}
+
+.colorblind {
+	top: 275px;
 }
 
 /* .map .streets {
@@ -123,8 +182,8 @@ body {
 }
 
 .map .death:hover {
-	stroke: var(--black);
-	stroke-width: 1px;
+	stroke: rgba(0,0,0,.75);
+	stroke-width: .75px;
 }
 
 .map .death.female--hide,
@@ -155,7 +214,6 @@ body {
 	transform-origin: center center;
 	font-weight: 700;
 	fill: var(--label);
-	font-style:italic;
 }
 
 .map .snowmap {
