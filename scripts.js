@@ -234,7 +234,7 @@ function setupStreets() {
 function setupPumps() {
     const g = map.append("g").attr("class", "pumps");
     dataPumps.map(d => {
-        const symbol = d3.symbol().type(d3.symbolTriangle, 32);
+        const symbol = d3.symbol().type(d3.symbolTriangle).size(40);
         g.append("path")
             .attr("data-type", "Pump")
             .attr("d", symbol)

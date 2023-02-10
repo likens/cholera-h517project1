@@ -46,7 +46,7 @@
 			</div>
 
             <svg id="svg" class="map bg-white w-full h-full relative z-10"></svg>
-			<div id="tooltip" class="tooltip absolute text-white bg-slate-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border rounded drop-shadow-lg"></div>
+			<div id="tooltip" class="tooltip absolute text-white bg-slate-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
 			<div id="charts" class="charts"></div>
 
 			<div id="drawers">
@@ -101,19 +101,27 @@
 						<div class="grid gap-3"></div>
 					</div>
 				</div>
-
-				<div id="genders" class="genders draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">Gender</div>
-					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
-				</div>
 	
 				<div id="ages" class="ages draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
 					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
 						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">Age</div>
+						<div class="text-lg pr-6">By Age</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
+				</div>
+
+				<div id="genders" class="genders draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">By Gender</div>
+					</div>
+					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
+				</div>
+
+				<div id="days" class="days draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
+					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+						<div class="text-lg pr-6">By Day</div>
 					</div>
 					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
 				</div>

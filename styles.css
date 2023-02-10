@@ -106,16 +106,20 @@ body {
 	top: 125px;
 }
 
-.genders {
+.days {
 	top: 175px;
 }
 
-.ages {
+.genders {
 	top: 225px;
 }
 
-.colorblind {
+.ages {
 	top: 275px;
+}
+
+.colorblind {
+	top: 325px;
 }
 
 /* .map .streets {
