@@ -6,6 +6,9 @@ const STRING_AGE_2 = "21-40";
 const STRING_AGE_3 = "41-60";
 const STRING_AGE_4 = "61-80";
 const STRING_AGE_5 = "> 80";
+const COLOR_MALE = getComputedStyle(document.body).getPropertyValue('--male');
+const COLOR_FEMALE = getComputedStyle(document.body).getPropertyValue('--female');
+const COLOR_BARS = getComputedStyle(document.body).getPropertyValue('--bars');
 
 const multiplier = 50;
 const offsetDataX = 0;
@@ -21,9 +24,6 @@ let dataPumps = [];
 let dataDeathsByDemo = [];
 let dataDeathsByDay = [];
 const dataDeaths = [];
-
-const dataGenders = { m: 0, f: 0 };
-const dataAges = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -65,8 +65,8 @@ function setupDraggables() {
 }
 
 function setupFilters() {
-    const filters = Array.from(document.querySelectorAll("#filters input"));
-    filters.forEach(f => {
+    const filterChk = Array.from(document.querySelectorAll("#filters input[type=checkbox]"));
+    filterChk.forEach(f => {
         f.addEventListener('change', (e) => {
             const checked = e.target.checked;
             const clazz = `${e.target.id}--hide`;
@@ -74,47 +74,9 @@ function setupFilters() {
             items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
         });
     })
-}
-
-function setupColorblind() {
-    const colorBlindArea = document.querySelector("#colorblind .content .grid");
-    const colorBlindFilters = [
-        "None",
-        "Protanopia",
-        "Protanomaly",
-        "Deuteranopia",
-        "Deuteranomaly",
-        "Tritanopia",
-        "Tritanomaly",
-        "Achromatopsia",
-        "Achromatomaly"
-    ];
-
-    colorBlindFilters.forEach(c => {
-        const id = c.toLocaleLowerCase();
-        const lbl = document.createElement("label");
-        const input = document.createElement("input");
-        const span = document.createElement("span");
-
-        input.type = "radio";
-        input.id = id;
-        input.value = id;
-        input.name = "colorblind";
-        input.checked = id === "none";
-
-        span.textContent = c;
-
-        lbl.appendChild(input);
-        lbl.appendChild(span);
-
-        lbl.classList.add("flex", "gap-2", "text-sm", "cursor-pointer");
-
-        colorBlindArea.appendChild(lbl);
-    });
-    
-    const options = Array.from(document.querySelectorAll("#colorblind input"));
-    options.forEach(o => {
-        o.addEventListener('click', (e) => {
+    const filterRdo = Array.from(document.querySelectorAll("#filters input[type=radio]"));
+    filterRdo.forEach(r => {
+        r.addEventListener('click', (e) => {
             document.body.removeAttribute("style");
             if (e.target.value != "none") {
                 document.body.style.filter = `url('/img/filters.svg#${e.target.value}')`;
@@ -133,17 +95,31 @@ const onMouseOver = function(e) {
         } else if (this.dataset.type === "Death") {
             tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${this.dataset.gender.toLocaleLowerCase()}`);
             html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
+        } else if (this.dataset.type === "Bar") {
+            tooltip.style.background = COLOR_BARS;
+            html = `${this.dataset.date}, ${this.dataset.deaths} death${parseInt(this.dataset.deaths) === 1 ? `` : `s`}`;
         }
     }
     tooltip.style.opacity = 1;
     tooltip.innerHTML = html;
 }
+
 const onMouseLeave = function(e) {
     tooltip.style.opacity = 0;
     tooltip.innerHTML = "";
 }
+
 const onZoom = (e) => map.attr('transform', e.transform);
+
 const onMouseMove = (e) => tooltip.style.transform = `translate(${e.pageX}px, ${e.pageY}px)`;
+
+const onMouseClick = (e) => {
+    if (e.target.dataset.type === "Bar") {
+        const step = parseInt(e.target.dataset.step);
+        slider.value = step;
+        fireUpdates(step);
+    }
+}
 
 function loadData() {
     const streets = d3.json("/data/streets.json").then(streets => dataStreets = streets);
@@ -183,7 +159,6 @@ function setupLayout() {
     setupDrawers();
     setupDraggables();
     setupFilters();
-    setupColorblind();
 }
 
 function setupSVG() {
@@ -258,17 +233,13 @@ function setupDeaths() {
     const g = map.append("g").attr("class", "deaths");
     dataDeaths.map(d => {
         let gender;
-        const gVal = parseInt(d.gender);
-        if (gVal) {
+        if (parseInt(d.gender)) {
             gender = STRING_FEMALE;
-            dataGenders.f++;
         } else {
             gender = STRING_MALE;
-            dataGenders.m++;
         }
         let age;
         const aVal = d.age;
-        dataAges[aVal]++;
         switch(aVal) {
             case "0":
                 age = STRING_AGE_0
@@ -290,7 +261,7 @@ function setupDeaths() {
                 break;
             default:
                 age = STRING_AGE_0
-                dataAges["0"]++;
+                ages["0"]++;
                 break;
         }
         g.append("circle")
@@ -306,16 +277,149 @@ function setupDeaths() {
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
     });
-    setupPieChart(dataGenders, [getComputedStyle(document.body).getPropertyValue('--male'), getComputedStyle(document.body).getPropertyValue('--female')], "Genders");
-    setupPieChart(dataAges, ["white"], "Ages");
 }
 
-function setupPieChart(data, swatch, id) {
+function setupSlider() {
 
-    const size = 180;
+    slider.max = dataDeathsByDay.length;
+
+    fireUpdates(0);
+
+    slider.addEventListener("input", (e) => fireUpdates(e));
+
+}
+
+function fireUpdates(e) {
+    
+    let totalDeaths = dataDeaths.length;
+    let step;
+
+    if (isNaN(e)) {
+        step = parseInt(e.target.value);
+    } else {
+        step = e;
+    }
+
+    if (step > 0) {
+        totalDeaths = dataDeathsByDay.slice(0, step).map(d => d.deaths).reduce((a, b) => a + b, 0);
+        updateMap(step);
+        updateDate(dateString(dataDeathsByDay[step - 1].date));
+        updateDeathCount(deathString(dataDeathsByDay[step - 1].deaths, totalDeaths));
+        updatePieCharts(dataDeaths.slice(0, totalDeaths));
+        updateBarChart(step);
+    } else {
+        dayZero(dataDeaths);
+    }
+
+    function deathString(current, total) {
+        return `${current} death${current === 1 ? `` : `s`}, ${total} total`;
+    }
+
+    function dateString(val) {
+        let date;
+        if (val.includes("Aug")) {
+            date = `August ${val.replace("-Aug", "")}`
+        } else if (val.includes("Sep")) {
+            date = `September ${val.replace("-Sep", "")}`
+        }
+        // date = `${date}, 1854`;
+        return date;
+    }
+
+    function updateDate(date) {
+        document.getElementById("date").innerHTML = date;
+    }
+
+    function updateDeathCount(deaths) {
+        document.getElementById("deaths").innerHTML = deaths;
+    }
+
+    function updateMap(step) {
+        const items = Array.from(document.querySelectorAll(`#svg .death`));
+        items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
+    }
+
+    function updatePieCharts(deaths) {
+        const genders = {m: 0, f: 0};
+        const ages = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+
+        deaths.forEach(d => {
+            if (parseInt(d.gender) === 1) {
+                genders.f++;
+            } else {
+                genders.m++;
+            }
+            ages[parseInt(d.age)]++;
+        });
+        d3.selectAll(".content > #genders").remove();
+        d3.selectAll(".content > #ages").remove();
+        createPieChart(genders, "Genders");
+        createPieChart(ages, "Ages");
+    }
+
+    function updateBarChart(step) {
+        const bars = Array.from(document.querySelectorAll(`#days .bar`));
+        bars.forEach(bar => parseInt(bar.dataset.step) === step ? bar.classList.add("active") : bar.classList.remove("active"))
+    }
+
+    function dayZero(deaths) {
+        updateMap(0);
+        updateDate(`${dateString(dataDeathsByDay[0].date)} - ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
+        updateDeathCount(`${dataDeaths.length} deaths`);
+        updatePieCharts(deaths);
+        createBarChart(dataDeathsByDay);
+    }
+
+}
+
+function createBarChart(deaths) {
+
+    d3.selectAll(".content > #days").remove();
+
+    const width = 750;
+    const height = 250;
+
+    const bar = d3.select(`#days .content`)
+                    .append("svg")
+                    .attr("id", "days")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("class", "bars")
+                    .append("g");
+
+    const x = d3.scaleBand()
+                .range([0, width])
+                .domain(deaths.map(d => d.date))
+                .padding(0.3);
+
+    const y = d3.scaleLinear()
+                .domain([0, Math.max(...deaths.map(d => d.deaths))])
+                .range([height, 0]);
+              
+    bar.selectAll("svg")
+        .data(deaths)
+        .enter()
+        .append("rect")
+        .attr("x", (d) => x(d.date))
+        .attr("y", (d) => y(d.deaths))
+        .attr("width", x.bandwidth())
+        .attr("height", (d) => height - y(d.deaths))
+        .attr("class", "bar")
+        .attr("data-type", "Bar")
+        .attr("data-date", (d) => d.date)
+        .attr("data-deaths", (d) => d.deaths)
+        .attr("data-step", (d, i) => i + 1)
+        .on("mouseover", onMouseOver)
+        .on("mouseleave", onMouseLeave)
+        .on("click", onMouseClick)
+
+}
+
+function createPieChart(data, id) {
+
+    const size = 250;
     const translate = size / 2;
     const radius = translate - 5;
-    const colors = d3.scaleOrdinal().range(swatch);
     const pieVal = d3.pie().value((d) => d[1]);
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
@@ -340,6 +444,17 @@ function setupPieChart(data, swatch, id) {
         }
     }
 
+    const getPieColor = (key) => {
+        switch(key) {
+            case "m":
+                return COLOR_MALE;
+            case "f":
+                return COLOR_FEMALE;
+            default:
+                return "white";
+        }
+    }
+
     const pie = d3.select(`#${id.toLocaleLowerCase()} .content`)
                     .append("svg")
                     .attr("width", size)
@@ -347,146 +462,30 @@ function setupPieChart(data, swatch, id) {
                     .attr("class", `${id.toLocaleLowerCase()} pie`)
                     .attr("id", id.toLocaleLowerCase())
                     .append("g")
-                    .on("mouseover", onMouseOver)
-                    .on("mouseleave", onMouseLeave)
                     .attr("transform", `translate(${translate}, ${translate})`)
+    
+    const filteredData = Object.entries(data).filter(d => d[1] > 0)
+
     pie.selectAll()
-        .data(pieVal(Object.entries(data)))
+        .data(pieVal(filteredData))
         .enter()
         .append('path')
         .attr('d', arc)	
-        .attr('fill', (d) => colors(d.data[1]))
+        .attr('fill', (d) => getPieColor(d.data[0]))
+        // .on("mouseover", onMouseOver)
+        // .on("mouseleave", onMouseLeave)
+    
     pie.selectAll()
-        .data(pieVal(Object.entries(data)))
+        .data(pieVal(filteredData))
         .enter()
         .append('text')
         .attr("y", -15)
         .html((d) => {
             return `
-                <tspan x="0" dy="15">${getPieLabel(d.data[0])}</tspan>
-                <tspan x="0" dy="15">(${d.data[1]})</tspan>
+                <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
+                <tspan x="0" dy="20">(${d.data[1]})</tspan>
             `
         })
-        .attr("class", "label")
+        .attr("class", `label ${id.toLocaleLowerCase()}`)
         .attr('transform', (d) => `translate(${arc.centroid(d)})`)
-}
-
-// function setupTimeline() {
-
-//     const margin = {top: 0, right: 0, bottom: 0, left: 0},
-//         width = 460 - margin.left - margin.right,
-//         height = 200 - margin.top - margin.bottom;
-
-//     const timeline = d3.select("#charts")
-//         .append("svg")
-//         .attr("width", width + margin.left + margin.right)
-//         .attr("height", height + margin.top + margin.bottom)
-//         .append("g")
-//         .attr("transform",`translate(${margin.left},${margin.top})`);
-
-//     // console.log(data);
-
-//     const x = d3.scaleLinear().domain(d3.extent(dataDeathsByDay, d => d.date)).range([ 0, width ]);
-//     const y = d3.scaleLinear().domain([0, d3.max(dataDeathsByDay, d => +d.deaths)]).range([ height, 0 ]);
-
-//     const axisX = timeline.append("g")
-//         .attr("transform", `translate(0,${height})`)
-//         .call(d3.axisBottom(x));
-
-//     const axisY = timeline.append("g")
-//         .call(d3.axisLeft(y));
-
-//     const area = timeline.append('g')
-//         .attr("clip-path", "url(#clip)")
-
-//     const areaGenerator = d3.area()
-//         .x((d, i) => i)
-//         .y0(y(0))
-//         .y1(d => y(d.deaths))
-
-//     area.append("path")
-//         .datum(dataDeathsByDay)
-//         .attr("class", "myArea")  // I add the class myArea to be able to modify it later on.
-//         .attr("fill", "#69b3a2")
-//         .attr("fill-opacity", .3)
-//         .attr("stroke", "black")
-//         .attr("stroke-width", 1)
-//         .attr("d", areaGenerator)
-
-//         // const bar = d3.select("#charts")
-//         // 			.append("svg")
-//         // 			.attr("width", size)
-//         // 			.attr("height", size + 20)
-//         // 			.attr("class", `${id.toLocaleLowerCase()} pie`)
-//         // 			.attr("id", id.toLocaleLowerCase())
-//         // 			.append("g")
-//         // 			.attr("transform", `translate(${translate}, ${translate + 20})`)
-
-        
-// }
-
-function setupSlider() {
-
-    let totalDeaths = dataDeaths.length;
-    slider.max = dataDeathsByDay.length;
-
-    dayZero();
-    // updateBubble(`${dataDeathsByDay[0].date}`);
-
-    slider.addEventListener("input", (e) => {
-
-        const val = parseInt(e.target.value);
-
-        if (val > 0) {
-            totalDeaths = dataDeathsByDay.slice(0, val).map(d => d.deaths).reduce((a, b) => a + b, 0);
-            updateMap(val);
-            updateDate(dateString(dataDeathsByDay[val - 1].date));
-            updateDeathCount(deathString(dataDeathsByDay[val - 1].deaths, totalDeaths));
-            // updateBubble(`${date}`);
-            // const pos = Number(((slider.value - slider.min) * 100) / (slider.max - slider.min));
-            // bubble.style.left = `calc(${pos}% + (${10 - pos * 0.15}px))`;
-        } else {
-            dayZero();
-        }
-
-    });
-    
-    function dayZero() {
-        updateMap(0);
-        updateDate("");
-        updateDeathCount(`Total Deaths: ${dataDeaths.length}`);
-    }
-
-    function deathString(current, total) {
-        return `(${current} death${current === 1 ? `` : `s`}, ${total} total)`;
-    }
-
-    function dateString(val) {
-        let date;
-        if (val.includes("Aug")) {
-            date = `August ${val.replace("-Aug", "")}`
-        } else if (val.includes("Sep")) {
-            date = `September ${val.replace("-Sep", "")}`
-        }
-        date = `${date}, 1854`;
-        return date;
-    }
-
-    function updateDate(date) {
-        document.getElementById("date").innerHTML = date;
-    }
-
-    function updateDeathCount(deaths) {
-        document.getElementById("deaths").innerHTML = deaths;
-    }
-
-    function updateBubble(bubble) {
-        document.getElementById("bubble").innerHTML = bubble;
-    }
-
-    function updateMap(step) {
-        const items = Array.from(document.querySelectorAll(`#svg .death`));
-        items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
-    }
-
 }

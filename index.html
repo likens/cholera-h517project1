@@ -15,9 +15,16 @@
 
 		<!-- 
 			TODO:
+			❌ ADD LEGEND ON MAP ITSELF
+			❌ ADD X/Y AXIS TO BY DAY?
+			❌ REVISIT LAYOUT? MAKE SLIDER ALWAYS AVAILABLE INSTEAD OF DRAGGABLE
+			❌ ADD AGE COLORS AND ROTATE TEXT
+			❌ ADD TUTORIAL?
+			❌ DARK/LIGHT MODE?
+
 			✔️ 1. A well drawn map of the area (streets and pumps) including the locations of the deaths
-			❌ 2. a timeline graph showing the number of deaths per day
-			❌ 3. ability to move the mouse over the timeline graph to choose which day to visualize - this should affect the deaths visible on the map and in the graph - at minimum all cholera deaths prior to that date should be shown on the map and the graph
+			✔️ 2. a timeline graph showing the number of deaths per day
+			✔️ 3. ability to move the mouse over the timeline graph to choose which day to visualize - this should affect the deaths visible on the map and in the graph - at minimum all cholera deaths prior to that date should be shown on the map and the graph
 			✔️ 4. the graph and the map should be stable (i.e., they should not move when new data is added or removed)
 			✔️ 5. the graph and the map should be well labeled
 			✔️ 6. you should check your visualization with a color blindness simulation tool to see that its OK
@@ -33,120 +40,100 @@
 		-->
 
         <div id="master" class="relative w-full h-full overflow-hidden">
-			<div class="flex justify-between items-center px-4 py-2 fixed top-0 left-0 z-50 gap-5 w-full border-b-2 border-slate-900 backdrop-blur bg-slate-900/10">
-				<div class="font-bold text-slate-900">
-					<div class="text-2xl">London's Cholera Epidemic</div>
+
+			<div class="flex justify-between items-center px-4 py-2 fixed top-0 left-0 z-50 gap-5 w-full border-b-2 border-zinc-900 backdrop-blur bg-zinc-900/10">
+				<div class="font-bold text-zinc-900">
+					<div class="text-2xl whitespace-nowrap">The 1854 Broad Street Cholera Outbreak</div>
 					<div class="text-lg">visualized by Dr. John Snow</div>
 				</div>
-				<div id="buttons" class="flex gap-5">
-					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnAbout" title="Open">About</button>
-					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnVideo" title="Open">Video</button>
-					<button type="button" class="inline-block px-6 py-2 border-2 border-slate-900 text-white font-bold rounded bg-slate-600 hover:bg-slate-800 focus:outline-none focus:ring-0 transition-all open" id="btnDocs" title="Open">Docs</button>
+				<div id="buttons" class="flex flex-wrap justify-center align-center gap-3">
+					<button type="button" class="inline-block px-6 py-2 border-2 border-zinc-900 text-white font-bold rounded bg-zinc-600 hover:bg-zinc-800 focus:outline-none focus:ring-0 transition-all open" id="btnAbout" title="Open">About</button>
+					<button type="button" class="inline-block px-6 py-2 border-2 border-zinc-900 text-white font-bold rounded bg-zinc-600 hover:bg-zinc-800 focus:outline-none focus:ring-0 transition-all open" id="btnVideo" title="Open">Video</button>
+					<button type="button" class="inline-block px-6 py-2 border-2 border-zinc-900 text-white font-bold rounded bg-zinc-600 hover:bg-zinc-800 focus:outline-none focus:ring-0 transition-all open" id="btnDocs" title="Open">Docs</button>
 				</div>
 			</div>
 
             <svg id="svg" class="map bg-white w-full h-full relative z-10"></svg>
-			<div id="tooltip" class="tooltip absolute text-white bg-slate-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
+			<div id="tooltip" class="tooltip absolute text-white bg-zinc-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
 			<div id="charts" class="charts"></div>
 
 			<div id="drawers">
-				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
-					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">About</div>
-					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
+				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">About</div>
+					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					<div class="p-4">
 						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
 					</div>
 				</div>
 	
-				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
-					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">Video</div>
-					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
+				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">Video</div>
+					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					<div class="p-4">
 						Praesent neque condimentum congue blandit nascetur integer mollis condimentum imperdiet dignissim scelerisque dui dignissim a sapien ut gravida ornare. Ut senectus id ut aliquam parturient dolor placerat ac luctus faucibus a vehicula vestibulum congue vestibulum suspendisse. Condimentum ad eu cursus leo curabitur placerat fermentum vestibulum sodales scelerisque eu a metus nibh. Id parturient scelerisque primis potenti vel nam vestibulum cubilia ultrices ut dictum adipiscing habitant ante suspendisse primis suspendisse eu.Lorem ut potenti pulvinar fusce diam adipiscing viverra vehicula suspendisse orci lectus nam parturient imperdiet parturient eget molestie parturient lobortis nullam a a donec sagittis aenean a suspendisse.Ultrices.
 					</div>
 				</div>
 	
-				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-slate-200/75 translate-x-full border-l-2 border-solid border-slate-900">
-					<div class="font-bold text-3xl text-center py-4 bg-slate-600 text-white">Docs</div>
-					<button class="close absolute top-5 left-4 bg-red-500 text-white border-0 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-xl" title="Close">X</button>
-					<div class="p-4">
-						<div class="font-bold text-lg">Data</div>
-						<ul>
-							<li>Street Layout: streets.json</li>
-							<li>Street Labels: labels.json</li>
-							<li>Pump Locations: pumps.csv</li>
-							<li>Death Age/Gender/Location: deaths_age_sex.csv</li>
-							<li>Death Count Per Day: deathdays.csv</li>
-							<li>John Snow's Original Map, 1854: https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</li>
-						</ul>
-						<div class="font-bold text-lg">Libraries</div>
-						<ul>
-							<li>D3: https://github.com/d3/d3</li>
-							<li>Draggabilly: https://github.com/desandro/draggabilly</li>
-							<li>Colorblind Filters: https://github.com/hail2u/color-blindness-emulation</li>
-							<li>Tailwind: https://github.com/tailwindlabs/tailwindcss</li>
-						</ul>
+				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">Docs</div>
+					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
+					<div class="p-4 leading-5 grid gap-4">
+						<div class="grid gap-2">
+							<div class="font-bold text-lg">Data</div>
+							<ul>
+								<li>Street Layout: streets.json</li>
+								<li>Street Labels: labels.json</li>
+								<li>Pump Locations: pumps.csv</li>
+								<li>Death Age/Gender/Location: deaths_age_sex.csv</li>
+								<li>Death Count Per Day: deathdays.csv</li>
+								<li>John Snow's Original Map, 1854: https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</li>
+							</ul>
+						</div>
+						<div class="grid gap-2">
+							<div class="font-bold text-lg">Libraries</div>
+							<ul>
+								<li>D3: https://github.com/d3/d3</li>
+								<li>Draggabilly: https://github.com/desandro/draggabilly</li>
+								<li>Tailwind: https://github.com/tailwindlabs/tailwindcss</li>
+								<li>Colorblind Filters: https://github.com/hail2u/color-blindness-emulation</li>
+							</ul>
+						</div>
+						<div class="grid gap-2">
+							<div class="font-bold text-lg">Inspiration</div>
+							<ul>
+								<li>The D3.js Graph Gallery: https://d3-graph-gallery.com/</li>
+								<li>D3 on Observable: https://observablehq.com/@d3</li>
+								<li>StackOverflow: https://stackoverflow.com/</li>
+
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div id="draggabilly" class="draggabilly absolute top-0 left-0 right-0 bottom-0 w-full">
-
-				<div id="colorblind" class="colorblind draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">Colorblindness</div>
-					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid">
-						<div class="grid gap-3"></div>
-					</div>
-				</div>
 	
-				<div id="ages" class="ages draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">By Age</div>
-					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
-				</div>
-
-				<div id="genders" class="genders draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">By Gender</div>
-					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
-				</div>
-
-				<div id="days" class="days draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
-						<div class="text-lg pr-6">By Day</div>
-					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid"></div>
-				</div>
-	
-				<div id="filters" class="filters draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">+</button>
+				<div id="filters" class="filters draggies select-none grid justify-center absolute backdrop-blur content-start border-zinc-900 border-2 border-solid rounded bg-zinc-200/75">
+					<div class="handle font-bold bg-zinc-600 hover:bg-zinc-800 text-white flex gap-1 items-center transition-all">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center">+</button>
 						<div class="text-lg pr-6">Filters</div>
 					</div>
-					<div class="content p-3 border-slate-900 border-t-2 border-solid">
-						<div class="flex gap-10">
+					<div class="content p-3 border-zinc-900 border-t-2 border-solid">
+						<div class="flex gap-10 text-sm">
 	
-							<div class="grid gap-3 content-start">
+							<div class="grid gap-2 content-start">
 								<div class="text-center font-bold">Gender</div>
-								<label for="male" class="male flex gap-2">
+								<label for="male" class="male flex gap-2 cursor-pointer">
 									<input type="checkbox" id="male" checked />
 									<span>Male</span>
 								</label>
-								<label for="female" class="female flex gap-2">
+								<label for="female" class="female flex gap-2 cursor-pointer">
 									<input type="checkbox" id="female" checked />
 									<span>Female</span>
 								</label>
 							</div>
 	
-							<div class="grid gap-3 content-start">
+							<div class="grid gap-2 content-start">
 								<div class="text-center font-bold">Age</div>
 								<label for="age0">
 									<input type="checkbox" id="age0" checked />
@@ -174,42 +161,107 @@
 								</label>
 							</div>
 	
-							<div class="grid gap-3 content-start">
+							<div class="grid gap-2 content-start">
 								<div class="text-center font-bold">Map</div>
-								<label for="pump" class="pump flex gap-2">
+								<label for="pump" class="pump flex gap-2 cursor-pointer">
 									<input type="checkbox" id="pump" checked />
 									Pumps
 								</label>
-								<label for="street" class="street flex gap-2">
+								<label for="street" class="street flex gap-2 cursor-pointer">
 									<input type="checkbox" id="street" checked />
 									Streets
 								</label>
-								<label for="label" class="label flex gap-2">
+								<label for="label" class="label flex gap-2 cursor-pointer">
 									<input type="checkbox" id="label" checked />
 									Labels
 								</label>
-								<label for="snowmap" class="snowmap flex gap-2">
+								<label for="snowmap" class="snowmap flex gap-2 cursor-pointer">
 									<input type="checkbox" id="snowmap" />
 									Snow's Map
 								</label>
 							</div>
+	
+							<div class="grid gap-3 content-start">
+								<div class="text-center font-bold">Colorblindness</div>
+								<div class="grid gap-2">
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="none" value="none" name="colorblind" checked>
+										<span>None</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="protanopia" value="protanopia" name="colorblind">
+										<span>Protanopia</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="protanomaly" value="protanomaly" name="colorblind">
+										<span>Protanomaly</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="deuteranopia" value="deuteranopia" name="colorblind">
+										<span>Deuteranopia</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="deuteranomaly" value="deuteranomaly" name="colorblind">
+										<span>Deuteranomaly</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="tritanopia" value="tritanopia" name="colorblind">
+										<span>Tritanopia</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="tritanomaly" value="tritanomaly" name="colorblind">
+										<span>Tritanomaly</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="achromatopsia" value="achromatopsia" name="colorblind">
+										<span>Achromatopsia</span>
+									</label>
+									<label class="flex gap-2 cursor-pointer">
+										<input type="radio" id="achromatomaly" value="achromatomaly" name="colorblind">
+										<span>Achromatomaly</span>
+									</label>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
+
+				<div id="ages" class="ages draggies select-none grid justify-center absolute backdrop-blur content-start border-zinc-900 border-2 border-solid rounded bg-zinc-200/75">
+					<div class="handle font-bold bg-zinc-600 hover:bg-zinc-800 text-white flex gap-1 items-center transition-all">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center">+</button>
+						<div class="text-lg pr-6">By Age</div>
+					</div>
+					<div class="content p-3 border-zinc-900 border-t-2 border-solid"></div>
+				</div>
+
+				<div id="genders" class="genders draggies select-none grid justify-center absolute backdrop-blur content-start border-zinc-900 border-2 border-solid rounded bg-zinc-200/75">
+					<div class="handle font-bold bg-zinc-600 hover:bg-zinc-800 text-white flex gap-1 items-center transition-all">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center">+</button>
+						<div class="text-lg pr-6">By Gender</div>
+					</div>
+					<div class="content p-3 border-zinc-900 border-t-2 border-solid"></div>
+				</div>
+
+				<div id="days" class="days draggies select-none grid justify-center absolute backdrop-blur content-start border-zinc-900 border-2 border-solid rounded bg-zinc-200/75">
+					<div class="handle font-bold bg-zinc-600 hover:bg-zinc-800 text-white flex gap-1 items-center transition-all">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center">+</button>
+						<div class="text-lg pr-6">By Day</div>
+					</div>
+					<div class="content p-3 border-zinc-900 border-t-2 border-solid"></div>
+				</div>
 				
-				<div id="timeline" class="timeline draggies select-none grid justify-center absolute backdrop-blur content-start border-slate-900 border-2 border-solid rounded bg-slate-200/75">
-					<div class="handle font-bold bg-slate-600 hover:bg-slate-800 text-white flex gap-1 items-center">
-						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center hover:bg-slate-800">-</button>
+				<div id="timeline" class="timeline draggies select-none grid justify-center absolute backdrop-blur content-start border-zinc-900 border-2 border-solid rounded bg-zinc-200/75">
+					<div class="handle font-bold bg-zinc-600 hover:bg-zinc-800 text-white flex gap-1 items-center transition-all">
+						<button class="toggle text-2xl w-8 h-8 pb-1 flex items-center justify-center">-</button>
 						<div class="text-lg pr-6">Timeline</div>
 					</div>
-					<div class="content active p-3 border-slate-900 border-t-2 border-solid">
+					<div class="content active p-3 border-zinc-900 border-t-2 border-solid">
 						<div class="grid gap-2">
-							<div class="w-80 whitespace-nowrap flex gap-1 font-bold text-center justify-center">
+							<div class="whitespace-nowrap grid gap-2 font-bold text-center justify-center">
 								<span id="date" class="date"></span>
-								<span id="deaths" class="deaths">Total Deaths:</span>
+								<span id="deaths" class="deaths"></span>
 							</div>
-							<input type="range" class="block w-80 m-auto" id="slider" name="slider" value="0" min="0" />
-							<!-- <div id="bubble" class="bubble"></div> -->
+							<input type="range" class="block w-72 m-auto" id="slider" name="slider" value="0" min="0" />
 						</div>
 					</div>
 				</div>

@@ -17,6 +17,7 @@
 	--pump: #523500;
 	--street: #e5e5e5;
 	--label: #ccc;
+	--bars: #52525b;
 
 	font-family: sans-serif;
 	font-size: 16px;
@@ -67,9 +68,26 @@ body {
 }
 
 .pie .label {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 700;
 	text-anchor: middle;
+}
+
+.pie .label.genders {
+	fill: var(--white);
+}
+
+.bar {
+	fill: var(--bars);
+	cursor: pointer;
+	opacity: .35;
+	stroke: black;
+	stroke-width: 2px;
+}
+
+.bar:hover,
+.bar.active {
+	opacity: 1;
 }
 
 .draggabilly {
@@ -103,23 +121,19 @@ body {
 }
 
 .filters {
-	top: 125px;
+	top: 300px;
 }
 
 .days {
-	top: 175px;
+	top: 150px;
 }
 
 .genders {
-	top: 225px;
+	top: 200px;
 }
 
 .ages {
-	top: 275px;
-}
-
-.colorblind {
-	top: 325px;
+	top: 250px;
 }
 
 /* .map .streets {
