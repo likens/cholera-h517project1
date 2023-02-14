@@ -175,19 +175,74 @@ function setupZoom() {
 
 function setupStreets() {
     const g = map.append("g").attr("class", "streets");
+    const xCoords = [];
+    const yCoords = [];
     dataStreets.map(street => {
-        const streetXCoords = street.map(s => s.x * multiplier + offsetDataX);
-        const streetYCoords = street.map(s => ((1 - s.y) * multiplier + offsetDataY));
+        const streetsX = street.map(s => s.x * multiplier + offsetDataX);
+        const streetsY = street.map(s => ((1 - s.y) * multiplier + offsetDataY)); // flip vertically
         const line = d3.line()
-            .x(d => streetXCoords[d])
-            .y(d => streetYCoords[d]);
+            .x(d => streetsX[d])
+            .y(d => streetsY[d]);
         g.append("path")
-            .datum(d3.range(streetXCoords.length))
-            .attr("stroke", "black")
-            .attr("fill", "none")
+            .datum(d3.range(streetsX.length))
             .attr("class", "street")
             .attr("d", line);
+        streetsX.forEach(s => xCoords.push(s));
+        streetsY.forEach(s => yCoords.push(s));
     });
+
+    // const minX = Math.min(...xCoords);
+    // const maxX = Math.max(...xCoords);
+    // const minY = Math.min(...yCoords);
+    // const maxY = Math.max(...yCoords);
+
+    // const gridSize = 10;
+
+    // const distanceX = (maxX - minX) / gridSize;
+    // const distanceY = (maxY - minY) / gridSize;
+
+    // let x = 0;
+    // let y = 0;
+
+    // console.log("min", minX);
+
+    // const ggrid = svg.selectAll(".container").append("g");
+
+    // for (let i = 0; i <= gridSize; i++) {
+
+    //     if (x === 0) {
+    //         x = minX;
+    //     } else {
+    //         x = x + distanceX;
+    //     }
+    //     if (y === 0) {
+    //         y = minY;
+    //     } else {
+    //         y = y + distanceY;
+    //     }
+        
+    //     ggrid.append("circle")
+    //         .attr("cx", x)
+    //         .attr("cy", minY)
+    //         .attr("r", 5)
+    //     ggrid.append("circle")
+    //         .attr("cx", x)
+    //         .attr("cy", maxY)
+    //         .attr("r", 5)
+    //     ggrid.append("circle")
+    //         .attr("cx", minX)
+    //         .attr("cy", y)
+    //         .attr("r", 5)
+    //     ggrid.append("circle")
+    //         .attr("cx", maxX)
+    //         .attr("cy", y)
+    //         .attr("r", 5)
+    // }
+
+    // console.log("max", maxX);
+
+    // console.log(distanceX, distanceY);
+
     dataLabels.map(l => {
         const lg = g.append("g").attr("style", `transform:rotate(${l.rotate}deg)`);
         lg.append("text")
@@ -209,7 +264,7 @@ function setupStreets() {
 function setupPumps() {
     const g = map.append("g").attr("class", "pumps");
     dataPumps.map(d => {
-        const symbol = d3.symbol().type(d3.symbolTriangle).size(40);
+        const symbol = d3.symbol().type(d3.symbolTriangle).size(16);
         g.append("path")
             .attr("data-type", "Pump")
             .attr("d", symbol)
@@ -272,7 +327,7 @@ function setupDeaths() {
             .attr("data-step", d.step + 1)
             .attr("cx", (d.x) * multiplier + offsetDataX)
             .attr("cy", (1 - d.y) * multiplier + offsetDataY)
-            .attr("r", 2)
+            .attr("r", 1)
             .attr("class", `death ${gender.toLocaleLowerCase()} age${d.age}`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)

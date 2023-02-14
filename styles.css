@@ -136,12 +136,17 @@ body {
 	top: 250px;
 }
 
+.map {
+	background: var(--white);
+}
+
 /* .map .streets {
 	transform: rotate(1deg);
 } */
 
 .map .streets path {
 	stroke: var(--street);
+	fill: none;
 }
 
 .map .pump {
@@ -149,6 +154,14 @@ body {
 	z-index: 10;
 	cursor: pointer;
 	fill: var(--pump);
+	stroke: var(--pump);
+	stroke-width: .5px;
+	stroke-linejoin: round;
+}
+
+.map .pump:hover {
+	stroke: rgba(0,0,0,.75);
+	stroke-width: 1px;
 }
 
 .map .death {
@@ -162,7 +175,7 @@ body {
 
 .map .death:hover {
 	stroke: rgba(0,0,0,.75);
-	stroke-width: .75px;
+	stroke-width: .5px;
 }
 
 .map .death.female--hide,

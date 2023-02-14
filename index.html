@@ -41,7 +41,7 @@
 
         <div id="master" class="relative w-full h-full overflow-hidden">
 
-			<div class="flex justify-between items-center px-4 py-2 fixed top-0 left-0 z-50 gap-5 w-full border-b-2 border-zinc-900 backdrop-blur bg-zinc-900/10">
+			<div class="flex justify-between items-center px-4 py-2 fixed top-0 left-0 z-50 gap-5 w-full border-b-2 border-zinc-900 backdrop-blur bg-zinc-200/75">
 				<div class="font-bold text-zinc-900">
 					<div class="text-2xl whitespace-nowrap">The 1854 Broad Street Cholera Outbreak</div>
 					<div class="text-lg">visualized by Dr. John Snow</div>
@@ -53,12 +53,12 @@
 				</div>
 			</div>
 
-            <svg id="svg" class="map bg-white w-full h-full relative z-10"></svg>
+            <svg id="svg" class="map w-full h-full relative z-10"></svg>
 			<div id="tooltip" class="tooltip absolute text-white bg-zinc-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-5 -top-5 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
 			<div id="charts" class="charts"></div>
 
 			<div id="drawers">
-				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+				<div id="about" class="about drawer fixed top-0 right-0 h-full max-w-xl z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
 					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">About</div>
 					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					<div class="p-4">
@@ -66,7 +66,7 @@
 					</div>
 				</div>
 	
-				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+				<div id="video" class="video drawer fixed top-0 right-0 h-full max-w-xl z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
 					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">Video</div>
 					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					<div class="p-4">
@@ -74,7 +74,7 @@
 					</div>
 				</div>
 	
-				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-lg z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
+				<div id="docs" class="docs drawer fixed top-0 right-0 h-full max-w-xl z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900">
 					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">Docs</div>
 					<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					<div class="p-4 leading-5 grid gap-4">
