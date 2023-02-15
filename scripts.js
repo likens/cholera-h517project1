@@ -26,65 +26,8 @@ let dataDeathsByDay = [];
 const dataDeaths = [];
 
 document.addEventListener("DOMContentLoaded", function(event) {
-
     loadData();
-
-    document.addEventListener("mousemove", (e) => onMouseMove(e));
-
 });
-
-function setupDrawers() {
-    const drawers = Array.from(document.querySelectorAll("#drawers .drawer"));
-    const drawerOpen = Array.from(document.querySelectorAll(".open"));
-    const drawerClose = Array.from(document.querySelectorAll(".close"));
-    drawerOpen.forEach(b => {
-        b.addEventListener("click", () => {
-            drawers.forEach(d => d.classList.remove("active"));
-            document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
-        });
-    });
-    drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
-}
-
-function setupDraggables() {
-    const dragElem = Array.from(document.querySelectorAll('.draggies'));
-    const draggies = dragElem.map(d => {
-        const handle = d.querySelector('.handle');
-        const content = d.querySelector('.content');
-        const toggle = handle.querySelector('.toggle');
-        toggle.addEventListener('click', () => {
-            content.classList.toggle('active');
-            content.className.includes("active") ? toggle.innerHTML = "-" : toggle.innerHTML = "+";
-        });
-        const draggie = new Draggabilly(d, {
-            containment: '#draggabilly',
-            handle: handle
-        });
-        return draggie;
-    });
-}
-
-function setupFilters() {
-    const filterChk = Array.from(document.querySelectorAll("#filters input[type=checkbox]"));
-    filterChk.forEach(f => {
-        f.addEventListener('change', (e) => {
-            const checked = e.target.checked;
-            const clazz = `${e.target.id}--hide`;
-            const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
-            items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
-        });
-    })
-    const filterRdo = Array.from(document.querySelectorAll("#filters input[type=radio]"));
-    filterRdo.forEach(r => {
-        r.addEventListener('click', (e) => {
-            document.body.removeAttribute("style");
-            if (e.target.value != "none") {
-                document.body.style.filter = `url('/img/filters.svg#${e.target.value}')`;
-                document.body.style.overflow = "hidden";
-            }
-        });
-    });
-}
 
 const onMouseOver = function(e) {
     let html = "";
@@ -132,8 +75,12 @@ function loadData() {
             deaths: parseInt(d.deaths) 
         }
     }).then(deaths => dataDeathsByDay = deaths);
+    const aboutPage = fetch('about.html').then(resp => resp.text()).then(html => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        document.getElementById("about").append(doc.getElementById("content"));
+    });
 
-    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays]).then(v => {
+    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays, aboutPage]).then(v => {
         combineData();
         setupLayout();
         setupSVG();
@@ -159,6 +106,63 @@ function setupLayout() {
     setupDrawers();
     setupDraggables();
     setupFilters();
+    document.addEventListener("mousemove", (e) => onMouseMove(e));
+}
+
+
+
+function setupDrawers() {
+    const drawers = Array.from(document.querySelectorAll("#drawers .drawer"));
+    const drawerOpen = Array.from(document.querySelectorAll(".open"));
+    const drawerClose = Array.from(document.querySelectorAll(".close"));
+    drawerOpen.forEach(b => {
+        b.addEventListener("click", (e) => {
+            e.preventDefault();
+            drawers.forEach(d => d.classList.remove("active"));
+            document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
+        });
+    });
+    drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
+}
+
+function setupDraggables() {
+    const dragElem = Array.from(document.querySelectorAll('.draggies'));
+    const draggies = dragElem.map(d => {
+        const handle = d.querySelector('.handle');
+        const content = d.querySelector('.content');
+        const toggle = handle.querySelector('.toggle');
+        toggle.addEventListener('click', () => {
+            content.classList.toggle('active');
+            content.className.includes("active") ? toggle.innerHTML = "-" : toggle.innerHTML = "+";
+        });
+        const draggie = new Draggabilly(d, {
+            containment: '#draggabilly',
+            handle: handle
+        });
+        return draggie;
+    });
+}
+
+function setupFilters() {
+    const filterChk = Array.from(document.querySelectorAll("#filters input[type=checkbox]"));
+    filterChk.forEach(f => {
+        f.addEventListener('change', (e) => {
+            const checked = e.target.checked;
+            const clazz = `${e.target.id}--hide`;
+            const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
+            items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
+        });
+    })
+    const filterRdo = Array.from(document.querySelectorAll("#filters input[type=radio]"));
+    filterRdo.forEach(r => {
+        r.addEventListener('click', (e) => {
+            document.body.removeAttribute("style");
+            if (e.target.value != "none") {
+                document.body.style.filter = `url('/img/filters.svg#${e.target.value}')`;
+                document.body.style.overflow = "hidden";
+            }
+        });
+    });
 }
 
 function setupSVG() {
