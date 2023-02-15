@@ -163,7 +163,7 @@ function setupLayout() {
 
 function setupSVG() {
     setupZoom();
-    setupStreets();
+    setupMap();
     setupDeaths();
     setupPumps();
     setupSlider();
@@ -173,7 +173,7 @@ function setupZoom() {
     svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
 }
 
-function setupStreets() {
+function setupMap() {
     const g = map.append("g").attr("class", "streets");
     const xCoords = [];
     const yCoords = [];
@@ -191,58 +191,6 @@ function setupStreets() {
         streetsY.forEach(s => yCoords.push(s));
     });
 
-    // const minX = Math.min(...xCoords);
-    // const maxX = Math.max(...xCoords);
-    // const minY = Math.min(...yCoords);
-    // const maxY = Math.max(...yCoords);
-
-    // const gridSize = 10;
-
-    // const distanceX = (maxX - minX) / gridSize;
-    // const distanceY = (maxY - minY) / gridSize;
-
-    // let x = 0;
-    // let y = 0;
-
-    // console.log("min", minX);
-
-    // const ggrid = svg.selectAll(".container").append("g");
-
-    // for (let i = 0; i <= gridSize; i++) {
-
-    //     if (x === 0) {
-    //         x = minX;
-    //     } else {
-    //         x = x + distanceX;
-    //     }
-    //     if (y === 0) {
-    //         y = minY;
-    //     } else {
-    //         y = y + distanceY;
-    //     }
-        
-    //     ggrid.append("circle")
-    //         .attr("cx", x)
-    //         .attr("cy", minY)
-    //         .attr("r", 5)
-    //     ggrid.append("circle")
-    //         .attr("cx", x)
-    //         .attr("cy", maxY)
-    //         .attr("r", 5)
-    //     ggrid.append("circle")
-    //         .attr("cx", minX)
-    //         .attr("cy", y)
-    //         .attr("r", 5)
-    //     ggrid.append("circle")
-    //         .attr("cx", maxX)
-    //         .attr("cy", y)
-    //         .attr("r", 5)
-    // }
-
-    // console.log("max", maxX);
-
-    // console.log(distanceX, distanceY);
-
     dataLabels.map(l => {
         const lg = g.append("g").attr("style", `transform:rotate(${l.rotate}deg)`);
         lg.append("text")
@@ -252,6 +200,7 @@ function setupStreets() {
             .attr("class", "label")
             .attr("style", `letter-spacing:${l.spacing}px;font-size:${l.size}px`)
     });
+
     const sg = g.append("g").attr("class", "snowmap snowmap--hide")
     sg.append("image")
         .attr("href", "/img/snowmap.png")
@@ -259,6 +208,38 @@ function setupStreets() {
         .attr("height", 774)
         .attr("x", 165)
         .attr("y", 110)
+    
+    const gg = g.append("g").attr("class", "grid grid--hide")
+    const minX = Math.min(...xCoords);
+    const maxX = Math.max(...xCoords);
+    const minY = Math.min(...yCoords);
+    const maxY = Math.max(...yCoords);
+    const count = 10;
+    const width = (maxX - minX) / count;
+    const height = (maxY - minY) / count;
+    const grid = [];
+
+    for (let i = 0; i < count; i++) {
+        const row = [];
+        for (let j = 0; j < count; j++) {
+            row.push([minX + j * width, 
+                    minY + i * height,
+                    minX + (j + 1) * width,
+                    minY + (i + 1) * height]);
+        }
+        grid.push(row);
+        for (let j = 0; j < count; j++) {
+            const x = grid[i][j][0];
+            const y = grid[i][j][1];
+            gg.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "box")
+                .attr("x", x)
+                .attr("y", y)
+        }
+    }
+
 }
 
 function setupPumps() {
