@@ -321,8 +321,15 @@ function setupDeaths() {
 
 function setupSlider() {
 
-    slider.max = dataDeathsByDay.length;
+    // const range = rangeSlider(document.getElementById("rangeSlider"), {
+    //     value: [0, dataDeathsByDay.length],
+    //     thumbsDisabled: [true, false],
+    //     rangeSlideDisabled: true,
+    //     onInput: (e) => fireUpdates(e)
+    // });
 
+    slider.max = dataDeathsByDay.length;
+    
     fireUpdates(0);
 
     slider.addEventListener("input", (e) => fireUpdates(e));
@@ -336,7 +343,11 @@ function fireUpdates(e) {
 
     if (isNaN(e)) {
         step = parseInt(e.target.value);
-    } else {
+    } 
+    // else if (typeof e === "object") {
+    //     step = e[1];
+    // } 
+    else {
         step = e;
     }
 
