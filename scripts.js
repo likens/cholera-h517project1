@@ -75,7 +75,7 @@ function loadData() {
             deaths: parseInt(d.deaths) 
         }
     }).then(deaths => dataDeathsByDay = deaths);
-    const aboutPage = fetch('/about.html').then(resp => resp.text()).then(html => {
+    const aboutPage = fetch('/about').then(resp => resp.text()).then(html => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         document.getElementById("about").append(doc.getElementById("content"));
     });
