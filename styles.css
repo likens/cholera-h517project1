@@ -178,6 +178,11 @@ body {
 	stroke-width: .5px;
 }
 
+.map .death.hover {
+	stroke-width: 3px;
+	stroke: var(--bars);
+}
+
 .map .death.female--hide,
 .map .death.male--hide,
 .map .death.age0--hide,

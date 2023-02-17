@@ -16,14 +16,15 @@ const offsetDataY = 1000;
 const svg = d3.select("#svg");
 const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
-const slider = document.getElementById("slider");
+
+let slider;
 
 const xCoords = [];
 const yCoords = [];
 
 let gridW = 0;
 let gridH = 0;
-let gridCount = 10;
+let gridCount = 5;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -51,7 +52,9 @@ const onMouseOver = function(e) {
             html = `${e.target.dataset.date}, ${e.target.dataset.deaths} death${parseInt(e.target.dataset.deaths) === 1 ? `` : `s`}`;
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_BARS;
-            html = `Deaths: ${Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`)).length}`;
+            const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`));
+            html = `${deaths.length} death${deaths.length === 1 ? `` : `s`}`;
+            deaths.forEach(d => d.classList.add("hover"));
         }
     } else if (e.target.title) {
         tooltip.style.background = COLOR_BARS;
@@ -64,6 +67,9 @@ const onMouseOver = function(e) {
 const onMouseLeave = function(e) {
     tooltip.style.opacity = 0;
     tooltip.innerHTML = "";
+    if (e.target.dataset.type === "Box") {
+        Array.from(document.querySelectorAll(`.death.hover`)).forEach(d => d.classList.remove("hover"));
+    }
 }
 
 const onZoom = (e) => map.attr('transform', e.transform);
@@ -78,9 +84,9 @@ const onMouseMove = (e) => {
 
 const onMouseClick = (e) => {
     if (e.target.dataset.type === "Bar") {
-        const step = parseInt(e.target.dataset.step);
-        slider.value = step;
-        fireUpdates(step);
+        const range = [0, parseInt(e.target.dataset.step)];
+        slider.value(range);
+        fireUpdate(range);
     }
 }
 
@@ -353,6 +359,7 @@ function setupGrid() {
             const id = `${String.fromCharCode(96+i+1).toLocaleUpperCase()}${j+1}`;
             const ggg = gg.append("g")
                 .attr("class", "box")
+                .attr("data-type", "Box")
                 .on("mouseover", onMouseOver)
                 .on("mouseleave", onMouseLeave)
             ggg.append("text")
@@ -384,7 +391,7 @@ function setupGrid() {
 
 function setupSlider() {
 
-    const range = rangeSlider(document.getElementById("rangeSlider"), {
+    slider = rangeSlider(document.getElementById("rangeSlider"), {
         value: [0, 0],
         max: dataDeathsByDay.length,
         thumbsDisabled: [true, false],
@@ -394,13 +401,10 @@ function setupSlider() {
     
     fireUpdate([0,0]);
 
-    // slider.max = dataDeathsByDay.length;
-    // slider.addEventListener("input", (e) => fireUpdates(e));
-
 }
 
 function fireUpdate(range) {
-    
+
     let totalDeaths = dataDeaths.length;
     
     if (range[0] + range[1] === 0) {
