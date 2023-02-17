@@ -219,6 +219,7 @@ body {
 	stroke: rgba(0,0,0,.25);
 	fill: transparent;
 	stroke-width: .5px;
+	stroke-dasharray: 2;
 }
 
 .map .grid .label {
@@ -229,7 +230,7 @@ body {
 }
 
 .map .box:hover {
-	fill: rgba(0, 0, 0, 0.25);
+	fill: rgba(0, 0, 0, 0.1);
 }
 
 .drawer.active {

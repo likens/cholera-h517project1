@@ -33,26 +33,29 @@ let dataDeathsByDay = [];
 let dataGrid = [];
 const dataDeaths = [];
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", (e) => {
     loadData();
 });
 
 const onMouseOver = function(e) {
     let html = "";
-    if (this.dataset.type) {
-        if (this.dataset.type === "Pump") {
-            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${this.dataset.type.toLocaleLowerCase()}`);
-            html = this.dataset.type;
-        } else if (this.dataset.type === "Death") {
-            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${this.dataset.gender.toLocaleLowerCase()}`);
-            html = `${this.dataset.gender}, aged ${this.dataset.age}, died ${this.dataset.date}`;
-        } else if (this.dataset.type === "Bar") {
+    if (e.target.dataset.type) {
+        if (e.target.dataset.type === "Pump") {
+            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${e.target.dataset.type.toLocaleLowerCase()}`);
+            html = e.target.dataset.type;
+        } else if (e.target.dataset.type === "Death") {
+            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${e.target.dataset.gender.toLocaleLowerCase()}`);
+            html = `${e.target.dataset.gender}, aged ${e.target.dataset.age}, died ${e.target.dataset.date}`;
+        } else if (e.target.dataset.type === "Bar") {
             tooltip.style.background = COLOR_BARS;
-            html = `${this.dataset.date}, ${this.dataset.deaths} death${parseInt(this.dataset.deaths) === 1 ? `` : `s`}`;
-        } else if (this.dataset.type === "Grid") {
+            html = `${e.target.dataset.date}, ${e.target.dataset.deaths} death${parseInt(e.target.dataset.deaths) === 1 ? `` : `s`}`;
+        } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_BARS;
-            html = `Deaths: ${Array.from(document.querySelectorAll(`.death[data-grid=${this.dataset.grid}].show`)).length}`;
+            html = `Deaths: ${Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`)).length}`;
         }
+    } else if (e.target.title) {
+        tooltip.style.background = COLOR_BARS;
+        html = e.target.title
     }
     tooltip.style.opacity = 1;
     tooltip.innerHTML = html;
@@ -65,7 +68,13 @@ const onMouseLeave = function(e) {
 
 const onZoom = (e) => map.attr('transform', e.transform);
 
-const onMouseMove = (e) => tooltip.style.transform = `translate(${e.pageX}px, ${e.pageY}px)`;
+const onMouseMove = (e) => {
+    if (tooltip.innerText) {
+        const x = e.pageX + 20;
+        const y = e.pageY + 10;
+        tooltip.style.transform = `translate(${x}px, ${y}px)`
+    }
+};
 
 const onMouseClick = (e) => {
     if (e.target.dataset.type === "Bar") {
@@ -132,6 +141,8 @@ function setupDrawers() {
             drawers.forEach(d => d.classList.remove("active"));
             document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
         });
+        b.addEventListener("mouseover", (e) => onMouseOver(e));
+        b.addEventListener("mouseleave", (e) => onMouseLeave(e));
     });
     drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
 }
@@ -231,7 +242,7 @@ function setupMap() {
 function setupPumps() {
     const g = map.insert("g", ".grid").attr("class", "pumps");
     dataPumps.map(d => {
-        const symbol = d3.symbol().type(d3.symbolTriangle).size(16);
+        const symbol = d3.symbol().type(d3.symbolTriangle).size(24);
         g.append("path")
             .attr("data-type", "Pump")
             .attr("d", symbol)
@@ -307,7 +318,7 @@ function setupDeaths() {
             .attr("data-grid", grid)
             .attr("cx", x)
             .attr("cy", y)
-            .attr("r", 1)
+            .attr("r", 1.5)
             .attr("class", `death ${gender.toLocaleLowerCase()} age${d.age}`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
@@ -342,8 +353,6 @@ function setupGrid() {
             const id = `${String.fromCharCode(96+i+1).toLocaleUpperCase()}${j+1}`;
             const ggg = gg.append("g")
                 .attr("class", "box")
-                .attr("data-type", "Grid")
-                .attr("data-grid", id)
                 .on("mouseover", onMouseOver)
                 .on("mouseleave", onMouseLeave)
             ggg.append("text")
@@ -352,13 +361,15 @@ function setupGrid() {
                 .html(id)
                 .attr("class", "label")
             ggg.append("rect")
+                .attr("data-type", "Grid")
+                .attr("data-grid", id)
                 .attr("width", width)
                 .attr("height", height)
                 .attr("x", x)
                 .attr("y", y);
         }
     }
-    const boxes = Array.from(document.querySelectorAll(".grid .box"));
+    const boxes = Array.from(document.querySelectorAll(".grid .box rect"));
     dataGrid = boxes.map(b => {
         const rect = b.getBoundingClientRect();
         return {
@@ -369,50 +380,39 @@ function setupGrid() {
             left: rect.left
         }
     });
-    console.log(dataGrid);
 }
 
 function setupSlider() {
 
-    // const range = rangeSlider(document.getElementById("rangeSlider"), {
-    //     value: [0, dataDeathsByDay.length],
-    //     thumbsDisabled: [true, false],
-    //     rangeSlideDisabled: true,
-    //     onInput: (e) => fireUpdates(e)
-    // });
-
-    slider.max = dataDeathsByDay.length;
+    const range = rangeSlider(document.getElementById("rangeSlider"), {
+        value: [0, 0],
+        max: dataDeathsByDay.length,
+        thumbsDisabled: [true, false],
+        rangeSlideDisabled: false,
+        onInput: (e) => fireUpdate(e)
+    });
     
-    fireUpdates(0);
+    fireUpdate([0,0]);
 
-    slider.addEventListener("input", (e) => fireUpdates(e));
+    // slider.max = dataDeathsByDay.length;
+    // slider.addEventListener("input", (e) => fireUpdates(e));
 
 }
 
-function fireUpdates(e) {
+function fireUpdate(range) {
     
     let totalDeaths = dataDeaths.length;
-    let step;
-
-    if (isNaN(e)) {
-        step = parseInt(e.target.value);
-    } 
-    // else if (typeof e === "object") {
-    //     step = e[1];
-    // } 
-    else {
-        step = e;
-    }
-
-    if (step > 0) {
+    
+    if (range[0] + range[1] === 0) {
+        dayZero(dataDeaths);
+    } else {
+        const step = range[1];
         totalDeaths = dataDeathsByDay.slice(0, step).map(d => d.deaths).reduce((a, b) => a + b, 0);
         updateMap(step);
         updateDate(dateString(dataDeathsByDay[step - 1].date));
         updateDeathCount(deathString(dataDeathsByDay[step - 1].deaths, totalDeaths));
         updatePieCharts(dataDeaths.slice(0, totalDeaths));
         updateBarChart(step);
-    } else {
-        dayZero(dataDeaths);
     }
 
     function deathString(current, total) {
@@ -468,7 +468,7 @@ function fireUpdates(e) {
 
     function dayZero(deaths) {
         updateMap(0);
-        updateDate(`${dateString(dataDeathsByDay[0].date)} - ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
+        updateDate(`${dateString(dataDeathsByDay[0].date)} – ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
         updateDeathCount(`${dataDeaths.length} deaths`);
         updatePieCharts(deaths);
         createBarChart(dataDeathsByDay);
