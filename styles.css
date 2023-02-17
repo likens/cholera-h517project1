@@ -202,7 +202,7 @@ body {
 	fill: var(--female);
 }
 
-.map .label {
+.map .labels .label {
 	text-transform: uppercase;
 	transform-origin: center center;
 	font-weight: 700;
@@ -215,10 +215,17 @@ body {
 	transform-origin: center center; */
 }
 
-.map .box {
-	stroke: var(--nearBlack);
+.map .grid .box {
+	stroke: rgba(0,0,0,.25);
 	fill: transparent;
-	stroke-width: .1px;
+	stroke-width: .5px;
+}
+
+.map .grid .label {
+	font-weight: 700;
+	font-size: 8px;
+	fill: rgba(0,0,0,.5);
+	stroke: none;
 }
 
 .map .box:hover {

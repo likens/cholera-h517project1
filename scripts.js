@@ -18,11 +18,19 @@ const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
 const slider = document.getElementById("slider");
 
+const xCoords = [];
+const yCoords = [];
+
+let gridW = 0;
+let gridH = 0;
+let gridCount = 10;
+
 let dataStreets =[];
 let dataLabels = [];
 let dataPumps = [];
 let dataDeathsByDemo = [];
 let dataDeathsByDay = [];
+let dataGrid = [];
 const dataDeaths = [];
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -41,6 +49,9 @@ const onMouseOver = function(e) {
         } else if (this.dataset.type === "Bar") {
             tooltip.style.background = COLOR_BARS;
             html = `${this.dataset.date}, ${this.dataset.deaths} death${parseInt(this.dataset.deaths) === 1 ? `` : `s`}`;
+        } else if (this.dataset.type === "Grid") {
+            tooltip.style.background = COLOR_BARS;
+            html = `Deaths: ${Array.from(document.querySelectorAll(`.death[data-grid=${this.dataset.grid}].show`)).length}`;
         }
     }
     tooltip.style.opacity = 1;
@@ -75,7 +86,7 @@ function loadData() {
             deaths: parseInt(d.deaths) 
         }
     }).then(deaths => dataDeathsByDay = deaths);
-    const aboutPage = fetch('/about').then(resp => resp.text()).then(html => {
+    const aboutPage = fetch('/about.html').then(resp => resp.text()).then(html => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         document.getElementById("about").append(doc.getElementById("content"));
     });
@@ -168,6 +179,7 @@ function setupFilters() {
 function setupSVG() {
     setupZoom();
     setupMap();
+    setupGrid();
     setupDeaths();
     setupPumps();
     setupSlider();
@@ -178,9 +190,17 @@ function setupZoom() {
 }
 
 function setupMap() {
+
+    const sg = map.append("g").attr("class", "snowmap snowmap--hide")
+    sg.append("image")
+        .attr("href", "/img/snowmap.png")
+        .attr("width", 826)
+        .attr("height", 774)
+        .attr("x", 165)
+        .attr("y", 110)
+
     const g = map.append("g").attr("class", "streets");
-    const xCoords = [];
-    const yCoords = [];
+
     dataStreets.map(street => {
         const streetsX = street.map(s => s.x * multiplier + offsetDataX);
         const streetsY = street.map(s => ((1 - s.y) * multiplier + offsetDataY)); // flip vertically
@@ -195,9 +215,10 @@ function setupMap() {
         streetsY.forEach(s => yCoords.push(s));
     });
 
+    const lg = map.append("g").attr("class", "labels")
     dataLabels.map(l => {
-        const lg = g.append("g").attr("style", `transform:rotate(${l.rotate}deg)`);
-        lg.append("text")
+        const llg = lg.append("g").attr("style", `transform:rotate(${l.rotate}deg)`);
+        llg.append("text")
             .attr("x", l.x)
             .attr("y", l.y)
             .html(l.name)
@@ -205,49 +226,10 @@ function setupMap() {
             .attr("style", `letter-spacing:${l.spacing}px;font-size:${l.size}px`)
     });
 
-    const sg = g.append("g").attr("class", "snowmap snowmap--hide")
-    sg.append("image")
-        .attr("href", "/img/snowmap.png")
-        .attr("width", 826)
-        .attr("height", 774)
-        .attr("x", 165)
-        .attr("y", 110)
-    
-    const gg = g.append("g").attr("class", "grid grid--hide")
-    const minX = Math.min(...xCoords);
-    const maxX = Math.max(...xCoords);
-    const minY = Math.min(...yCoords);
-    const maxY = Math.max(...yCoords);
-    const count = 10;
-    const width = (maxX - minX) / count;
-    const height = (maxY - minY) / count;
-    const grid = [];
-
-    for (let i = 0; i < count; i++) {
-        const row = [];
-        for (let j = 0; j < count; j++) {
-            row.push([minX + j * width, 
-                    minY + i * height,
-                    minX + (j + 1) * width,
-                    minY + (i + 1) * height]);
-        }
-        grid.push(row);
-        for (let j = 0; j < count; j++) {
-            const x = grid[i][j][0];
-            const y = grid[i][j][1];
-            gg.append("rect")
-                .attr("width", width)
-                .attr("height", height)
-                .attr("class", "box")
-                .attr("x", x)
-                .attr("y", y)
-        }
-    }
-
 }
 
 function setupPumps() {
-    const g = map.append("g").attr("class", "pumps");
+    const g = map.insert("g", ".grid").attr("class", "pumps");
     dataPumps.map(d => {
         const symbol = d3.symbol().type(d3.symbolTriangle).size(16);
         g.append("path")
@@ -270,7 +252,7 @@ function setupPumps() {
 }
 
 function setupDeaths() {
-    const g = map.append("g").attr("class", "deaths");
+    const g = map.insert("g", ".grid").attr("class", "deaths");
     dataDeaths.map(d => {
         let gender;
         if (parseInt(d.gender)) {
@@ -304,19 +286,90 @@ function setupDeaths() {
                 ages["0"]++;
                 break;
         }
+
+        const x = (d.x) * multiplier + offsetDataX;
+        const y = (1 - d.y) * multiplier + offsetDataY;
+        let grid;
+        dataGrid.forEach(dg => {
+            if (x >= dg.left && 
+                x <= dg.right &&
+                y >= dg.top &&
+                y <= dg.bottom) {
+                    grid = dg.grid;
+            }
+        });
         g.append("circle")
             .attr("data-type", "Death")
             .attr("data-age", age)
             .attr("data-gender", gender)
             .attr("data-date", d.date)
             .attr("data-step", d.step + 1)
-            .attr("cx", (d.x) * multiplier + offsetDataX)
-            .attr("cy", (1 - d.y) * multiplier + offsetDataY)
+            .attr("data-grid", grid)
+            .attr("cx", x)
+            .attr("cy", y)
             .attr("r", 1)
             .attr("class", `death ${gender.toLocaleLowerCase()} age${d.age}`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
     });
+}
+
+function setupGrid() {
+    
+    const gg = map.append("g").attr("class", "grid grid--hide")
+    const minX = Math.min(...xCoords);
+    const maxX = Math.max(...xCoords);
+    const minY = Math.min(...yCoords);
+    const maxY = Math.max(...yCoords);
+    const width = (maxX - minX) / gridCount;
+    const height = (maxY - minY) / gridCount;
+    gridW = width;
+    gridH = height;
+    const grid = [];
+
+    for (let i = 0; i < gridCount; i++) {
+        const row = [];
+        for (let j = 0; j < gridCount; j++) {
+            row.push([minX + j * width, 
+                    minY + i * height,
+                    minX + (j + 1) * width,
+                    minY + (i + 1) * height]);
+        }
+        grid.push(row);
+        for (let j = 0; j < gridCount; j++) {
+            const x = grid[i][j][0];
+            const y = grid[i][j][1];
+            const id = `${String.fromCharCode(96+i+1).toLocaleUpperCase()}${j+1}`;
+            const ggg = gg.append("g")
+                .attr("class", "box")
+                .attr("data-type", "Grid")
+                .attr("data-grid", id)
+                .on("mouseover", onMouseOver)
+                .on("mouseleave", onMouseLeave)
+            ggg.append("text")
+                .attr("x", x + 3)
+                .attr("y", y + 10)
+                .html(id)
+                .attr("class", "label")
+            ggg.append("rect")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", x)
+                .attr("y", y);
+        }
+    }
+    const boxes = Array.from(document.querySelectorAll(".grid .box"));
+    dataGrid = boxes.map(b => {
+        const rect = b.getBoundingClientRect();
+        return {
+            grid: b.dataset.grid,
+            top: rect.top,
+            right: rect.right,
+            bottom: rect.bottom,
+            left: rect.left
+        }
+    });
+    console.log(dataGrid);
 }
 
 function setupSlider() {
