@@ -78,9 +78,9 @@ body {
 }
 
 .bar {
-	fill: var(--bars);
+	fill: var(--white);
 	cursor: pointer;
-	opacity: .35;
+	/* opacity: .35; */
 	stroke: black;
 	stroke-width: 2px;
 }
@@ -98,14 +98,14 @@ body {
 }
 
 .draggies {
-	left: 10px;
+	left: 16px;
 	z-index: 30;
 	pointer-events: auto;
 }
 
 .draggies .handle {
-	cursor: move;
 	min-width: 150px;
+	cursor: pointer;
 }
 
 .draggies .content {
@@ -116,24 +116,16 @@ body {
 	display: block;
 }
 
-.timeline {
-	top: 10px;
-}
-
 .filters {
-	top: 300px;
-}
-
-.days {
-	top: 150px;
+	top: 60px;
 }
 
 .genders {
-	top: 200px;
+	top: 110px;
 }
 
 .ages {
-	top: 250px;
+	top: 160px;
 }
 
 .map {
@@ -238,6 +230,25 @@ body {
 	fill: rgba(0, 0, 0, 0.1);
 }
 
+.map .legend rect {
+	fill: var(--white);
+	stroke: var(--street);
+	stroke-width: 2px;
+}
+
+.map .legend text {
+	text-transform: uppercase;
+	font-weight: 700;
+}
+
+
 .drawer.active {
 	transform: translateX(0);
+}
+
+.range-slider__thumb[data-disabled] {
+	display: none;
+}
+.range-slider__thumb[data-disabled] ~ .range-slider__range {
+	margin-left: -12px;
 }

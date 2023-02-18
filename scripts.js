@@ -9,6 +9,7 @@ const STRING_AGE_5 = "> 80";
 const COLOR_MALE = getComputedStyle(document.body).getPropertyValue('--male');
 const COLOR_FEMALE = getComputedStyle(document.body).getPropertyValue('--female');
 const COLOR_BARS = getComputedStyle(document.body).getPropertyValue('--bars');
+const COLOR_PUMP = getComputedStyle(document.body).getPropertyValue('--pump');
 
 const multiplier = 50;
 const offsetDataX = 0;
@@ -18,13 +19,14 @@ const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
 
 let slider;
+let rangeEnabled = false;
 
 const xCoords = [];
 const yCoords = [];
 
 let gridW = 0;
 let gridH = 0;
-let gridCount = 5;
+let gridCount = 10;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -67,7 +69,7 @@ const onMouseOver = function(e) {
 const onMouseLeave = function(e) {
     tooltip.style.opacity = 0;
     tooltip.innerHTML = "";
-    if (e.target.dataset.type === "Box") {
+    if (e.target.dataset.type === "Grid") {
         Array.from(document.querySelectorAll(`.death.hover`)).forEach(d => d.classList.remove("hover"));
     }
 }
@@ -131,7 +133,7 @@ function combineData() {
 function setupLayout() {
     setupDrawers();
     setupDraggables();
-    setupFilters();
+    setupSettings();
     document.addEventListener("mousemove", (e) => onMouseMove(e));
 }
 
@@ -171,17 +173,17 @@ function setupDraggables() {
     });
 }
 
-function setupFilters() {
-    const filterChk = Array.from(document.querySelectorAll("#filters input[type=checkbox]"));
-    filterChk.forEach(f => {
-        f.addEventListener('change', (e) => {
+function setupSettings() {
+    const settingChk = Array.from(document.querySelectorAll("#settings input[type=checkbox]"));
+    settingChk.forEach(s => {
+        s.addEventListener('change', (e) => {
             const checked = e.target.checked;
             const clazz = `${e.target.id}--hide`;
             const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
             items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
         });
     })
-    const filterRdo = Array.from(document.querySelectorAll("#filters input[type=radio]"));
+    const filterRdo = Array.from(document.querySelectorAll("#settings input[type=radio]"));
     filterRdo.forEach(r => {
         r.addEventListener('click', (e) => {
             document.body.removeAttribute("style");
@@ -199,13 +201,14 @@ function setupSVG() {
     setupGrid();
     setupDeaths();
     setupPumps();
+    setupLegend();
     setupSlider();
 }
 
 function setupZoom() {
     const zoom = d3.zoom();
     svg.call(zoom.on("zoom", (e) => onZoom(e)));
-    svg.call(zoom.transform, d3.zoomIdentity.translate(-671,-342).scale(2))
+    // svg.call(zoom.transform, d3.zoomIdentity.translate(-671,-342).scale(2))
 }
 
 function setupMap() {
@@ -352,9 +355,6 @@ function setupGrid() {
             const id = `${String.fromCharCode(96+i+1).toLocaleUpperCase()}${j+1}`;
             const ggg = gg.append("g")
                 .attr("class", "box")
-                .attr("data-type", "Box")
-                .on("mouseover", onMouseOver)
-                .on("mouseleave", onMouseLeave)
             ggg.append("text")
                 .attr("x", x + 3)
                 .attr("y", y + 10)
@@ -366,7 +366,9 @@ function setupGrid() {
                 .attr("width", width)
                 .attr("height", height)
                 .attr("x", x)
-                .attr("y", y);
+                .attr("y", y)
+                .on("mouseover", onMouseOver)
+                .on("mouseleave", onMouseLeave);
         }
     }
     const boxes = Array.from(document.querySelectorAll(".grid .box rect"));
@@ -382,33 +384,95 @@ function setupGrid() {
     });
 }
 
+function setupLegend() {
+    const xStart = Math.min(...xCoords) + 15;
+    const yStart = Math.min(...yCoords) + 30;
+    const g = map.insert("g", ".grid").attr("class", "legend");
+    g.append("rect")
+        .attr("width", 125)
+        .attr("height", 75)
+        .attr("x", xStart)
+        .attr("y", yStart)
+    const lg = g.append("defs")
+            .append("linearGradient")
+            .attr("id", "genderFill")
+        lg.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", COLOR_MALE)
+        lg.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", COLOR_MALE)
+        lg.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", COLOR_FEMALE)
+        lg.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", COLOR_FEMALE)
+    g.append("text")
+        .html("Death")
+        .attr("x", xStart + 45)
+        .attr("y", yStart + 30)
+    g.append("text")
+        .html("Pump")
+        .attr("x", xStart + 45)
+        .attr("y", yStart + 60)
+    g.append("path")
+        .attr("d", d3.symbol().type(d3.symbolTriangle).size(128))
+        .attr("transform", `translate(${xStart + 25}, ${yStart + 57})`)
+        .attr("fill", COLOR_PUMP)
+    g.append("path")
+        .attr("d", d3.symbol().type(d3.symbolCircle).size(200))
+        .attr("transform", `translate(${xStart + 25}, ${yStart + 24})`)
+        .attr("fill", "url(#genderFill)")
+}
+
 function setupSlider() {
 
     slider = rangeSlider(document.getElementById("rangeSlider"), {
         value: [0, 0],
         max: dataDeathsByDay.length,
-        thumbsDisabled: [false, false],
-        rangeSlideDisabled: false,
+        thumbsDisabled: [true, false],
+        rangeSlideDisabled: true,
         onInput: (e) => fireUpdate(e)
     });
     
     fireUpdate([0,0]);
 
+    // enableRange();
+}
+
+function enableRange() {
+    rangeEnabled = true;
+    slider.thumbsDisabled([false, false]);
+    slider.rangeSlideDisabled(false);
 }
 
 function fireUpdate(range) {
 
     let totalDeaths = dataDeaths.length;
-    console.log(range[0], range[1]);
-    
-    if (range[0] + range[1] === 0) {
+
+    const sameSteps = range.every((v, i, a) => v === a[0]);
+    const zeroSteps = range.reduce((a,b) => a + b) === 0;
+
+    if (zeroSteps) {
         dayZero(dataDeaths);
-    } 
-    // else if (range[0] > 0 && range[1] > 0) {
-    //     updateDate(`${dateString(dataDeathsByDay[range[0]-1].date)} – ${dateString(dataDeathsByDay[range[1]-1].date)}`)
-    // } 
-    else {
-        const step = range[1];
+    } else if (sameSteps) {
+        singleDay(range[0])
+    } else if (!rangeEnabled) {
+        singleDay(range[1])
+    } else if (rangeEnabled) {
+        multiDay(range);
+    }
+
+    function dayZero(deaths) {
+        updateMap(0);
+        updateDate(`${dateString(dataDeathsByDay[0].date)} – ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
+        updateDeathCount(`${dataDeaths.length} deaths`);
+        updatePieCharts(deaths);
+        createBarChart(dataDeathsByDay);
+    }
+
+    function singleDay(step) {
         totalDeaths = dataDeathsByDay.slice(0, step).map(d => d.deaths).reduce((a, b) => a + b, 0);
         updateMap(step);
         updateDate(dateString(dataDeathsByDay[step - 1].date));
@@ -417,8 +481,19 @@ function fireUpdate(range) {
         updateBarChart(step);
     }
 
+    // function multiDay(steps) {
+    //     const deaths = dataDeathsByDay.slice(steps[0], steps[1]).map(d => d.deaths).reduce((a, b) => a + b, 0);
+    //     const dates = dataDeathsByDay.slice(steps[0], steps[1]).map(d => d.date);
+    //     updateMap(step);
+    //     updateDate(`${dateString(dates[0])} – ${dateString(dates.slice(-1)[0])}`);
+    //     updateDeathCount(deathString(deaths));
+    //     updatePieCharts(dataDeaths.slice(0, totalDeaths));
+    //     updateBarChart(step);
+    //     console.log("multiday", dates.slice(-1)[0].date);
+    // }
+
     function deathString(current, total) {
-        return `${current} death${current === 1 ? `` : `s`}, ${total} total`;
+        return `${current} death${current === 1 ? `` : `s`}${total ? `, ${total} total` : ``}`;
     }
 
     function dateString(val) {
@@ -457,8 +532,6 @@ function fireUpdate(range) {
             }
             ages[parseInt(d.age)]++;
         });
-        d3.selectAll(".content > #genders").remove();
-        d3.selectAll(".content > #ages").remove();
         createPieChart(genders, "Genders");
         createPieChart(ages, "Ages");
     }
@@ -468,24 +541,18 @@ function fireUpdate(range) {
         bars.forEach(bar => parseInt(bar.dataset.step) === step ? bar.classList.add("active") : bar.classList.remove("active"))
     }
 
-    function dayZero(deaths) {
-        updateMap(0);
-        updateDate(`${dateString(dataDeathsByDay[0].date)} – ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
-        updateDeathCount(`${dataDeaths.length} deaths`);
-        updatePieCharts(deaths);
-        createBarChart(dataDeathsByDay);
-    }
-
 }
 
 function createBarChart(deaths) {
 
-    d3.selectAll(".content > #days").remove();
+    d3.selectAll("#days .chart").remove();
 
-    const width = 750;
+    const width = document.getElementById("days")?.getBoundingClientRect()?.width;
     const height = 250;
 
-    const bar = d3.select(`#days .content`)
+    const bars = d3.select(`#days`)
+                    .append('div')
+                    .attr("class", "chart")
                     .append("svg")
                     .attr("id", "days")
                     .attr("width", width)
@@ -496,13 +563,13 @@ function createBarChart(deaths) {
     const x = d3.scaleBand()
                 .range([0, width])
                 .domain(deaths.map(d => d.date))
-                .padding(0.3);
+                .padding(0.25);
 
     const y = d3.scaleLinear()
                 .domain([0, Math.max(...deaths.map(d => d.deaths))])
                 .range([height, 0]);
               
-    bar.selectAll("svg")
+    bars.selectAll("svg")
         .data(deaths)
         .enter()
         .append("rect")
@@ -522,6 +589,8 @@ function createBarChart(deaths) {
 }
 
 function createPieChart(data, id) {
+
+    d3.selectAll(`#${id.toLocaleLowerCase()} .chart`).remove();
 
     const size = 250;
     const translate = size / 2;
@@ -561,7 +630,9 @@ function createPieChart(data, id) {
         }
     }
 
-    const pie = d3.select(`#${id.toLocaleLowerCase()} .content`)
+    const pie = d3.select(`#${id.toLocaleLowerCase()}`)
+                    .append("div")
+                    .attr("class", "chart")
                     .append("svg")
                     .attr("width", size)
                     .attr("height", size)
