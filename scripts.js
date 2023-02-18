@@ -203,7 +203,9 @@ function setupSVG() {
 }
 
 function setupZoom() {
-    svg.call(d3.zoom().on("zoom", (e) => onZoom(e)));
+    const zoom = d3.zoom();
+    svg.call(zoom.on("zoom", (e) => onZoom(e)));
+    svg.call(zoom.transform, d3.zoomIdentity.translate(-671,-342).scale(2))
 }
 
 function setupMap() {
@@ -256,15 +258,6 @@ function setupPumps() {
             .attr("class", `pump`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
-
-        // g.append("image")
-        //     .attr("href", "/img/pump.svg")
-        //     .attr("data-type", "Pump")
-        //     .attr("x", (d.x) * multiplier + offsetDataX)
-        //     .attr("y", (1 - d.y) * multiplier + offsetDataY)
-        //     .attr("class", "pump")
-        //     .on("mouseover", onMouseOver)
-        //     .on("mouseleave", onMouseLeave)
     });
 }
 
@@ -394,7 +387,7 @@ function setupSlider() {
     slider = rangeSlider(document.getElementById("rangeSlider"), {
         value: [0, 0],
         max: dataDeathsByDay.length,
-        thumbsDisabled: [true, false],
+        thumbsDisabled: [false, false],
         rangeSlideDisabled: false,
         onInput: (e) => fireUpdate(e)
     });
@@ -406,10 +399,15 @@ function setupSlider() {
 function fireUpdate(range) {
 
     let totalDeaths = dataDeaths.length;
+    console.log(range[0], range[1]);
     
     if (range[0] + range[1] === 0) {
         dayZero(dataDeaths);
-    } else {
+    } 
+    // else if (range[0] > 0 && range[1] > 0) {
+    //     updateDate(`${dateString(dataDeathsByDay[range[0]-1].date)} – ${dateString(dataDeathsByDay[range[1]-1].date)}`)
+    // } 
+    else {
         const step = range[1];
         totalDeaths = dataDeathsByDay.slice(0, step).map(d => d.deaths).reduce((a, b) => a + b, 0);
         updateMap(step);
