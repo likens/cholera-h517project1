@@ -62,18 +62,18 @@ body {
 	margin: 0;
 }
 
-.pie path {
+.charts path {
 	stroke: var(--black);
 	stroke-width: 1px;
 }
 
-.pie .label {
-	font-size: 14px;
+.charts .label {
+	font-size: 16px;
 	font-weight: 700;
 	text-anchor: middle;
 }
 
-.pie .label.genders {
+.charts .label.genders {
 	fill: var(--white);
 }
 
@@ -230,7 +230,8 @@ body {
 	fill: rgba(0, 0, 0, 0.1);
 }
 
-.map .legend rect {
+.map .legend rect, 
+.map .charts rect {
 	fill: var(--white);
 	stroke: var(--street);
 	stroke-width: 2px;

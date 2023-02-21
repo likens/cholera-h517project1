@@ -132,7 +132,6 @@ function combineData() {
 
 function setupLayout() {
     setupDrawers();
-    setupDraggables();
     setupSettings();
     document.addEventListener("mousemove", (e) => onMouseMove(e));
 }
@@ -153,24 +152,6 @@ function setupDrawers() {
         b.addEventListener("mouseleave", (e) => onMouseLeave(e));
     });
     drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
-}
-
-function setupDraggables() {
-    const dragElem = Array.from(document.querySelectorAll('.draggies'));
-    const draggies = dragElem.map(d => {
-        const handle = d.querySelector('.handle');
-        const content = d.querySelector('.content');
-        const toggle = handle.querySelector('.toggle');
-        toggle.addEventListener('click', () => {
-            content.classList.toggle('active');
-            content.className.includes("active") ? toggle.innerHTML = "-" : toggle.innerHTML = "+";
-        });
-        const draggie = new Draggabilly(d, {
-            containment: '#draggabilly',
-            handle: handle
-        });
-        return draggie;
-    });
 }
 
 function setupSettings() {
@@ -201,6 +182,7 @@ function setupSVG() {
     setupGrid();
     setupDeaths();
     setupPumps();
+    setupCharts();
     setupLegend();
     setupSlider();
 }
@@ -213,6 +195,7 @@ function setupZoom() {
 
 function setupMap() {
 
+    // snow's map
     const sg = map.append("g").attr("class", "snowmap snowmap--hide")
     sg.append("image")
         .attr("href", "/img/snowmap.png")
@@ -221,8 +204,8 @@ function setupMap() {
         .attr("x", 165)
         .attr("y", 110)
 
+    // streets
     const g = map.append("g").attr("class", "streets");
-
     dataStreets.map(street => {
         const streetsX = street.map(s => s.x * multiplier + offsetDataX);
         const streetsY = street.map(s => ((1 - s.y) * multiplier + offsetDataY)); // flip vertically
@@ -237,6 +220,7 @@ function setupMap() {
         streetsY.forEach(s => yCoords.push(s));
     });
 
+    // labels
     const lg = map.append("g").attr("class", "labels")
     dataLabels.map(l => {
         const llg = lg.append("g").attr("style", `transform:rotate(${l.rotate}deg)`);
@@ -382,6 +366,47 @@ function setupGrid() {
             left: rect.left
         }
     });
+}
+
+function setupCharts() {
+
+    const xStart = Math.max(...xCoords) + 35;
+    const yStart = Math.min(...yCoords);
+    const g = map.append("g").attr("class", "charts");
+
+    const gg = g.append("g").attr("id", "genders");
+
+    gg.append("rect")
+        .attr("width", 180)
+        .attr("height", 195)
+        .attr("x", xStart)
+        .attr("y", yStart);
+
+    gg.append("g")
+        .attr("class", "chart")
+        .attr("transform", `translate(${xStart + 90}, ${yStart + 110})`)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", -7)
+        .attr("y", -85)
+        .html("By Gender")
+
+    const ag = g.append("g").attr("id", "ages");
+
+    ag.append("rect")
+        .attr("width", 180)
+        .attr("height", 195)
+        .attr("x", xStart)
+        .attr("y", yStart + 240);
+
+    ag.append("g")
+        .attr("class", "chart")
+        .attr("transform", `translate(${xStart + 90}, ${yStart + 350})`)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", -7)
+        .attr("y", -85)
+        .html("By Age")
 }
 
 function setupLegend() {
@@ -590,9 +615,9 @@ function createBarChart(deaths) {
 
 function createPieChart(data, id) {
 
-    d3.selectAll(`#${id.toLocaleLowerCase()} .chart`).remove();
+    d3.selectAll(`#${id.toLocaleLowerCase()} .chart path`).remove();
 
-    const size = 250;
+    const size = 150;
     const translate = size / 2;
     const radius = translate - 5;
     const pieVal = d3.pie().value((d) => d[1]);
@@ -625,22 +650,24 @@ function createPieChart(data, id) {
                 return COLOR_MALE;
             case "f":
                 return COLOR_FEMALE;
+            // case "0":
+            //     return "#5c1d5c";
+            // case "1":
+            //     return "#3c4fa4";
+            // case "2":
+            //     return "#0082d9";
+            // case "3":
+            //     return "#00b1e7";
+            // case "4":
+            //     return "#00dbcb";
+            // case "5":
+            //     return "#19ff94";
             default:
-                return "white";
+                return "#19ff94";
         }
     }
 
-    const pie = d3.select(`#${id.toLocaleLowerCase()}`)
-                    .append("div")
-                    .attr("class", "chart")
-                    .append("svg")
-                    .attr("width", size)
-                    .attr("height", size)
-                    .attr("class", `${id.toLocaleLowerCase()} pie`)
-                    .attr("id", id.toLocaleLowerCase())
-                    .append("g")
-                    .attr("transform", `translate(${translate}, ${translate})`)
-    
+    const pie = d3.select(`#${id.toLocaleLowerCase()} .chart`)
     const filteredData = Object.entries(data).filter(d => d[1] > 0)
 
     pie.selectAll()
@@ -652,17 +679,17 @@ function createPieChart(data, id) {
         // .on("mouseover", onMouseOver)
         // .on("mouseleave", onMouseLeave)
     
-    pie.selectAll()
-        .data(pieVal(filteredData))
-        .enter()
-        .append('text')
-        .attr("y", -15)
-        .html((d) => {
-            return `
-                <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
-                <tspan x="0" dy="20">(${d.data[1]})</tspan>
-            `
-        })
-        .attr("class", `label ${id.toLocaleLowerCase()}`)
-        .attr('transform', (d) => `translate(${arc.centroid(d)})`)
+    // pie.selectAll()
+    //     .data(pieVal(filteredData))
+    //     .enter()
+    //     .append('text')
+    //     .attr("y", -15)
+    //     .html((d) => {
+    //         return `
+    //             <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
+    //             <tspan x="0" dy="20">(${d.data[1]})</tspan>
+    //         `
+    //     })
+    //     .attr("class", `label ${id.toLocaleLowerCase()}`)
+    //     .attr('transform', (d) => `translate(${arc.centroid(d)})`)
 }
