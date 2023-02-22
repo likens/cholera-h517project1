@@ -72,19 +72,10 @@ body {
 	font-weight:700;
 }
 
-.charts .label.title {
-	font-size:16px;
-}
-
-.charts .label.slice {
-	font-size: 12px;
-	fill: var(--white);
-}
-
-.bar {
+/* .bar {
 	fill: var(--white);
 	cursor: pointer;
-	/* opacity: .35; */
+	opacity: .35;
 	stroke: black;
 	stroke-width: 2px;
 }
@@ -92,45 +83,7 @@ body {
 .bar:hover,
 .bar.active {
 	opacity: 1;
-}
-
-.draggabilly {
-	height: calc(100% - 78px);
-	transform: translateY(78px);
-	z-index: 40;
-	pointer-events: none;
-}
-
-.draggies {
-	left: 16px;
-	z-index: 30;
-	pointer-events: auto;
-}
-
-.draggies .handle {
-	min-width: 150px;
-	cursor: pointer;
-}
-
-.draggies .content {
-	display: none;
-}
-
-.draggies .active {
-	display: block;
-}
-
-.filters {
-	top: 60px;
-}
-
-.genders {
-	top: 110px;
-}
-
-.ages {
-	top: 160px;
-}
+} */
 
 .map {
 	background: var(--white);
@@ -203,6 +156,15 @@ body {
 	fill: var(--female);
 }
 
+.map .charts .label.title {
+	font-size:16px;
+}
+
+.map .charts .label.slice {
+	font-size: 12px;
+	fill: var(--white);
+}
+
 .map .labels .label {
 	text-transform: uppercase;
 	transform-origin: center center;
@@ -234,8 +196,8 @@ body {
 	fill: rgba(0, 0, 0, 0.1);
 }
 
-.map .legend rect, 
-.map .charts rect {
+.map .legend .box, 
+.map .charts .box {
 	fill: var(--white);
 	stroke: var(--street);
 	stroke-width: 2px;
@@ -246,6 +208,33 @@ body {
 	font-weight: 700;
 }
 
+.map .chart .axis {
+	font-size: 12px;
+	font-weight: 700;
+	font-family: 'Inter', sans-serif;
+}
+
+.map .chart .axis .tick {
+	color: var(--bars)
+}
+
+.map .chart .bar {
+	stroke-width: 1px;
+	stroke: var(--nearBlack);
+}
+
+.map .chart .bars .value {
+	font-weight: 700;
+	font-size: 12px;
+	text-anchor: middle;
+	fill: var(--nearWhite)
+}
+
+.map .charts .male:hover,
+.map .charts .female:hover,
+.map .charts .bar:hover {
+	opacity: .6;
+}
 
 .drawer.active {
 	transform: translateX(0);

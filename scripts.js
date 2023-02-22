@@ -85,11 +85,11 @@ const onMouseMove = (e) => {
 };
 
 const onMouseClick = (e) => {
-    if (e.target.dataset.type === "Bar") {
-        const range = [0, parseInt(e.target.dataset.step)];
-        slider.value(range);
-        fireUpdate(range);
-    }
+    // if (e.target.dataset.type === "Bar") {
+    //     const range = [0, parseInt(e.target.dataset.step)];
+    //     slider.value(range);
+    //     fireUpdate(range);
+    // }
 }
 
 function loadData() {
@@ -372,41 +372,50 @@ function setupCharts() {
 
     const xStart = Math.max(...xCoords) + 35;
     const yStart = Math.min(...yCoords);
+
     const g = map.append("g").attr("class", "charts");
 
-    const gg = g.append("g").attr("id", "genders");
+    const gg = g.append("g")
+        .attr("id", "genders")
+        .attr("transform", `translate(${xStart}, ${yStart})`)
 
-    gg.append("rect")
+    const ggc = gg.append("g").attr("class", "contain");
+    
+    ggc.append("rect")
+        .attr("class", "box")
         .attr("width", 180)
         .attr("height", 195)
-        .attr("x", xStart)
-        .attr("y", yStart);
+
+    ggc.append("text")
+        .attr("class", "label title")
+        .attr("x", 90)
+        .attr("y", 25)
+        .html("By Gender");
 
     gg.append("g")
         .attr("class", "chart")
-        .attr("transform", `translate(${xStart + 90}, ${yStart + 110})`)
-        .append("text")
+        .attr("transform", `translate(90, 110)`)
+
+    const ag = g.append("g")
+        .attr("id", "ages")
+        .attr("transform", `translate(${xStart}, ${yStart + 220})`);
+
+    const agc = ag.append("g").attr("class", "contain");
+
+    agc.append("rect")
+        .attr("class", "box")
+        .attr("width", 375)
+        .attr("height", 215)
+
+    agc.append("text")
         .attr("class", "label title")
-        .attr("x", -7)
-        .attr("y", -85)
-        .html("By Gender")
-
-    const ag = g.append("g").attr("id", "ages");
-
-    ag.append("rect")
-        .attr("width", 180)
-        .attr("height", 195)
-        .attr("x", xStart)
-        .attr("y", yStart + 240);
+        .attr("x", 180)
+        .attr("y", 25)
+        .html("By Age");
 
     ag.append("g")
         .attr("class", "chart")
-        .attr("transform", `translate(${xStart + 90}, ${yStart + 350})`)
-        .append("text")
-        .attr("class", "label")
-        .attr("x", -7)
-        .attr("y", -85)
-        .html("By Age")
+        .attr("transform", `translate(100, 120)`)
 }
 
 function setupLegend() {
@@ -414,6 +423,7 @@ function setupLegend() {
     const yStart = Math.min(...yCoords) + 30;
     const g = map.insert("g", ".grid").attr("class", "legend");
     g.append("rect")
+        .attr("class", "box")
         .attr("width", 125)
         .attr("height", 75)
         .attr("x", xStart)
@@ -555,12 +565,12 @@ function fireUpdate(range) {
 
     function updateBarChart(deaths) {
         const ages = [
-            { label: STRING_AGE_0, deaths: 0 },
-            { label: STRING_AGE_1, deaths: 0 },
-            { label: STRING_AGE_2, deaths: 0 },
-            { label: STRING_AGE_3, deaths: 0 },
-            { label: STRING_AGE_4, deaths: 0 },
-            { label: STRING_AGE_5, deaths: 0 }
+            { label: STRING_AGE_0, deaths: 0, fill: "#c90000" },
+            { label: STRING_AGE_1, deaths: 0, fill: "#c15200" },
+            { label: STRING_AGE_2, deaths: 0, fill: "#af7c00" },
+            { label: STRING_AGE_3, deaths: 0, fill: "#939e00" },
+            { label: STRING_AGE_4, deaths: 0, fill: "#6cbc18" },
+            { label: STRING_AGE_5, deaths: 0, fill: "#00d667" }
         ]
         deaths.forEach(d => ages[parseInt(d.age)].deaths++)
         createBarChart(ages, "Ages");
@@ -653,8 +663,7 @@ function createPieChart(data, id) {
         .append('path')
         .attr('d', arc)	
         .attr('fill', (d) => getPieColor(d.data[0]))
-        // .on("mouseover", onMouseOver)
-        // .on("mouseleave", onMouseLeave)
+        .attr("class", (d) => getPieLabel(d.data[0]).toLocaleLowerCase())
     
     pie.selectAll()
         .data(pieVal(filteredData))
@@ -674,58 +683,52 @@ function createPieChart(data, id) {
 
 function createBarChart(data, id) {
 
-    d3.selectAll(`#${id.toLocaleLowerCase()} .chart path`).remove();
+    d3.selectAll(`#${id.toLocaleLowerCase()} .chart *`).remove();
 
-    const width = 600;
-    const height = 250;
-
-    console.log(data);
-
-    const getBarLabel = (key) => {
-        switch(key) {
-            case "0":
-                return STRING_AGE_0;
-            case "1":
-                return STRING_AGE_1;
-            case "2":
-                return STRING_AGE_2;
-            case "3":
-                return STRING_AGE_3;
-            case "4":
-                return STRING_AGE_4;
-            case "5":
-                return STRING_AGE_5;
-        }
-    }
+    const width = 350;
+    const height = 150;
 
     const bars = d3.select(`#${id.toLocaleLowerCase()} .chart`)
-        .append("g")
-        .attr("class", "bars");
 
     const x = d3.scaleBand()
                 .range([0, width])
                 .domain(data.map(d => d.label))
                 .padding(0.25);
 
+    bars.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(-90, ${height - 80})`)
+        .call(d3.axisBottom(x))
+
     const y = d3.scaleLinear()
                 .domain([0, Math.max(...data.map(d => d.deaths))])
                 .range([height, 0]);
+
+    // bars.append("g")
+    //     .attr("class", "axis")
+    //     .attr("transform", `translate(-90, -80)`)
+    //     .call(d3.axisLeft(y))
               
-    bars.selectAll()
-        .data(deaths)
-        .enter()
-        .append("rect")
+    const bar = bars.append("g")
+            .attr("class", "bars")
+            .attr("transform", "translate(-90, -80)")
+            .selectAll("g")
+            .data(data)
+            .enter()
+
+    bar.append("rect")
         .attr("x", (d) => x(d.label))
         .attr("y", (d) => y(d.deaths))
         .attr("width", x.bandwidth())
         .attr("height", (d) => height - y(d.deaths))
         .attr("class", "bar")
-        .attr("data-type", "Bar")
-        .attr("data-date", (d) => d.date)
-        .attr("data-deaths", (d) => d.deaths)
-        .attr("data-step", (d, i) => i + 1)
-        // .on("mouseover", onMouseOver)
-        // .on("mouseleave", onMouseLeave)
-        // .on("click", onMouseClick)
+        .attr("fill", (d) => d.fill)
+    
+    bar.append("text")
+        .attr("class", "value")
+        .html((d) => d.deaths ? d.deaths : ``)
+        .attr("x", (d) => x(d.label))
+        .attr("y", (d) => y(d.deaths))
+        .attr("transform", `translate(${x.bandwidth() / 2}, 15)`)
 
 }
