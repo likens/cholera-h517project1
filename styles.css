@@ -68,12 +68,16 @@ body {
 }
 
 .charts .label {
-	font-size: 16px;
-	font-weight: 700;
 	text-anchor: middle;
+	font-weight:700;
 }
 
-.charts .label.genders {
+.charts .label.title {
+	font-size:16px;
+}
+
+.charts .label.slice {
+	font-size: 12px;
 	fill: var(--white);
 }
 

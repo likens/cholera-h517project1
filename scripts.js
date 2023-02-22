@@ -386,7 +386,7 @@ function setupCharts() {
         .attr("class", "chart")
         .attr("transform", `translate(${xStart + 90}, ${yStart + 110})`)
         .append("text")
-        .attr("class", "label")
+        .attr("class", "label title")
         .attr("x", -7)
         .attr("y", -85)
         .html("By Gender")
@@ -493,8 +493,9 @@ function fireUpdate(range) {
         updateMap(0);
         updateDate(`${dateString(dataDeathsByDay[0].date)} – ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
         updateDeathCount(`${dataDeaths.length} deaths`);
-        updatePieCharts(deaths);
-        createBarChart(dataDeathsByDay);
+        updatePieChart(deaths);
+        updateBarChart(deaths);
+        // createBarChart(dataDeathsByDay);
     }
 
     function singleDay(step) {
@@ -502,8 +503,9 @@ function fireUpdate(range) {
         updateMap(step);
         updateDate(dateString(dataDeathsByDay[step - 1].date));
         updateDeathCount(deathString(dataDeathsByDay[step - 1].deaths, totalDeaths));
-        updatePieCharts(dataDeaths.slice(0, totalDeaths));
-        updateBarChart(step);
+        updatePieChart(dataDeaths.slice(0, totalDeaths));
+        updateBarChart(dataDeaths.slice(0, totalDeaths));
+        // updateBarChart(step);
     }
 
     // function multiDay(steps) {
@@ -512,7 +514,7 @@ function fireUpdate(range) {
     //     updateMap(step);
     //     updateDate(`${dateString(dates[0])} – ${dateString(dates.slice(-1)[0])}`);
     //     updateDeathCount(deathString(deaths));
-    //     updatePieCharts(dataDeaths.slice(0, totalDeaths));
+    //     updatePieChart(dataDeaths.slice(0, totalDeaths));
     //     updateBarChart(step);
     //     console.log("multiday", dates.slice(-1)[0].date);
     // }
@@ -545,73 +547,74 @@ function fireUpdate(range) {
         items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
     }
 
-    function updatePieCharts(deaths) {
+    function updatePieChart(deaths) {
         const genders = {m: 0, f: 0};
-        const ages = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
-
-        deaths.forEach(d => {
-            if (parseInt(d.gender) === 1) {
-                genders.f++;
-            } else {
-                genders.m++;
-            }
-            ages[parseInt(d.age)]++;
-        });
+        deaths.forEach(d => parseInt(d.gender) === 1 ? genders.f++ : genders.m++);
         createPieChart(genders, "Genders");
-        createPieChart(ages, "Ages");
     }
 
-    function updateBarChart(step) {
-        const bars = Array.from(document.querySelectorAll(`#days .bar`));
-        bars.forEach(bar => parseInt(bar.dataset.step) === step ? bar.classList.add("active") : bar.classList.remove("active"))
+    function updateBarChart(deaths) {
+        const ages = [
+            { label: STRING_AGE_0, deaths: 0 },
+            { label: STRING_AGE_1, deaths: 0 },
+            { label: STRING_AGE_2, deaths: 0 },
+            { label: STRING_AGE_3, deaths: 0 },
+            { label: STRING_AGE_4, deaths: 0 },
+            { label: STRING_AGE_5, deaths: 0 }
+        ]
+        deaths.forEach(d => ages[parseInt(d.age)].deaths++)
+        createBarChart(ages, "Ages");
+        
+        // const bars = Array.from(document.querySelectorAll(`#days .bar`));
+        // bars.forEach(bar => parseInt(bar.dataset.step) === step ? bar.classList.add("active") : bar.classList.remove("active"))
     }
 
 }
 
-function createBarChart(deaths) {
+// function createBarChart(deaths) {
 
-    d3.selectAll("#days .chart").remove();
+//     d3.selectAll("#days .chart").remove();
 
-    const width = document.getElementById("days")?.getBoundingClientRect()?.width;
-    const height = 250;
+//     const width = document.getElementById("days")?.getBoundingClientRect()?.width;
+//     const height = 250;
 
-    const bars = d3.select(`#days`)
-                    .append('div')
-                    .attr("class", "chart")
-                    .append("svg")
-                    .attr("id", "days")
-                    .attr("width", width)
-                    .attr("height", height)
-                    .attr("class", "bars")
-                    .append("g");
+//     const bars = d3.select(`#days`)
+//                     .append('div')
+//                     .attr("class", "chart")
+//                     .append("svg")
+//                     .attr("id", "days")
+//                     .attr("width", width)
+//                     .attr("height", height)
+//                     .attr("class", "bars")
+//                     .append("g");
 
-    const x = d3.scaleBand()
-                .range([0, width])
-                .domain(deaths.map(d => d.date))
-                .padding(0.25);
+//     const x = d3.scaleBand()
+//                 .range([0, width])
+//                 .domain(deaths.map(d => d.date))
+//                 .padding(0.25);
 
-    const y = d3.scaleLinear()
-                .domain([0, Math.max(...deaths.map(d => d.deaths))])
-                .range([height, 0]);
+//     const y = d3.scaleLinear()
+//                 .domain([0, Math.max(...deaths.map(d => d.deaths))])
+//                 .range([height, 0]);
               
-    bars.selectAll("svg")
-        .data(deaths)
-        .enter()
-        .append("rect")
-        .attr("x", (d) => x(d.date))
-        .attr("y", (d) => y(d.deaths))
-        .attr("width", x.bandwidth())
-        .attr("height", (d) => height - y(d.deaths))
-        .attr("class", "bar")
-        .attr("data-type", "Bar")
-        .attr("data-date", (d) => d.date)
-        .attr("data-deaths", (d) => d.deaths)
-        .attr("data-step", (d, i) => i + 1)
-        .on("mouseover", onMouseOver)
-        .on("mouseleave", onMouseLeave)
-        .on("click", onMouseClick)
+//     bars.selectAll("svg")
+//         .data(deaths)
+//         .enter()
+//         .append("rect")
+//         .attr("x", (d) => x(d.date))
+//         .attr("y", (d) => y(d.deaths))
+//         .attr("width", x.bandwidth())
+//         .attr("height", (d) => height - y(d.deaths))
+//         .attr("class", "bar")
+//         .attr("data-type", "Bar")
+//         .attr("data-date", (d) => d.date)
+//         .attr("data-deaths", (d) => d.deaths)
+//         .attr("data-step", (d, i) => i + 1)
+//         .on("mouseover", onMouseOver)
+//         .on("mouseleave", onMouseLeave)
+//         .on("click", onMouseClick)
 
-}
+// }
 
 function createPieChart(data, id) {
 
@@ -629,18 +632,6 @@ function createPieChart(data, id) {
                 return STRING_MALE;
             case "f":
                 return STRING_FEMALE;
-            case "0":
-                return STRING_AGE_0;
-            case "1":
-                return STRING_AGE_1;
-            case "2":
-                return STRING_AGE_2;
-            case "3":
-                return STRING_AGE_3;
-            case "4":
-                return STRING_AGE_4;
-            case "5":
-                return STRING_AGE_5;
         }
     }
 
@@ -650,20 +641,6 @@ function createPieChart(data, id) {
                 return COLOR_MALE;
             case "f":
                 return COLOR_FEMALE;
-            // case "0":
-            //     return "#5c1d5c";
-            // case "1":
-            //     return "#3c4fa4";
-            // case "2":
-            //     return "#0082d9";
-            // case "3":
-            //     return "#00b1e7";
-            // case "4":
-            //     return "#00dbcb";
-            // case "5":
-            //     return "#19ff94";
-            default:
-                return "#19ff94";
         }
     }
 
@@ -679,17 +656,76 @@ function createPieChart(data, id) {
         // .on("mouseover", onMouseOver)
         // .on("mouseleave", onMouseLeave)
     
-    // pie.selectAll()
-    //     .data(pieVal(filteredData))
-    //     .enter()
-    //     .append('text')
-    //     .attr("y", -15)
-    //     .html((d) => {
-    //         return `
-    //             <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
-    //             <tspan x="0" dy="20">(${d.data[1]})</tspan>
-    //         `
-    //     })
-    //     .attr("class", `label ${id.toLocaleLowerCase()}`)
-    //     .attr('transform', (d) => `translate(${arc.centroid(d)})`)
+    pie.selectAll()
+        .data(pieVal(filteredData))
+        .enter()
+        .append('text')
+        .attr("y", -15)
+        .html((d) => {
+            return `
+                <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
+                <tspan x="0" dy="15" style="font-size:10px;">(${d.data[1]})</tspan>
+            `
+        })
+        .attr("class", `label slice`)
+        .attr('transform', (d) => `translate(${arc.centroid(d)})`)
+}
+
+
+function createBarChart(data, id) {
+
+    d3.selectAll(`#${id.toLocaleLowerCase()} .chart path`).remove();
+
+    const width = 600;
+    const height = 250;
+
+    console.log(data);
+
+    const getBarLabel = (key) => {
+        switch(key) {
+            case "0":
+                return STRING_AGE_0;
+            case "1":
+                return STRING_AGE_1;
+            case "2":
+                return STRING_AGE_2;
+            case "3":
+                return STRING_AGE_3;
+            case "4":
+                return STRING_AGE_4;
+            case "5":
+                return STRING_AGE_5;
+        }
+    }
+
+    const bars = d3.select(`#${id.toLocaleLowerCase()} .chart`)
+        .append("g")
+        .attr("class", "bars");
+
+    const x = d3.scaleBand()
+                .range([0, width])
+                .domain(data.map(d => d.label))
+                .padding(0.25);
+
+    const y = d3.scaleLinear()
+                .domain([0, Math.max(...data.map(d => d.deaths))])
+                .range([height, 0]);
+              
+    bars.selectAll()
+        .data(deaths)
+        .enter()
+        .append("rect")
+        .attr("x", (d) => x(d.label))
+        .attr("y", (d) => y(d.deaths))
+        .attr("width", x.bandwidth())
+        .attr("height", (d) => height - y(d.deaths))
+        .attr("class", "bar")
+        .attr("data-type", "Bar")
+        .attr("data-date", (d) => d.date)
+        .attr("data-deaths", (d) => d.deaths)
+        .attr("data-step", (d, i) => i + 1)
+        // .on("mouseover", onMouseOver)
+        // .on("mouseleave", onMouseLeave)
+        // .on("click", onMouseClick)
+
 }
