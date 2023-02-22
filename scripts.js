@@ -27,7 +27,7 @@ const yCoords = [];
 
 let gridW = 0;
 let gridH = 0;
-let gridCount = 20;
+let gridCount = 5;
 
 let dataStreets =[];
 let dataLabels = [];
