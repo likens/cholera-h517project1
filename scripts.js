@@ -27,7 +27,7 @@ const yCoords = [];
 
 let gridW = 0;
 let gridH = 0;
-let gridCount = 10;
+let gridCount = 20;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -59,9 +59,6 @@ const onMouseOver = function(e) {
             html = `${deaths.length} death${deaths.length === 1 ? `` : `s`}`;
             deaths.forEach(d => d.classList.add("hover"));
         }
-    } else if (e.target.title) {
-        tooltip.style.background = COLOR_BARS;
-        html = e.target.title
     }
     tooltip.style.opacity = 1;
     tooltip.innerHTML = html;
@@ -149,8 +146,8 @@ function setupDrawers() {
             drawers.forEach(d => d.classList.remove("active"));
             document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
         });
-        b.addEventListener("mouseover", (e) => onMouseOver(e));
-        b.addEventListener("mouseleave", (e) => onMouseLeave(e));
+        // b.addEventListener("mouseover", (e) => onMouseOver(e));
+        // b.addEventListener("mouseleave", (e) => onMouseLeave(e));
     });
     drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
 }
@@ -344,7 +341,7 @@ function setupGrid() {
                 .attr("x", x + 3)
                 .attr("y", y + 10)
                 .html(id)
-                .attr("class", "label")
+                .attr("class", "id")
             ggg.append("rect")
                 .attr("data-type", "Grid")
                 .attr("data-grid", id)
@@ -382,7 +379,7 @@ function setupMapCharts() {
         .attr("width", 180)
         .attr("height", 195)
     ggc.append("text")
-        .attr("class", "label title")
+        .attr("class", "title")
         .attr("x", 90)
         .attr("y", 25)
         .html("Deaths By Gender");
@@ -398,7 +395,7 @@ function setupMapCharts() {
         .attr("width", 375)
         .attr("height", 215)
     agc.append("text")
-        .attr("class", "label title")
+        .attr("class", "title")
         .attr("x", 190)
         .attr("y", 25)
         .html("Deaths By Age (in years)");
@@ -681,7 +678,7 @@ function createPieChart(data, id) {
                 <tspan x="0" dy="15" style="font-size:10px;">(${d.data[1]})</tspan>
             `
         })
-        .attr("class", `label slice`)
+        .attr("class", "slice")
         .attr('transform', (d) => `translate(${arc.centroid(d)})`)
 }
 

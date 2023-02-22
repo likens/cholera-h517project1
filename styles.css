@@ -62,29 +62,6 @@ body {
 	margin: 0;
 }
 
-.charts path {
-	stroke: var(--black);
-	stroke-width: 1px;
-}
-
-.charts .label {
-	text-anchor: middle;
-	font-weight:700;
-}
-
-/* .bar {
-	fill: var(--white);
-	cursor: pointer;
-	opacity: .35;
-	stroke: black;
-	stroke-width: 2px;
-}
-
-.bar:hover,
-.bar.active {
-	opacity: 1;
-} */
-
 .map {
 	background: var(--white);
 }
@@ -156,13 +133,22 @@ body {
 	fill: var(--female);
 }
 
-.map .charts .label.title {
-	font-size:16px;
+.map .charts path {
+	stroke: var(--black);
+	stroke-width: 1px;
 }
 
-.map .charts .label.slice {
+.map .charts .title {
+	font-size:16px;
+	text-anchor: middle;
+	font-weight:700;
+}
+
+.map .charts .slice {
 	font-size: 12px;
 	fill: var(--white);
+	text-anchor: middle;
+	font-weight:700;
 }
 
 .map .labels .label {
@@ -185,7 +171,7 @@ body {
 	stroke-dasharray: 2;
 }
 
-.map .grid .label {
+.map .grid .id {
 	font-weight: 700;
 	font-size: 8px;
 	fill: rgba(0,0,0,.5);
