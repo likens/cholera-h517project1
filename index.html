@@ -16,44 +16,52 @@
 
 		<!-- 
 			TODO:
-			❌ ADD X/Y AXIS TO BY DAY?
-			❌ CHANGE AGE TO BAR CHART
-			❌ ADD TUTORIAL?
-			❌ DARK/LIGHT MODE?
-
-			✔️ 1. A well drawn map of the area (streets and pumps) including the locations of the deaths
-			✔️ 2. a timeline graph showing the number of deaths per day
-			✔️ 3. ability to move the mouse over the timeline graph to choose which day to visualize - this should affect the deaths visible on the map and in the graph - at minimum all cholera deaths prior to that date should be shown on the map and the graph
-			✔️ 4. the graph and the map should be stable (i.e., they should not move when new data is added or removed)
-			✔️ 5. the graph and the map should be well labeled
-			✔️ 6. you should check your visualization with a color blindness simulation tool to see that its OK
-			✔️ 7. the map and graph should update quickly when the user interacts
-			✔️ 8. an about screen with details on who wrote the project, where the data came from, etc.
-			✔️ 9. more data to the map - major street names and the location of the brewery and the work house
-			✔️ 10. ability to easily see on the map whether each victim was male or female
-			✔️ 11. ability to easily see on the map the age of each victim
-			✔️ 12. additional graphs showing the distribution of deaths by sex and age overall
-			❌ 13. ability to cluster the data on the map into a grid that shows the number of dead in each grid cell (even with this small amount of data the points are starting to overwhelm) and the user should be able to vary the size of the clusters.
-			❌ 14. ability to show data from a window of days on the timeline graph
-			✔️ 15. ability to zoom in/out and pan around the map
+			- By Day chart, use line chart, add interactivity
+			- Add grid cell sizing
+			- Add timeline range toggle
+			- Add chart hovers to highlight on map
+			- Figure out the best floating design
+			- ??? Add a tutorial
+			- ??? Add dark mode
 		-->
 
         <div id="master" class="relative w-full h-full overflow-hidden">
 
-			<div class="fixed top-0 right-0 w-full z-50 px-4 pt-4">
+			<div class="fixed top-0 left-0 z-50 pointer-events-none select-none">
 				<div class="whitespace-nowrap grid font-bold text-left justify-start text-white">
-					<div class="text-4xl">
-						<span class="bg-zinc-700 inline-flex px-4 py-2 items-center">The 1854 Broad Street Cholera Outbreak</span>
+					<div class="text-3xl">
+						<span class="bg-zinc-600 inline-flex px-4 py-2 items-center">The 1854 Broad Street Cholera Outbreak</span>
 					</div>
 					<div class="text-2xl">
-						<div class="bg-zinc-700 inline-flex gap-1 px-4 py-2 items-center -mt-2">
-							<span class="text-3xl">Soho, London, England</span>
-							<button class="inline-flex items-center justify-center text-zinc-700 bg-white w-6 h-6 rounded-full text-lg ml-2 hover:opacity-50 open" id="btnSettings" title="Visualization Settings">s</button>
-							<a href="about.html" class="inline-flex items-center justify-center text-zinc-700 bg-white w-6 h-6 rounded-full text-lg ml-2 hover:opacity-50 open" id="btnAbout" title="About This Visualization">?</a>
-						</div>
+						<span class="bg-zinc-600 inline-flex px-4 py-2 items-center -mt-2">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-white mr-3" viewBox="0 0 512 512"><path d="M32 456a24 24 0 0024 24h400a24 24 0 0024-24V176H32zm320-244a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zM456 64h-55.92V32h-48v32H159.92V32h-48v32H56a23.8 23.8 0 00-24 23.77V144h448V87.77A23.8 23.8 0 00456 64z"/></svg>
+							August 19 – September 29, 1854
+						</span>
+					</div>
+					<div class="text-2xl">
+						<span class="bg-zinc-600 inline-flex gap-1 px-4 py-2 items-center -mt-2">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1164-64 64.07 64.07 0 01-64 64z"/></svg>
+							Soho, London, England
+						</span>
+					</div>
+					<div class="text-2xl">
+						<span class="bg-zinc-600 inline-flex gap-1 px-4 py-2 items-center -mt-2">
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 16C141.31 16 48 109.31 48 224v154.83l82 32.81L146.88 496H192v-64h32v64h16v-64h32v64h16v-64h32v64h45.12L382 411.64l82-32.81V224c0-114.69-93.31-208-208-208zm-88 320a56 56 0 1156-56 56.06 56.06 0 01-56 56zm51.51 64L244 320h24l24.49 80zM344 336a56 56 0 1156-56 56.06 56.06 0 01-56 56zm104 32z"/></svg>
+							571 lives lost
+						</span>
+					</div>
+					<div class="date text-2xl">
+						<span id="date" class="hidden"></span> <!--  bg-zinc-600 inline-flex px-4 py-2 items-center -mt-4 -->
+					</div>
+					<div class="deaths text-3xl">
+						<span id="deaths" class="hidden"></span> <!-- bg-zinc-600 inline-flex px-4 py-2 items-center -mt-2 -->
 					</div>
 				</div>
 			</div>
+
+			
+			<button class="inline-flex items-center justify-center text-zinc-700 bg-white w-6 h-6 rounded-full text-lg ml-2 hover:opacity-50 open" id="btnSettings" title="Visualization Settings">s</button>
+			<a href="about.html" class="inline-flex items-center justify-center text-zinc-700 bg-white w-6 h-6 rounded-full text-lg ml-2 hover:opacity-50 open" id="btnAbout" title="About This Visualization">?</a>
 
             <svg id="svg" class="map select-none w-full h-full relative z-10"></svg>
 			<div id="tooltip" class="tooltip absolute text-white bg-zinc-900 py-1 px-2 pointer-events-none z-[100] opacity-0 left-0 top-0 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
@@ -182,21 +190,14 @@
 				</div>
 			</div>
 
-			<!-- <div id="days" class="absolute bottom-5 left-0 z-30 w-full px-4">
-				<div class="chart"></div>
-			</div> -->
-			
-			<div id="range" class="fixed bottom-0 left-0 w-full z-40 px-4 pb-4 grid gap-4 items-end">
-				<div class="whitespace-nowrap grid font-bold text-left justify-start text-white w-[600px]">
-					<div class="deaths text-5xl">
-						<span id="deaths" class="bg-zinc-700 inline-flex px-4 py-2 items-center"></span>
+			<div id="range" class="fixed bottom-0 left-0 w-full px-10 z-40 grid gap-4 items-end">
+				<div class="relative w-full">
+					<div id="days" class="w-full absolute bottom-0 left-0 pointer-events-none select-none">
+						<div class="chart"></div>
 					</div>
-					<div class="date text-3xl">
-						<span id="date" class="bg-zinc-700 inline-flex px-4 py-2 items-center -mt-2"></span>
+					<div class="w-full pb-8">
+						<div id="rangeSlider"></div>
 					</div>
-				</div>
-				<div class="w-full py-6">
-					<div id="rangeSlider"></div>
 				</div>
 			</div>
 

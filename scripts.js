@@ -17,6 +17,7 @@ const offsetDataY = 1000;
 const svg = d3.select("#svg");
 const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
+const rangeTooltip = document.getElementById("rangeTooltip");
 
 let slider;
 let rangeEnabled = false;
@@ -182,7 +183,7 @@ function setupSVG() {
     setupGrid();
     setupDeaths();
     setupPumps();
-    setupCharts();
+    setupMapCharts();
     setupLegend();
     setupSlider();
 }
@@ -368,51 +369,39 @@ function setupGrid() {
     });
 }
 
-function setupCharts() {
-
+function setupMapCharts() {
     const xStart = Math.max(...xCoords) + 35;
     const yStart = Math.min(...yCoords);
-
     const g = map.append("g").attr("class", "charts");
-
     const gg = g.append("g")
         .attr("id", "genders")
         .attr("transform", `translate(${xStart}, ${yStart})`)
-
     const ggc = gg.append("g").attr("class", "contain");
-    
     ggc.append("rect")
         .attr("class", "box")
         .attr("width", 180)
         .attr("height", 195)
-
     ggc.append("text")
         .attr("class", "label title")
         .attr("x", 90)
         .attr("y", 25)
-        .html("By Gender");
-
+        .html("Deaths By Gender");
     gg.append("g")
         .attr("class", "chart")
         .attr("transform", `translate(90, 110)`)
-
     const ag = g.append("g")
         .attr("id", "ages")
         .attr("transform", `translate(${xStart}, ${yStart + 220})`);
-
     const agc = ag.append("g").attr("class", "contain");
-
     agc.append("rect")
         .attr("class", "box")
         .attr("width", 375)
         .attr("height", 215)
-
     agc.append("text")
         .attr("class", "label title")
-        .attr("x", 180)
+        .attr("x", 190)
         .attr("y", 25)
-        .html("By Age");
-
+        .html("Deaths By Age (in years)");
     ag.append("g")
         .attr("class", "chart")
         .attr("transform", `translate(100, 120)`)
@@ -461,6 +450,10 @@ function setupLegend() {
         .attr("fill", "url(#genderFill)")
 }
 
+// function setupDayChart() {
+//     createLineChart()
+// }
+
 function setupSlider() {
 
     slider = rangeSlider(document.getElementById("rangeSlider"), {
@@ -490,6 +483,7 @@ function fireUpdate(range) {
     const zeroSteps = range.reduce((a,b) => a + b) === 0;
 
     if (zeroSteps) {
+        createLineChart(dataDeathsByDay);
         dayZero(dataDeaths);
     } else if (sameSteps) {
         singleDay(range[0])
@@ -505,7 +499,6 @@ function fireUpdate(range) {
         updateDeathCount(`${dataDeaths.length} deaths`);
         updatePieChart(deaths);
         updateBarChart(deaths);
-        // createBarChart(dataDeathsByDay);
     }
 
     function singleDay(step) {
@@ -515,7 +508,8 @@ function fireUpdate(range) {
         updateDeathCount(deathString(dataDeathsByDay[step - 1].deaths, totalDeaths));
         updatePieChart(dataDeaths.slice(0, totalDeaths));
         updateBarChart(dataDeaths.slice(0, totalDeaths));
-        // updateBarChart(step);
+        updateLineChart(step);
+        updateTooltip(dataDeathsByDay[step - 1].deaths, dataDeathsByDay[step - 1].date);
     }
 
     // function multiDay(steps) {
@@ -552,6 +546,13 @@ function fireUpdate(range) {
         document.getElementById("deaths").innerHTML = deaths;
     }
 
+    function updateTooltip(deaths, date) {
+        const upperThumb = document.querySelector(".range-slider__thumb[data-upper]");
+        upperThumb.classList.add("active");
+        upperThumb.setAttribute("data-date", `${date}`);
+        upperThumb.setAttribute("data-deaths", `${deaths} death${deaths === 1 ? `` : `s`}`);
+    }
+
     function updateMap(step) {
         const items = Array.from(document.querySelectorAll(`#svg .death`));
         items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
@@ -574,57 +575,61 @@ function fireUpdate(range) {
         ]
         deaths.forEach(d => ages[parseInt(d.age)].deaths++)
         createBarChart(ages, "Ages");
+    }
+    
+    function updateLineChart(step) { 
         
-        // const bars = Array.from(document.querySelectorAll(`#days .bar`));
-        // bars.forEach(bar => parseInt(bar.dataset.step) === step ? bar.classList.add("active") : bar.classList.remove("active"))
     }
 
 }
 
-// function createBarChart(deaths) {
+function createLineChart(deaths) {
 
-//     d3.selectAll("#days .chart").remove();
+    const data = deaths.map(d => {
+        let date = d.date.split('-');
+        date = `${date[1].includes("Aug") ? `08` : `09`}-${date[0]}`
+        return {
+            date: d3.timeParse("%m-%d")(date),
+            deaths: d.deaths
+        }
+    });
 
-//     const width = document.getElementById("days")?.getBoundingClientRect()?.width;
-//     const height = 250;
+    console.log(data);
 
-//     const bars = d3.select(`#days`)
-//                     .append('div')
-//                     .attr("class", "chart")
-//                     .append("svg")
-//                     .attr("id", "days")
-//                     .attr("width", width)
-//                     .attr("height", height)
-//                     .attr("class", "bars")
-//                     .append("g");
+    d3.selectAll("#days .chart").remove();
 
-//     const x = d3.scaleBand()
-//                 .range([0, width])
-//                 .domain(deaths.map(d => d.date))
-//                 .padding(0.25);
+    const buffer = 0;
+    const width = document.getElementById("days")?.getBoundingClientRect()?.width - buffer;
+    const height = 150;
 
-//     const y = d3.scaleLinear()
-//                 .domain([0, Math.max(...deaths.map(d => d.deaths))])
-//                 .range([height, 0]);
+    const trend = d3.select(`#days`)
+                    .append('div')
+                    .attr("class", "chart")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("transform", `translate(0, -50)`)
+                    .attr("class", "trend");
+
+    const x = d3.scaleTime()
+                .range([0, width])
+                .domain(d3.extent(data, (d) => d.date))
+    
+    // trend.append("g")
+    //     .attr("class", "axis")
+    //     .attr("transform", `translate(0, 0)`)
+    //     .call(d3.axisBottom(x))
+
+    const y = d3.scaleLinear()
+                .domain([0, d3.max(data, (d) => d.deaths)])
+                .range([height, 0]);
               
-//     bars.selectAll("svg")
-//         .data(deaths)
-//         .enter()
-//         .append("rect")
-//         .attr("x", (d) => x(d.date))
-//         .attr("y", (d) => y(d.deaths))
-//         .attr("width", x.bandwidth())
-//         .attr("height", (d) => height - y(d.deaths))
-//         .attr("class", "bar")
-//         .attr("data-type", "Bar")
-//         .attr("data-date", (d) => d.date)
-//         .attr("data-deaths", (d) => d.deaths)
-//         .attr("data-step", (d, i) => i + 1)
-//         .on("mouseover", onMouseOver)
-//         .on("mouseleave", onMouseLeave)
-//         .on("click", onMouseClick)
+    trend.append("path")
+        .attr("class", "line")
+        .datum(data)
+        .attr("d", d3.line().x(d => x(d.date)).y(d => y(d.deaths)))
 
-// }
+}
 
 function createPieChart(data, id) {
 
@@ -655,7 +660,7 @@ function createPieChart(data, id) {
     }
 
     const pie = d3.select(`#${id.toLocaleLowerCase()} .chart`)
-    const filteredData = Object.entries(data).filter(d => d[1] > 0)
+    const filteredData = Object.entries(data).filter(d => d[1] > 0);
 
     pie.selectAll()
         .data(pieVal(filteredData))
@@ -679,7 +684,6 @@ function createPieChart(data, id) {
         .attr("class", `label slice`)
         .attr('transform', (d) => `translate(${arc.centroid(d)})`)
 }
-
 
 function createBarChart(data, id) {
 
