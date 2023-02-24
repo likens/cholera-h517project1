@@ -19,8 +19,10 @@
 			- By Day chart, use line chart, add interactivity
 			- Add grid cell sizing
 			- Add timeline range toggle
-			- Add chart hovers to highlight on map
-			- Figure out the best floating design
+			- Add chart hovers to highlight on map, use color code everywhere
+			- Flesh out about page
+			- Make video
+			- ??? more design edits
 			- ??? Add a tutorial
 			- ??? Add dark mode
 		-->
@@ -30,44 +32,44 @@
 			<div class="fixed top-0 left-0 z-50 pointer-events-none select-none">
 				<div class="whitespace-nowrap grid font-bold text-left justify-start text-white">
 					<div class="text-4xl">
-						<span class="bg-zinc-600 inline-flex px-4 py-2 items-center">The 1854 Broad Street Cholera Outbreak</span>
+						<span class="bg-zinc-900 inline-flex px-4 py-2 items-center">The 1854 Broad Street Cholera Outbreak</span>
 					</div>
 					<div class="text-2xl">
-						<span class="bg-zinc-600 inline-flex px-4 py-2 items-center -mt-2">
+						<span class="bg-zinc-900 inline-flex px-4 py-2 items-center -mt-2">
 							<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-3" viewBox="0 0 512 512"><path d="M32 456a24 24 0 0024 24h400a24 24 0 0024-24V176H32zm320-244a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm-80-80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zm0 80a4 4 0 014-4h40a4 4 0 014 4v40a4 4 0 01-4 4h-40a4 4 0 01-4-4zM456 64h-55.92V32h-48v32H159.92V32h-48v32H56a23.8 23.8 0 00-24 23.77V144h448V87.77A23.8 23.8 0 00456 64z"/></svg>
 							August 19 – September 29, 1854
 						</span>
 					</div>
 					<div class="text-2xl">
-						<span class="bg-zinc-600 inline-flex gap-1 px-4 py-2 items-center -mt-2">
+						<span class="bg-zinc-900 inline-flex gap-1 px-4 py-2 items-center -mt-2">
 							<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1164-64 64.07 64.07 0 01-64 64z"/></svg>
 							Soho, London, England
 						</span>
 					</div>
 					<div class="text-2xl">
-						<span class="bg-zinc-600 inline-flex gap-1 px-4 py-2 items-center -mt-2">
+						<span class="bg-zinc-900 inline-flex gap-1 px-4 py-2 items-center -mt-2">
 							<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 16C141.31 16 48 109.31 48 224v154.83l82 32.81L146.88 496H192v-64h32v64h16v-64h32v64h16v-64h32v64h45.12L382 411.64l82-32.81V224c0-114.69-93.31-208-208-208zm-88 320a56 56 0 1156-56 56.06 56.06 0 01-56 56zm51.51 64L244 320h24l24.49 80zM344 336a56 56 0 1156-56 56.06 56.06 0 01-56 56zm104 32z"/></svg>
 							571 lives lost
 						</span>
 					</div>
 					<div class="date text-2xl">
-						<span id="date" class="hidden"></span> <!--  bg-zinc-600 inline-flex px-4 py-2 items-center -mt-4 -->
+						<span id="date" class="hidden"></span> <!--  bg-zinc-900 inline-flex px-4 py-2 items-center -mt-4 -->
 					</div>
 					<div class="deaths text-3xl">
-						<span id="deaths" class="hidden"></span> <!-- bg-zinc-600 inline-flex px-4 py-2 items-center -mt-2 -->
+						<span id="deaths" class="hidden"></span> <!-- bg-zinc-900 inline-flex px-4 py-2 items-center -mt-2 -->
 					</div>
 				</div>
 			</div>
 
 			<div class="fixed top-0 grid right-0 z-50 select-none justify-items-end">
 				<div class="text-xl">
-					<a href="about.html" class="inline-flex items-center justify-center text-white bg-zinc-600 font-bold px-4 py-2 open" id="btnAbout">
+					<a href="about.html" class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open" id="btnAbout">
 						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-white mr-2" viewBox="0 0 512 512"><title>Information Circle</title><path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm64 226H200v-32h44v-88h-32v-32h64v120h44z"/></svg>
 						About
 					</a>
 				</div>
 				<div class="text-xl">
-					<button class="inline-flex items-center justify-center text-white bg-zinc-600 font-bold px-4 py-2 open" id="btnSettings">
+					<button class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open" id="btnSettings">
 						<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 176a80 80 0 1080 80 80.24 80.24 0 00-80-80zm172.72 80a165.53 165.53 0 01-1.64 22.34l48.69 38.12a11.59 11.59 0 012.63 14.78l-46.06 79.52a11.64 11.64 0 01-14.14 4.93l-57.25-23a176.56 176.56 0 01-38.82 22.67l-8.56 60.78a11.93 11.93 0 01-11.51 9.86h-92.12a12 12 0 01-11.51-9.53l-8.56-60.78A169.3 169.3 0 01151.05 393L93.8 416a11.64 11.64 0 01-14.14-4.92L33.6 331.57a11.59 11.59 0 012.63-14.78l48.69-38.12A174.58 174.58 0 0183.28 256a165.53 165.53 0 011.64-22.34l-48.69-38.12a11.59 11.59 0 01-2.63-14.78l46.06-79.52a11.64 11.64 0 0114.14-4.93l57.25 23a176.56 176.56 0 0138.82-22.67l8.56-60.78A11.93 11.93 0 01209.94 26h92.12a12 12 0 0111.51 9.53l8.56 60.78A169.3 169.3 0 01361 119l57.2-23a11.64 11.64 0 0114.14 4.92l46.06 79.52a11.59 11.59 0 01-2.63 14.78l-48.69 38.12a174.58 174.58 0 011.64 22.66z"/></svg>
 						Settings
 					</button>
@@ -79,13 +81,13 @@
 
 			<div id="drawers">
 				<div id="about" class="about drawer fixed top-0 right-0 h-full w-full max-w-xl z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900 overflow-auto">
-					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
 						About This Visualization
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					</div>
 				</div>
 				<div id="settings" class="settings drawer fixed top-0 right-0 h-full w-full max-w-sm z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900 overflow-auto">
-					<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
 						Settings
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					</div>

@@ -8,7 +8,13 @@ const STRING_AGE_4 = "61-80";
 const STRING_AGE_5 = "> 80";
 const COLOR_MALE = getComputedStyle(document.body).getPropertyValue('--male');
 const COLOR_FEMALE = getComputedStyle(document.body).getPropertyValue('--female');
-const COLOR_BARS = getComputedStyle(document.body).getPropertyValue('--bars');
+const COLOR_AGE_0 = getComputedStyle(document.body).getPropertyValue('--age0');
+const COLOR_AGE_1 = getComputedStyle(document.body).getPropertyValue('--age1');
+const COLOR_AGE_2 = getComputedStyle(document.body).getPropertyValue('--age2');
+const COLOR_AGE_3 = getComputedStyle(document.body).getPropertyValue('--age3');
+const COLOR_AGE_4 = getComputedStyle(document.body).getPropertyValue('--age4');
+const COLOR_AGE_5 = getComputedStyle(document.body).getPropertyValue('--age5');
+const COLOR_DEFAULT = getComputedStyle(document.body).getPropertyValue('--default');
 const COLOR_PUMP = getComputedStyle(document.body).getPropertyValue('--pump');
 
 const multiplier = 50;
@@ -51,10 +57,10 @@ const onMouseOver = function(e) {
             tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${e.target.dataset.gender.toLocaleLowerCase()}`);
             html = `${e.target.dataset.gender}, aged ${e.target.dataset.age}, died ${e.target.dataset.date}`;
         } else if (e.target.dataset.type === "Bar") {
-            tooltip.style.background = COLOR_BARS;
+            tooltip.style.background = COLOR_DEFAULT;
             html = `${e.target.dataset.date}, ${e.target.dataset.deaths} death${parseInt(e.target.dataset.deaths) === 1 ? `` : `s`}`;
         } else if (e.target.dataset.type === "Grid") {
-            tooltip.style.background = COLOR_BARS;
+            tooltip.style.background = COLOR_DEFAULT;
             const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`));
             html = `${deaths.length} death${deaths.length === 1 ? `` : `s`}`;
             deaths.forEach(d => d.classList.add("hover"));
@@ -235,7 +241,7 @@ function setupMap() {
 function setupPumps() {
     const g = map.insert("g", ".grid").attr("class", "pumps");
     dataPumps.map(d => {
-        const symbol = d3.symbol().type(d3.symbolTriangle).size(24);
+        const symbol = d3.symbol().type(d3.symbolTriangle).size(36);
         g.append("path")
             .attr("data-type", "Pump")
             .attr("d", symbol)
@@ -334,7 +340,7 @@ function setupGrid() {
         for (let j = 0; j < gridCount; j++) {
             const x = grid[i][j][0];
             const y = grid[i][j][1];
-            const id = `${String.fromCharCode(96+i+1).toLocaleUpperCase()}${j+1}`;
+            const id = `${String.fromCharCode(96 + i + 1).toLocaleUpperCase()}${j + 1}`;
             const ggg = gg.append("g")
                 .attr("class", "box")
             ggg.append("text")
@@ -414,21 +420,21 @@ function setupLegend() {
         .attr("height", 75)
         .attr("x", xStart)
         .attr("y", yStart)
-    const lg = g.append("defs")
-            .append("linearGradient")
-            .attr("id", "genderFill")
-        lg.append("stop")
-            .attr("offset", "0%")
-            .attr("stop-color", COLOR_MALE)
-        lg.append("stop")
-            .attr("offset", "50%")
-            .attr("stop-color", COLOR_MALE)
-        lg.append("stop")
-            .attr("offset", "50%")
-            .attr("stop-color", COLOR_FEMALE)
-        lg.append("stop")
-            .attr("offset", "100%")
-            .attr("stop-color", COLOR_FEMALE)
+    // const lg = g.append("defs")
+    //         .append("linearGradient")
+    //         .attr("id", "genderFill")
+    //     lg.append("stop")
+    //         .attr("offset", "0%")
+    //         .attr("stop-color", COLOR_MALE)
+    //     lg.append("stop")
+    //         .attr("offset", "50%")
+    //         .attr("stop-color", COLOR_MALE)
+    //     lg.append("stop")
+    //         .attr("offset", "50%")
+    //         .attr("stop-color", COLOR_FEMALE)
+    //     lg.append("stop")
+    //         .attr("offset", "100%")
+    //         .attr("stop-color", COLOR_FEMALE)
     g.append("text")
         .html("Death")
         .attr("x", xStart + 45)
@@ -444,7 +450,8 @@ function setupLegend() {
     g.append("path")
         .attr("d", d3.symbol().type(d3.symbolCircle).size(200))
         .attr("transform", `translate(${xStart + 25}, ${yStart + 24})`)
-        .attr("fill", "url(#genderFill)")
+        .attr("fill", COLOR_DEFAULT)
+        // .attr("fill", "url(#genderFill)")
 }
 
 // function setupDayChart() {
@@ -462,6 +469,8 @@ function setupSlider() {
     });
     
     fireUpdate([0,0]);
+
+    window.addEventListener("resize", () => fireUpdate([0,0]))
 
     // enableRange();
 }
@@ -496,6 +505,7 @@ function fireUpdate(range) {
         updateDeathCount(`${dataDeaths.length} deaths`);
         updatePieChart(deaths);
         updateBarChart(deaths);
+        updateTooltip(undefined, undefined);
     }
 
     function singleDay(step) {
@@ -545,9 +555,13 @@ function fireUpdate(range) {
 
     function updateTooltip(deaths, date) {
         const upperThumb = document.querySelector(".range-slider__thumb[data-upper]");
-        upperThumb.classList.add("active");
-        upperThumb.setAttribute("data-date", `${date}`);
-        upperThumb.setAttribute("data-deaths", `${deaths} death${deaths === 1 ? `` : `s`}`);
+        if (deaths || date) {
+            upperThumb.classList.add("active");
+            upperThumb.setAttribute("data-date", `${date}`);
+            upperThumb.setAttribute("data-deaths", `${deaths} death${deaths === 1 ? `` : `s`}`);
+        } else {
+            upperThumb.classList.remove("active");
+        }
     }
 
     function updateMap(step) {
@@ -563,19 +577,20 @@ function fireUpdate(range) {
 
     function updateBarChart(deaths) {
         const ages = [
-            { label: STRING_AGE_0, deaths: 0, fill: "#c90000" },
-            { label: STRING_AGE_1, deaths: 0, fill: "#c15200" },
-            { label: STRING_AGE_2, deaths: 0, fill: "#af7c00" },
-            { label: STRING_AGE_3, deaths: 0, fill: "#939e00" },
-            { label: STRING_AGE_4, deaths: 0, fill: "#6cbc18" },
-            { label: STRING_AGE_5, deaths: 0, fill: "#00d667" }
+            { label: STRING_AGE_0, deaths: 0, id: "age0", fill: COLOR_AGE_0 },
+            { label: STRING_AGE_1, deaths: 0, id: "age1", fill: COLOR_AGE_1 },
+            { label: STRING_AGE_2, deaths: 0, id: "age2", fill: COLOR_AGE_2 },
+            { label: STRING_AGE_3, deaths: 0, id: "age3", fill: COLOR_AGE_3 },
+            { label: STRING_AGE_4, deaths: 0, id: "age4", fill: COLOR_AGE_4 },
+            { label: STRING_AGE_5, deaths: 0, id: "age5", fill: COLOR_AGE_5 }
         ]
         deaths.forEach(d => ages[parseInt(d.age)].deaths++)
         createBarChart(ages, "Ages");
     }
     
     function updateLineChart(step) { 
-        
+        const points = Array.from(document.querySelectorAll(".points .point"));
+        points.forEach(point => parseInt(point.dataset.step) === step ? point.classList.add("show") : point.classList.remove("show"));
     }
 
 }
@@ -586,6 +601,7 @@ function createLineChart(deaths) {
         let date = d.date.split('-');
         date = `${date[1].includes("Aug") ? `08` : `09`}-${date[0]}`
         return {
+            short: d.date,
             date: d3.timeParse("%m-%d")(date),
             deaths: d.deaths
         }
@@ -597,7 +613,7 @@ function createLineChart(deaths) {
 
     const buffer = 0;
     const width = document.getElementById("days")?.getBoundingClientRect()?.width - buffer;
-    const height = 150;
+    const height = 200;
 
     const trend = d3.select(`#days`)
                     .append('div')
@@ -605,26 +621,64 @@ function createLineChart(deaths) {
                     .append("svg")
                     .attr("width", width)
                     .attr("height", height)
-                    .attr("transform", `translate(0, -50)`)
+                    .attr("transform", `translate(${buffer}, -50)`)
                     .attr("class", "trend");
 
     const x = d3.scaleTime()
                 .range([0, width])
                 .domain(d3.extent(data, (d) => d.date))
+
+    const y = d3.scaleLinear()
+                .domain([0, d3.max(data, (d) => +d.deaths)])
+                .range([height, 0]);
     
     // trend.append("g")
     //     .attr("class", "axis")
     //     .attr("transform", `translate(0, 0)`)
     //     .call(d3.axisBottom(x))
 
-    const y = d3.scaleLinear()
-                .domain([0, d3.max(data, (d) => d.deaths)])
-                .range([height, 0]);
-              
+    const lg = trend.append("defs")
+            .append("linearGradient")
+            .attr("id", "dayFill")
+            .attr("x1", "0%")
+            .attr("x2", "0%")
+            .attr("y1", "100%")
+            .attr("y2", "0%")
+        lg.append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", "transparent")
+        lg.append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", COLOR_DEFAULT)
+    
     trend.append("path")
-        .attr("class", "line")
         .datum(data)
-        .attr("d", d3.line().x(d => x(d.date)).y(d => y(d.deaths)))
+        .attr("class", "line")
+        .attr("d", d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.deaths)))
+
+    trend.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", d3.area()
+            .x(d => x(d.date))
+            .y0(height)
+            .y1(d => y(d.deaths)))
+
+    trend.append("g")
+        .attr("class", "points")
+        .selectAll()
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "point")
+        .attr("r", 4)
+        .attr("cx", (d) => x(d.date))
+        .attr("cy", (d) => y(d.deaths))
+        .attr("data-step", (d, i) => i + 1)
+        .attr("data-deaths", (d) => d.deaths)
+        .attr("data-date", (d) => d.short)
 
 }
 
@@ -722,7 +776,7 @@ function createBarChart(data, id) {
         .attr("y", (d) => y(d.deaths))
         .attr("width", x.bandwidth())
         .attr("height", (d) => height - y(d.deaths))
-        .attr("class", "bar")
+        .attr("class", (d) => `bar ${d.id}`)
         .attr("fill", (d) => d.fill)
     
     bar.append("text")

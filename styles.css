@@ -10,14 +10,20 @@
 	--nearWhite: #f2f2f2;
 	--nearBlack: #222222;
 
-	/* --male: #0E56F2;
-	--female: #FF1492; */
 	--male: #255EDB;
 	--female: #E62A8E;
+	--age0: #c90000;
+	--age1: #c15200;
+	--age2: #af7c00;
+	--age3: #939e00;
+	--age4: #6cbc18;
+	--age5: #00d667;
+
+
 	--pump: #523500;
 	--street: #e5e5e5;
 	--label: #ccc;
-	--bars: #52525b;
+	--default: #52525b;
 
 	font-family: sans-serif;
 	font-size: 16px;
@@ -105,8 +111,8 @@ body {
 }
 
 .map .death.hover {
-	stroke-width: 3px;
-	stroke: var(--bars);
+	stroke-width: 5px;
+	stroke: var(--default);
 }
 
 .map .death.female--hide,
@@ -125,13 +131,17 @@ body {
 	display: none;
 }
 
-.map .male {
+.map .death {
+	fill: var(--default);
+}
+
+/* .map .male {
 	fill: var(--male);
 }
 
 .map .female {
 	fill: var(--female);
-}
+} */
 
 .map .charts path {
 	stroke: var(--black);
@@ -201,7 +211,7 @@ body {
 }
 
 .chart .axis .tick {
-	color: var(--bars)
+	color: var(--default)
 }
 
 .map .chart .bar {
@@ -232,7 +242,20 @@ body {
 	stroke-width: 2px;
 }
 
+.trend .area {
+	fill: url(#dayFill)
+}
 
+.trend .point {
+	fill: var(--nearBlack);
+	fill-opacity: .75;
+	stroke: none;
+	display: none;
+}
+
+.trend .point.show {
+	display: block;
+}
 
 
 .drawer.active {
