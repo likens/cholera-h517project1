@@ -613,7 +613,7 @@ function createLineChart(deaths) {
 
     const buffer = 0;
     const width = document.getElementById("days")?.getBoundingClientRect()?.width - buffer;
-    const height = 200;
+    const height = 150;
 
     const trend = d3.select(`#days`)
                     .append('div')

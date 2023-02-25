@@ -243,7 +243,8 @@ body {
 }
 
 .trend .area {
-	fill: url(#dayFill)
+	fill: url(#dayFill);
+	fill-opacity: .5;
 }
 
 .trend .point {
