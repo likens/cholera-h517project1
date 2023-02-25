@@ -374,8 +374,10 @@ function setupGrid() {
 
 function setupMapCharts() {
     const xStart = Math.max(...xCoords) + 35;
-    const yStart = Math.min(...yCoords);
+    const yStart = Math.min(...yCoords) + 15;
     const g = map.append("g").attr("class", "charts");
+
+    // gender
     const gg = g.append("g")
         .attr("id", "genders")
         .attr("transform", `translate(${xStart}, ${yStart})`)
@@ -392,6 +394,8 @@ function setupMapCharts() {
     gg.append("g")
         .attr("class", "chart")
         .attr("transform", `translate(90, 110)`)
+
+    // ages
     const ag = g.append("g")
         .attr("id", "ages")
         .attr("transform", `translate(${xStart}, ${yStart + 220})`);
@@ -408,6 +412,24 @@ function setupMapCharts() {
     ag.append("g")
         .attr("class", "chart")
         .attr("transform", `translate(100, 120)`)
+
+    // days
+    const dg = g.append("g")
+        .attr("id", "days")
+        .attr("transform", `translate(${xStart}, ${yStart + 460})`);
+    const dgc = dg.append("g").attr("class", "contain");
+    dgc.append("rect")
+        .attr("class", "box")
+        .attr("width", 500)
+        .attr("height", 280)
+        dgc.append("text")
+        .attr("class", "title")
+        .attr("x", 250)
+        .attr("y", 25)
+        .html("Deaths Per Day");
+    dg.append("g")
+        .attr("class", "chart trend")
+        .attr("transform", `translate(20, 60)`)
 }
 
 function setupLegend() {
@@ -505,6 +527,7 @@ function fireUpdate(range) {
         updateDeathCount(`${dataDeaths.length} deaths`);
         updatePieChart(deaths);
         updateBarChart(deaths);
+        updateLineChart(0);
         updateTooltip(undefined, undefined);
     }
 
@@ -607,22 +630,20 @@ function createLineChart(deaths) {
         }
     });
 
-    console.log(data);
-
-    d3.selectAll("#days .chart").remove();
+    d3.selectAll("#days .chart *").remove();
 
     const buffer = 0;
-    const width = document.getElementById("days")?.getBoundingClientRect()?.width - buffer;
-    const height = 150;
+    const width = 460;
+    const height = 200;
 
-    const trend = d3.select(`#days`)
-                    .append('div')
-                    .attr("class", "chart")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height)
-                    .attr("transform", `translate(${buffer}, -50)`)
-                    .attr("class", "trend");
+    const trend = d3.select(`#days .chart`)
+                    // .append('div')
+                    // .attr("class", "chart")
+                    // .append("svg")
+                    // .attr("width", width)
+                    // .attr("height", height)
+                    // .attr("transform", `translate(${buffer}, -50)`)
+                    // .attr("class", "trend");
 
     const x = d3.scaleTime()
                 .range([0, width])

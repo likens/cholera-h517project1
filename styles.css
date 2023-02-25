@@ -232,19 +232,16 @@ body {
 	opacity: .6;
 }
 
-.trend {
-	overflow: visible;
-}
-
 .trend .line {
 	fill: none;
 	stroke: var(--nearBlack);
 	stroke-width: 2px;
 }
 
-.trend .area {
+.trend.chart .area {
 	fill: url(#dayFill);
-	fill-opacity: .5;
+	fill-opacity: .75;
+	stroke: none;
 }
 
 .trend .point {
