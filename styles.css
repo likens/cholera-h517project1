@@ -60,6 +60,42 @@ body {
 	font-family: 'Inter', sans-serif;
 }
 
+.tooltip {
+	background: var(--default);
+}
+.tooltip .pump {
+	background: var(--pump);
+}
+.tooltip .male {
+	background: var(--male);
+}
+.tooltip .female {
+	background: var(--female);
+}
+.tooltip .age0 {
+	background: var(--age0);
+}
+.tooltip .age1 {
+	background: var(--age1);
+}
+.tooltip .age2 {
+	background: var(--age2);
+}
+.tooltip .age3 {
+	background: var(--age3);
+}
+.tooltip .age4 {
+	background: var(--age4);
+}
+.tooltip .age5 {
+	background: var(--age5);
+}
+.tooltip svg {
+	fill: var(--white);
+	width: 16px;
+	height: 16px;
+}
+
 .legend label {
 	cursor: pointer;
 }
@@ -111,8 +147,40 @@ body {
 }
 
 .map .death.hover {
-	stroke-width: 5px;
+	stroke-width: 7px;
 	stroke: var(--default);
+}
+
+.map .male.ghover {
+	stroke: var(--male);
+}
+
+.map .female.ghover {
+	stroke: var(--female);
+}
+
+.map .age0.ahover {
+	stroke: var(--age0);
+}
+
+.map .age1.ahover {
+	stroke: var(--age1);
+}
+
+.map .age2.ahover {
+	stroke: var(--age2);
+}
+
+.map .age3.ahover {
+	stroke: var(--age3);
+}
+
+.map .age4.ahover {
+	stroke: var(--age4);
+}
+
+.map .age5.ahover {
+	stroke: var(--age5);
 }
 
 .map .death.female--hide,
@@ -154,7 +222,7 @@ body {
 	font-weight:700;
 }
 
-.map .charts .slice {
+.map .charts .slice text {
 	font-size: 12px;
 	fill: var(--white);
 	text-anchor: middle;
@@ -214,7 +282,7 @@ body {
 	color: var(--default)
 }
 
-.map .chart .bar {
+.map .chart .bar rect {
 	stroke-width: 1px;
 	stroke: var(--nearBlack);
 }
@@ -226,10 +294,10 @@ body {
 	fill: var(--nearWhite)
 }
 
-.map .charts .male:hover,
-.map .charts .female:hover,
+.map .charts .slice:hover,
 .map .charts .bar:hover {
 	opacity: .6;
+	cursor: pointer;
 }
 
 .trend .line {
@@ -255,23 +323,40 @@ body {
 	display: block;
 }
 
+.trend .post {
+	stroke-width: 1px;
+	display: none;
+}
+
+.trend .post.show {
+	display: block;
+	fill: var(--nearBlack);
+	stroke: var(--nearBlack);
+}
+
+.trend .flag {
+	display: none;
+}
+
+.trend .flag.show {
+	display: block;
+}
+
+.trend .flag rect {
+	fill:var(--nearBlack);
+}
+
+.trend .flag text {
+	fill: var(--white);
+	font-size: 8px;
+	font-weight: 700;
+}
 
 .drawer.active {
 	transform: translateX(0);
 }
 
-/* .range-slider__thumb:after {
-	content: '';
-	width: 3px;
-	height: 150px;
-	background: red;
-	position: absolute;
-	bottom: 100%;
-	left: 50%;
-	transform: translate(-50%, 0);
-} */
-
-.range-slider .range-slider__thumb,
+/* .range-slider .range-slider__thumb,
 .range-slider .range-slider__range {
 	background: var(--nearBlack)
 }
@@ -300,7 +385,7 @@ body {
 	content: attr(data-deaths);
 	transform: translate(-50%, -10px);
 	z-index: 10;
-}
+} */
 
 .range-slider .range-slider__thumb[data-disabled] {
 	display: none;

@@ -49,20 +49,46 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 const onMouseOver = function(e) {
     let html = "";
-    if (e.target.dataset.type) {
+    if (e.target.dataset.type || e.target.parentNode.dataset.type) {
         if (e.target.dataset.type === "Pump") {
-            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${e.target.dataset.type.toLocaleLowerCase()}`);
-            html = e.target.dataset.type;
+            html = `<div class="pump px-2 py-1 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 43.91s-144 158.3-144 270.3c0 88.36 55.64 144 144 144s144-55.64 144-144c0-112-144-270.3-144-270.3zm16 362.3v-24a60.07 60.07 0 0060-60h24a84.09 84.09 0 01-84 84z"/></svg>
+                ${e.target.dataset.type}
+            </div>`;
         } else if (e.target.dataset.type === "Death") {
-            tooltip.style.background = getComputedStyle(document.body).getPropertyValue(`--${e.target.dataset.gender.toLocaleLowerCase()}`);
-            html = `${e.target.dataset.gender}, aged ${e.target.dataset.age}, died ${e.target.dataset.date}`;
-        } else if (e.target.dataset.type === "Bar") {
-            tooltip.style.background = COLOR_DEFAULT;
-            html = `${e.target.dataset.date}, ${e.target.dataset.deaths} death${parseInt(e.target.dataset.deaths) === 1 ? `` : `s`}`;
+            html = `
+                <div class="grid">
+                    <div class="px-2 py-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 16C141.31 16 48 109.31 48 224v154.83l82 32.81L146.88 496H192v-64h32v64h16v-64h32v64h16v-64h32v64h45.12L382 411.64l82-32.81V224c0-114.69-93.31-208-208-208zm-88 320a56 56 0 1156-56 56.06 56.06 0 01-56 56zm51.51 64L244 320h24l24.49 80zM344 336a56 56 0 1156-56 56.06 56.06 0 01-56 56zm104 32z"/></svg>
+                        Died ${e.target.dataset.date}
+                    </div>
+                    <div class="${e.target.dataset.gender.toLocaleLowerCase()} px-2 py-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            ${e.target.dataset.gender === "Male" ? `<path d="M330 48v44h58.89l-60.39 60.39c-68.2-52.86-167-48-229.54 14.57C31.12 234.81 31.12 345.19 99 413a174.21 174.21 0 00246 0c62.57-62.58 67.43-161.34 14.57-229.54L420 123.11V182h44V48zm-16.08 333.92a130.13 130.13 0 01-183.84 0c-50.69-50.68-50.69-133.16 0-183.84s133.16-50.69 183.84 0 50.69 133.16 0 183.84z"/>` : `<path d="M430 190c0-95.94-78.06-174-174-174S82 94.06 82 190c0 88.49 66.4 161.77 152 172.61V394h-58v44h58v58h44v-58h58v-44h-58v-31.39c85.6-10.84 152-84.12 152-172.61zm-304 0c0-71.68 58.32-130 130-130s130 58.32 130 130-58.32 130-130 130-130-58.32-130-130z"/>`}
+                        </svg>
+                        ${e.target.dataset.gender}
+                    </div>
+                    <div class="${e.target.dataset.id} px-2 py-1 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 48C141.13 48 48 141.13 48 256c0 114.69 93.32 208 208 208 114.86 0 208-93.14 208-208 0-114.69-93.31-208-208-208zm108 240H244a4 4 0 01-4-4V116a4 4 0 014-4h24a4 4 0 014 4v140h92a4 4 0 014 4v24a4 4 0 01-4 4z"/></svg>
+                        ${e.target.dataset.age} years old
+                    </div>
+                </div>`
+        } else if (e.target.parentNode.dataset.type === "Gender") {
+            // html = `<div class="${e.target.parentNode.dataset.gender.toLocaleLowerCase()} px-2 py-1">
+            //     Click to Filter Deaths by ${e.target.parentNode.dataset.gender}
+            // </div>`;
+            const genders = Array.from(document.querySelectorAll(`.death[data-gender=${e.target.parentNode.dataset.gender}].show`));
+            genders.forEach(g => g.classList.add("hover", "ghover"));
+        } else if (e.target.parentNode.dataset.type === "Age") {
+            // html = `<div class="${e.target.parentNode.dataset.id} px-2 py-1">
+            //     Click to Filter Deaths by ${e.target.parentNode.dataset.age} years
+            // </div>`;
+            const ages = Array.from(document.querySelectorAll(`.death[data-id=${e.target.parentNode.dataset.id}].show`));
+            ages.forEach(a => a.classList.add("hover", "ahover"));
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_DEFAULT;
             const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`));
-            html = `${deaths.length} death${deaths.length === 1 ? `` : `s`}`;
+            html = `<div class="px-2 py-1">${deaths.length} death${deaths.length === 1 ? `` : `s`}</div>`;
             deaths.forEach(d => d.classList.add("hover"));
         }
     }
@@ -73,9 +99,7 @@ const onMouseOver = function(e) {
 const onMouseLeave = function(e) {
     tooltip.style.opacity = 0;
     tooltip.innerHTML = "";
-    if (e.target.dataset.type === "Grid") {
-        Array.from(document.querySelectorAll(`.death.hover`)).forEach(d => d.classList.remove("hover"));
-    }
+    Array.from(document.querySelectorAll(`.death.hover`)).forEach(d => d.classList.remove("hover", "ahover", "ghover"));
 }
 
 const onZoom = (e) => map.attr('transform', e.transform);
@@ -89,11 +113,8 @@ const onMouseMove = (e) => {
 };
 
 const onMouseClick = (e) => {
-    // if (e.target.dataset.type === "Bar") {
-    //     const range = [0, parseInt(e.target.dataset.step)];
-    //     slider.value(range);
-    //     fireUpdate(range);
-    // }
+    if (e.target.parentNode.dataset.type === "Age") {
+    }
 }
 
 function loadData() {
@@ -306,6 +327,7 @@ function setupDeaths() {
             .attr("data-date", d.date)
             .attr("data-step", d.step + 1)
             .attr("data-grid", grid)
+            .attr("data-id", `age${d.age}`)
             .attr("cx", x)
             .attr("cy", y)
             .attr("r", 1.5)
@@ -421,7 +443,7 @@ function setupMapCharts() {
     dgc.append("rect")
         .attr("class", "box")
         .attr("width", 500)
-        .attr("height", 280)
+        .attr("height", 250)
         dgc.append("text")
         .attr("class", "title")
         .attr("x", 250)
@@ -429,7 +451,7 @@ function setupMapCharts() {
         .html("Deaths Per Day");
     dg.append("g")
         .attr("class", "chart trend")
-        .attr("transform", `translate(20, 60)`)
+        .attr("transform", `translate(30, 60)`)
 }
 
 function setupLegend() {
@@ -611,9 +633,31 @@ function fireUpdate(range) {
         createBarChart(ages, "Ages");
     }
     
-    function updateLineChart(step) { 
-        const points = Array.from(document.querySelectorAll(".points .point"));
-        points.forEach(point => parseInt(point.dataset.step) === step ? point.classList.add("show") : point.classList.remove("show"));
+    function updateLineChart(step) {
+
+        // const points = Array.from(document.querySelectorAll(".points .point"));
+        // points.forEach(point => parseInt(point.dataset.step) === step ? point.classList.add("show") : point.classList.remove("show"));
+
+        const posts = Array.from(document.querySelectorAll(".posts .post"));
+        posts.forEach(post => parseInt(post.dataset.step) === step ? post.classList.add("show") : post.classList.remove("show"));
+
+        const active = document.querySelector(".posts .post.show");
+
+        if (active) {
+            const flag = document.querySelector(".flag");
+            flag.classList.add("show");
+            const texts = Array.from(flag.querySelectorAll("text"));
+            const flagX = active?.getAttribute("x1");
+            const flagY = active?.getAttribute("y2");
+            texts[0].innerHTML = dataDeathsByDay[step - 1].date;
+            texts[1].innerHTML = deathString(dataDeathsByDay[step - 1].deaths);
+            if ((step > 0 && step <= 7) || (step >= 15 && step <= 36)) {
+                flag.setAttribute("transform", `translate(${flagX - 1}, ${flagY - 10 + 1})`)
+            } else if (step >= 8) {
+                flag.setAttribute("transform", `translate(${flagX - 50 + 1}, ${flagY - 10 + 1})`)
+            }
+        }
+
     }
 
 }
@@ -632,31 +676,23 @@ function createLineChart(deaths) {
 
     d3.selectAll("#days .chart *").remove();
 
-    const buffer = 0;
-    const width = 460;
-    const height = 200;
+    const width = 440;
+    const height = 150;
 
     const trend = d3.select(`#days .chart`)
-                    // .append('div')
-                    // .attr("class", "chart")
-                    // .append("svg")
-                    // .attr("width", width)
-                    // .attr("height", height)
-                    // .attr("transform", `translate(${buffer}, -50)`)
-                    // .attr("class", "trend");
 
     const x = d3.scaleTime()
                 .range([0, width])
-                .domain(d3.extent(data, (d) => d.date))
+                .domain(d3.extent(data, (d) => d.date)).nice()
 
     const y = d3.scaleLinear()
                 .domain([0, d3.max(data, (d) => +d.deaths)])
                 .range([height, 0]);
     
-    // trend.append("g")
-    //     .attr("class", "axis")
-    //     .attr("transform", `translate(0, 0)`)
-    //     .call(d3.axisBottom(x))
+    trend.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0, 160)`)
+        .call(d3.axisBottom(x))
 
     const lg = trend.append("defs")
             .append("linearGradient")
@@ -687,25 +723,58 @@ function createLineChart(deaths) {
             .y0(height)
             .y1(d => y(d.deaths)))
 
+    // trend.append("g")
+    //     .attr("class", "points")
+    //     .selectAll()
+    //     .data(data)
+    //     .enter()
+    //     .append("circle")
+    //     .attr("class", "point")
+    //     .attr("r", 2)
+    //     .attr("cx", (d) => x(d.date))
+    //     .attr("cy", (d) => y(d.deaths))
+    //     .attr("data-step", (d, i) => i + 1)
+    //     .attr("data-deaths", (d) => d.deaths)
+    //     .attr("data-date", (d) => d.short)
+
     trend.append("g")
-        .attr("class", "points")
+        .attr("class", "posts")
         .selectAll()
         .data(data)
         .enter()
-        .append("circle")
-        .attr("class", "point")
-        .attr("r", 4)
-        .attr("cx", (d) => x(d.date))
-        .attr("cy", (d) => y(d.deaths))
+        .append("line")
+        .attr("class", "post")
+        .attr("x1", (d) => x(d.date))
+        .attr("x2", (d) => x(d.date))
+        .attr("y1", (d) => y(d.deaths))
+        .attr("y2", (d) => y(d.deaths) - 30)
         .attr("data-step", (d, i) => i + 1)
         .attr("data-deaths", (d) => d.deaths)
         .attr("data-date", (d) => d.short)
+    
+    const flag = trend.append("g")
+        .attr("class", "flag")
+        .attr("transform", `translate(-1,90)`)
+
+    flag.append("rect")
+        .attr("width", 50)
+        .attr("height", 25)
+
+    flag.append("text")
+        .html("Aug-19")
+        .attr("transform", "translate(3,10)")
+
+    flag.append("text")
+        .html("143 deaths")
+        .attr("transform", "translate(3,21)")
+
+    // trend.append(flag)
 
 }
 
 function createPieChart(data, id) {
 
-    d3.selectAll(`#${id.toLocaleLowerCase()} .chart path`).remove();
+    d3.selectAll(`#${id.toLocaleLowerCase()} .chart *`).remove();
 
     const size = 150;
     const translate = size / 2;
@@ -734,26 +803,30 @@ function createPieChart(data, id) {
     const pie = d3.select(`#${id.toLocaleLowerCase()} .chart`)
     const filteredData = Object.entries(data).filter(d => d[1] > 0);
 
-    pie.selectAll()
+    const g = pie.selectAll()
         .data(pieVal(filteredData))
         .enter()
-        .append('path')
+        .append("g")
+        .attr("class", "slice")
+        .attr("data-type", "Gender")
+        .attr("data-gender", (d) => getPieLabel(d.data[0]))
+        .attr("data-fill", (d) => getPieColor(d.data[0]))
+        .on("mouseover", onMouseOver)
+        .on("mouseleave", onMouseLeave)
+        .on("click", onMouseClick)
+    
+    g.append('path')
         .attr('d', arc)	
         .attr('fill', (d) => getPieColor(d.data[0]))
         .attr("class", (d) => getPieLabel(d.data[0]).toLocaleLowerCase())
     
-    pie.selectAll()
-        .data(pieVal(filteredData))
-        .enter()
-        .append('text')
-        .attr("y", -15)
-        .html((d) => {
-            return `
-                <tspan x="0" dy="10">${getPieLabel(d.data[0])}</tspan>
-                <tspan x="0" dy="15" style="font-size:10px;">(${d.data[1]})</tspan>
-            `
-        })
-        .attr("class", "slice")
+    g.append('text')
+        .attr("y", -5)
+        .html((d) => getPieLabel(d.data[0]))
+        .attr('transform', (d) => `translate(${arc.centroid(d)})`)
+    g.append('text')
+        .attr("y", 10)
+        .html((d) => d.data[1])
         .attr('transform', (d) => `translate(${arc.centroid(d)})`)
 }
 
@@ -780,11 +853,6 @@ function createBarChart(data, id) {
                 .domain([0, Math.max(...data.map(d => d.deaths))])
                 .range([height, 0]);
 
-    // bars.append("g")
-    //     .attr("class", "axis")
-    //     .attr("transform", `translate(-90, -80)`)
-    //     .call(d3.axisLeft(y))
-              
     const bar = bars.append("g")
             .attr("class", "bars")
             .attr("transform", "translate(-90, -80)")
@@ -792,15 +860,24 @@ function createBarChart(data, id) {
             .data(data)
             .enter()
 
-    bar.append("rect")
+    const g = bar.append("g")
+        .attr("data-type", "Age")
+        .attr("data-age", (d) => d.label)
+        .attr("data-id", (d) => d.id)
+        .attr("class", "bar")
+        .on("mouseover", onMouseOver)
+        .on("mouseleave", onMouseLeave)
+        .on("click", onMouseClick)
+    
+    g.append("rect")
         .attr("x", (d) => x(d.label))
         .attr("y", (d) => y(d.deaths))
         .attr("width", x.bandwidth())
         .attr("height", (d) => height - y(d.deaths))
-        .attr("class", (d) => `bar ${d.id}`)
+        .attr("class", (d) => d.id)
         .attr("fill", (d) => d.fill)
     
-    bar.append("text")
+    g.append("text")
         .attr("class", "value")
         .html((d) => d.deaths ? d.deaths : ``)
         .attr("x", (d) => x(d.label))
