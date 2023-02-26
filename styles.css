@@ -20,7 +20,7 @@
 	--age5: #00d667;
 
 
-	--pump: #523500;
+	--pump: #775920;
 	--street: #e5e5e5;
 	--label: #ccc;
 	--default: #52525b;
@@ -319,19 +319,16 @@ body {
 	display: none;
 }
 
-.trend .point.show {
-	display: block;
-}
-
 .trend .post {
 	stroke-width: 1px;
 	display: none;
 }
 
+.trend .point.show,
 .trend .post.show {
-	display: block;
+	/* display: block;
 	fill: var(--nearBlack);
-	stroke: var(--nearBlack);
+	stroke: var(--nearBlack); */
 }
 
 .trend .flag {
@@ -343,11 +340,12 @@ body {
 }
 
 .trend .flag rect {
-	fill:var(--nearBlack);
+	fill: var(--nearBlack);
+	opacity: .1;
 }
 
 .trend .flag text {
-	fill: var(--white);
+	fill: var(--nearBlack);
 	font-size: 8px;
 	font-weight: 700;
 }
@@ -386,6 +384,12 @@ body {
 	transform: translate(-50%, -10px);
 	z-index: 10;
 } */
+
+.range-slider .range-slider__thumb {
+	width: 12px;
+	height: 60px;
+	border-radius: 0;
+}
 
 .range-slider .range-slider__thumb[data-disabled] {
 	display: none;

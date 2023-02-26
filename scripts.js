@@ -325,7 +325,7 @@ function setupDeaths() {
             .attr("data-age", age)
             .attr("data-gender", gender)
             .attr("data-date", d.date)
-            .attr("data-step", d.step + 1)
+            .attr("data-step", d.step)
             .attr("data-grid", grid)
             .attr("data-id", `age${d.age}`)
             .attr("cx", x)
@@ -498,82 +498,57 @@ function setupLegend() {
         // .attr("fill", "url(#genderFill)")
 }
 
-// function setupDayChart() {
-//     createLineChart()
-// }
-
 function setupSlider() {
 
+    createLineChart(dataDeathsByDay);
+
+    delete dataDeathsByDay.columns;
+    const min = 0;
+    const max = dataDeathsByDay.length;
+    const value = [min, max];
+
     slider = rangeSlider(document.getElementById("rangeSlider"), {
-        value: [0, 0],
-        max: dataDeathsByDay.length,
-        thumbsDisabled: [true, false],
-        rangeSlideDisabled: true,
+        value: value,
+        min: min,
+        max: max,
+        thumbsDisabled: [false, false],
+        rangeSlideDisabled: false,
         onInput: (e) => fireUpdate(e)
     });
     
-    fireUpdate([0,0]);
+    fireUpdate(value);
 
-    window.addEventListener("resize", () => fireUpdate([0,0]))
-
-    // enableRange();
-}
-
-function enableRange() {
-    rangeEnabled = true;
-    slider.thumbsDisabled([false, false]);
-    slider.rangeSlideDisabled(false);
+    window.addEventListener("resize", () => {
+        fireUpdate(value);
+    })
 }
 
 function fireUpdate(range) {
 
     let totalDeaths = dataDeaths.length;
 
-    const sameSteps = range.every((v, i, a) => v === a[0]);
-    const zeroSteps = range.reduce((a,b) => a + b) === 0;
+    const steps = Array.from({ length: range[1] - range[0] + 1 }, (_, i) => range[0] + i);
+    const deaths = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.deaths).reduce((a, b) => a + b, 0);
+    const dates = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.date);
 
-    if (zeroSteps) {
-        createLineChart(dataDeathsByDay);
-        dayZero(dataDeaths);
-    } else if (sameSteps) {
-        singleDay(range[0])
-    } else if (!rangeEnabled) {
-        singleDay(range[1])
-    } else if (rangeEnabled) {
-        multiDay(range);
+    if (range[1] - range[0] > 0) {
+
+        let date;
+        const start = dates[0];
+        const end = dates.slice(-1)[0];
+        if (start === end) {
+            date = dateString(start)
+        } else {
+            date = `${dateString(start)} – ${dateString(end)}`
+        }
+    
+        updateMap(steps);
+        updateDate(date);
+        updateDeathCount(deathString(deaths));
+        updatePieChart(dataDeaths.slice(0, deaths));
+        updateBarChart(dataDeaths.slice(0, deaths));
+        updateLineChart(steps);
     }
-
-    function dayZero(deaths) {
-        updateMap(0);
-        updateDate(`${dateString(dataDeathsByDay[0].date)} – ${dateString(dataDeathsByDay.slice(-1)[0].date)}`);
-        updateDeathCount(`${dataDeaths.length} deaths`);
-        updatePieChart(deaths);
-        updateBarChart(deaths);
-        updateLineChart(0);
-        updateTooltip(undefined, undefined);
-    }
-
-    function singleDay(step) {
-        totalDeaths = dataDeathsByDay.slice(0, step).map(d => d.deaths).reduce((a, b) => a + b, 0);
-        updateMap(step);
-        updateDate(dateString(dataDeathsByDay[step - 1].date));
-        updateDeathCount(deathString(dataDeathsByDay[step - 1].deaths, totalDeaths));
-        updatePieChart(dataDeaths.slice(0, totalDeaths));
-        updateBarChart(dataDeaths.slice(0, totalDeaths));
-        updateLineChart(step);
-        updateTooltip(dataDeathsByDay[step - 1].deaths, dataDeathsByDay[step - 1].date);
-    }
-
-    // function multiDay(steps) {
-    //     const deaths = dataDeathsByDay.slice(steps[0], steps[1]).map(d => d.deaths).reduce((a, b) => a + b, 0);
-    //     const dates = dataDeathsByDay.slice(steps[0], steps[1]).map(d => d.date);
-    //     updateMap(step);
-    //     updateDate(`${dateString(dates[0])} – ${dateString(dates.slice(-1)[0])}`);
-    //     updateDeathCount(deathString(deaths));
-    //     updatePieChart(dataDeaths.slice(0, totalDeaths));
-    //     updateBarChart(step);
-    //     console.log("multiday", dates.slice(-1)[0].date);
-    // }
 
     function deathString(current, total) {
         return `${current} death${current === 1 ? `` : `s`}${total ? `, ${total} total` : ``}`;
@@ -581,9 +556,9 @@ function fireUpdate(range) {
 
     function dateString(val) {
         let date;
-        if (val.includes("Aug")) {
+        if (val?.includes("Aug")) {
             date = `August ${val.replace("-Aug", "")}`
-        } else if (val.includes("Sep")) {
+        } else if (val?.includes("Sep")) {
             date = `September ${val.replace("-Sep", "")}`
         }
         // date = `${date}, 1854`;
@@ -598,20 +573,9 @@ function fireUpdate(range) {
         document.getElementById("deaths").innerHTML = deaths;
     }
 
-    function updateTooltip(deaths, date) {
-        const upperThumb = document.querySelector(".range-slider__thumb[data-upper]");
-        if (deaths || date) {
-            upperThumb.classList.add("active");
-            upperThumb.setAttribute("data-date", `${date}`);
-            upperThumb.setAttribute("data-deaths", `${deaths} death${deaths === 1 ? `` : `s`}`);
-        } else {
-            upperThumb.classList.remove("active");
-        }
-    }
-
-    function updateMap(step) {
+    function updateMap(steps) {
         const items = Array.from(document.querySelectorAll(`#svg .death`));
-        items.forEach(item => parseInt(item.dataset.step) <= step || step === 0 ? item.classList.add("show") : item.classList.remove("show"));
+        items.forEach(item => steps.includes(parseInt(item.dataset.step)) ? item.classList.add("show") : item.classList.remove("show"));
     }
 
     function updatePieChart(deaths) {
@@ -633,30 +597,46 @@ function fireUpdate(range) {
         createBarChart(ages, "Ages");
     }
     
-    function updateLineChart(step) {
+    function updateLineChart(steps) {
 
-        // const points = Array.from(document.querySelectorAll(".points .point"));
-        // points.forEach(point => parseInt(point.dataset.step) === step ? point.classList.add("show") : point.classList.remove("show"));
+        steps.pop();
 
-        const posts = Array.from(document.querySelectorAll(".posts .post"));
-        posts.forEach(post => parseInt(post.dataset.step) === step ? post.classList.add("show") : post.classList.remove("show"));
+        const points = Array.from(document.querySelectorAll(".points .point"));
+        points.forEach(point => steps.includes(parseInt(point.dataset.step)) ? point.classList.add("show") : point.classList.remove("show"));
 
-        const active = document.querySelector(".posts .post.show");
+        const showPoints = Array.from(document.querySelectorAll(".points .point.show"));
+        const firstPoint = showPoints[0];
+        const lastPoint = showPoints.slice(-1)[0];
+        const xStart = parseInt(firstPoint.getAttribute("cx"));
+        const xEnd = parseInt(lastPoint.getAttribute("cx"));
 
-        if (active) {
-            const flag = document.querySelector(".flag");
-            flag.classList.add("show");
-            const texts = Array.from(flag.querySelectorAll("text"));
-            const flagX = active?.getAttribute("x1");
-            const flagY = active?.getAttribute("y2");
-            texts[0].innerHTML = dataDeathsByDay[step - 1].date;
-            texts[1].innerHTML = deathString(dataDeathsByDay[step - 1].deaths);
-            if ((step > 0 && step <= 7) || (step >= 15 && step <= 36)) {
-                flag.setAttribute("transform", `translate(${flagX - 1}, ${flagY - 10 + 1})`)
-            } else if (step >= 8) {
-                flag.setAttribute("transform", `translate(${flagX - 50 + 1}, ${flagY - 10 + 1})`)
-            }
+        const flag = d3.select(".trend .flag")
+            .attr("class","flag show")
+
+        flag.select("rect")
+            .attr("width", xEnd - xStart + 2)
+            .attr("transform", `translate(${xStart}, 0)`)
+
+        const firstDate = firstPoint.dataset.date.split("-");
+        const lastDate = lastPoint.dataset.date.split("-");
+
+        let dateHtml = `${firstDate[1]} ${firstDate[0]}`;
+        if (firstDate[0] !== lastDate[0] || firstDate[1] !== lastDate[1]) {
+            dateHtml = `${dateHtml} to ${lastDate[1]} ${lastDate[0]}`
         }
+
+        flag.select(".fdate")
+            .attr("transform", `translate(${xStart + 3}, 10)`)
+            .html(dateHtml)
+
+        const deathsHtml = deathString(deaths);
+
+        flag.select(".fdeath")
+            .attr("transform", `translate(${xStart + 3}, 21)`)
+            .html(deathsHtml)
+
+        // const posts = Array.from(document.querySelectorAll(".posts .post"));
+        // posts.forEach(post => steps.includes(parseInt(post.dataset.step)) ? post.classList.add("show") : post.classList.remove("show"));
 
     }
 
@@ -723,19 +703,19 @@ function createLineChart(deaths) {
             .y0(height)
             .y1(d => y(d.deaths)))
 
-    // trend.append("g")
-    //     .attr("class", "points")
-    //     .selectAll()
-    //     .data(data)
-    //     .enter()
-    //     .append("circle")
-    //     .attr("class", "point")
-    //     .attr("r", 2)
-    //     .attr("cx", (d) => x(d.date))
-    //     .attr("cy", (d) => y(d.deaths))
-    //     .attr("data-step", (d, i) => i + 1)
-    //     .attr("data-deaths", (d) => d.deaths)
-    //     .attr("data-date", (d) => d.short)
+    trend.append("g")
+        .attr("class", "points")
+        .selectAll()
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "point")
+        .attr("r", 2)
+        .attr("cx", (d) => x(d.date))
+        .attr("cy", (d) => y(d.deaths))
+        .attr("data-step", (d, i) => i)
+        .attr("data-deaths", (d) => d.deaths)
+        .attr("data-date", (d) => d.short)
 
     trend.append("g")
         .attr("class", "posts")
@@ -748,24 +728,26 @@ function createLineChart(deaths) {
         .attr("x2", (d) => x(d.date))
         .attr("y1", (d) => y(d.deaths))
         .attr("y2", (d) => y(d.deaths) - 30)
-        .attr("data-step", (d, i) => i + 1)
+        .attr("data-step", (d, i) => i)
         .attr("data-deaths", (d) => d.deaths)
         .attr("data-date", (d) => d.short)
     
     const flag = trend.append("g")
         .attr("class", "flag")
-        .attr("transform", `translate(-1,90)`)
+        .attr("transform", `translate(-1,-25)`)
 
     flag.append("rect")
         .attr("width", 50)
-        .attr("height", 25)
+        .attr("height", 175)
 
     flag.append("text")
-        .html("Aug-19")
+        .attr("class", "fdate")
+        .html("")
         .attr("transform", "translate(3,10)")
 
     flag.append("text")
-        .html("143 deaths")
+        .attr("class", "fdeath")
+        .html("")
         .attr("transform", "translate(3,21)")
 
     // trend.append(flag)

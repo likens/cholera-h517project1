@@ -29,12 +29,12 @@
 
 			<div class="fixed top-0 left-0 z-50 pointer-events-none select-none">
 				<div class="whitespace-nowrap grid font-bold text-left justify-start text-white">
-					<div class="text-5xl">
+					<div class="text-4xl">
 						<span class="bg-zinc-900 inline-flex px-4 py-2 items-center">The 1854 Broad Street Cholera Outbreak</span>
 					</div>
-					<div class="text-4xl">
+					<div class="text-3xl">
 						<span class="bg-zinc-900 inline-flex gap-1 px-4 py-2 items-center -mt-2">
-							<svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1164-64 64.07 64.07 0 01-64 64z"/></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 32C167.67 32 96 96.51 96 176c0 128 160 304 160 304s160-176 160-304c0-79.49-71.67-144-160-144zm0 224a64 64 0 1164-64 64.07 64.07 0 01-64 64z"/></svg>
 							Soho, London, England
 						</span>
 					</div>
@@ -115,13 +115,17 @@
 
 						<div class="grid gap-2 content-start">
 							<div class="font-bold text-lg uppercase">Demographics</div>
-							<label for="" class="flex gap-2 cursor-pointer">
-								<input type="checkbox" id="age0" />
-								Gender
+							<label class="flex gap-2 cursor-pointer col-span-2">
+								<input type="radio" id="rnone" value="rnone" name="demos" checked>
+								<span>None</span>
 							</label>
-							<label for="" class="flex gap-2 cursor-pointer">
-								<input type="checkbox" id="" />
-								Age
+							<label class="flex gap-2 cursor-pointer col-span-2">
+								<input type="radio" id="rgender" value="rgender" name="demos">
+								<span>Gender</span>
+							</label>
+							<label class="flex gap-2 cursor-pointer">
+								<input type="radio" id="rage" value="rage" name="demos">
+								<span>Age</span>
 							</label>
 						</div>
 
@@ -212,7 +216,7 @@
 				</div>
 			</div>
 
-			<div id="range" class="fixed bottom-0 left-0 w-full py-10 px-10 z-40 grid gap-4 items-end bg-zinc-900">
+			<div id="range" class="fixed bottom-0 left-0 w-full py-10 px-4 z-40 grid gap-4 items-end bg-zinc-900">
 				<div class="relative w-full">
 					<div class="w-full">
 						<div id="rangeSlider"></div>
