@@ -194,12 +194,45 @@ body {
 .map .street--hide,
 .map .snowmap--hide,
 .map .label--hide,
-.map .grid--hide {
+.map .grid--hide,
+.map .death.death--hide {
 	display: none;
 }
 
 .map .death {
 	fill: var(--default);
+}
+
+.dgender .map .male {
+	fill: var(--male);
+}
+
+.dgender .map .female {
+	fill: var(--female);
+}
+
+.dage .map .age0 {
+	fill: var(--age0);
+}
+
+.dage .map .age1 {
+	fill: var(--age1);
+}
+
+.dage .map .age2 {
+	fill: var(--age2);
+}
+
+.dage .map .age3 {
+	fill: var(--age3);
+}
+
+.dage .map .age4 {
+	fill: var(--age4);
+}
+
+.dage .map .age5 {
+	fill: var(--age5);
 }
 
 .map .charts path {

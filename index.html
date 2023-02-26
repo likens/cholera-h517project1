@@ -69,7 +69,7 @@
 						Settings
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					</div>
-					<div class="p-4 grid gap-10">
+					<div class="p-4 grid gap-6">
 	
 						<div class="grid gap-2 content-start">
 							<div class="font-bold text-lg uppercase">Gender</div>
@@ -112,23 +112,11 @@
 						</div>
 
 						<div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Demographics</div>
-							<label class="flex gap-2 cursor-pointer col-span-2">
-								<input type="radio" id="rnone" value="rnone" name="demos" checked>
-								<span>None</span>
-							</label>
-							<label class="flex gap-2 cursor-pointer col-span-2">
-								<input type="radio" id="rgender" value="rgender" name="demos">
-								<span>Gender</span>
-							</label>
-							<label class="flex gap-2 cursor-pointer">
-								<input type="radio" id="rage" value="rage" name="demos">
-								<span>Age</span>
-							</label>
-						</div>
-
-						<div class="grid gap-2 content-start">
 							<div class="font-bold text-lg uppercase">Layout</div>
+							<label for="death" class="death flex gap-2 cursor-pointer">
+								<input type="checkbox" id="death" checked />
+								Deaths
+							</label>
 							<label for="pump" class="pump flex gap-2 cursor-pointer">
 								<input type="checkbox" id="pump" checked />
 								Pumps
@@ -148,6 +136,22 @@
 							<label for="snowmap" class="snowmap flex gap-2 cursor-pointer">
 								<input type="checkbox" id="snowmap" />
 								Snow's Map
+							</label>
+						</div>
+
+						<div class="grid gap-2 content-start">
+							<div class="font-bold text-lg uppercase">Demographic Colors</div>
+							<label class="flex gap-2 cursor-pointer col-span-2">
+								<input type="radio" id="rnone" value="dnone" name="demographics" checked>
+								<span>None</span>
+							</label>
+							<label class="flex gap-2 cursor-pointer col-span-2">
+								<input type="radio" id="rgender" value="dgender" name="demographics">
+								<span>Gender</span>
+							</label>
+							<label class="flex gap-2 cursor-pointer">
+								<input type="radio" id="rage" value="dage" name="demographics">
+								<span>Age</span>
 							</label>
 						</div>
 

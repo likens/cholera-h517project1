@@ -87,7 +87,7 @@ const onMouseOver = function(e) {
             ages.forEach(a => a.classList.add("hover", "ahover"));
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_DEFAULT;
-            const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show`));
+            const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show:not(.hide)`));
             html = `<div class="px-2 py-1">${deaths.length} death${deaths.length === 1 ? `` : `s`}</div>`;
             deaths.forEach(d => d.classList.add("hover"));
         }
@@ -186,16 +186,25 @@ function setupSettings() {
             const checked = e.target.checked;
             const clazz = `${e.target.id}--hide`;
             const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
-            items.forEach(item => checked ? item.classList.remove(clazz) : item.classList.add(clazz));
+            items.forEach(item => checked ? item.classList.remove(clazz, "hide") : item.classList.add(clazz, "hide"));
         });
     })
-    const filterRdo = Array.from(document.querySelectorAll("#settings input[type=radio]"));
-    filterRdo.forEach(r => {
+    const colorblindRdo = Array.from(document.querySelectorAll("#settings input[name=colorblind]"));
+    colorblindRdo.forEach(r => {
         r.addEventListener('click', (e) => {
             document.body.removeAttribute("style");
             if (e.target.value != "none") {
                 document.body.style.filter = `url('/img/filters.svg#${e.target.value}')`;
                 document.body.style.overflow = "hidden";
+            }
+        });
+    });
+    const demographicsRdo = Array.from(document.querySelectorAll("#settings input[name=demographics]"));
+    demographicsRdo.forEach(r => {
+        r.addEventListener('click', (e) => {
+            document.body.removeAttribute("class");
+            if (e.target.value != "dnone") {
+                document.body.classList.add(e.target.value);
             }
         });
     });
