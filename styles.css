@@ -121,8 +121,8 @@ body {
 	z-index: 10;
 	cursor: pointer;
 	fill: var(--pump);
-	stroke: var(--pump);
-	stroke-width: .5px;
+	stroke: var(--nearBlack);
+	stroke-width: .25px;
 	stroke-linejoin: round;
 }
 
@@ -141,7 +141,6 @@ body {
 }
 
 .map .death:hover {
-	stroke: rgba(0,0,0,.75);
 	stroke-width: .5px;
 }
 
@@ -201,6 +200,8 @@ body {
 
 .map .death {
 	fill: var(--default);
+	stroke-width: .25px;
+	stroke: var(--nearBlack);
 }
 
 .dgender .map .male {
