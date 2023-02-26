@@ -23,17 +23,9 @@ const offsetDataY = 1010;
 const svg = d3.select("#svg");
 const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
-const rangeTooltip = document.getElementById("rangeTooltip");
-
-let slider;
-let rangeEnabled = false;
 
 const xCoords = [];
 const yCoords = [];
-
-let gridW = 0;
-let gridH = 0;
-let gridCount = 5;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -216,7 +208,7 @@ function setupSVG() {
     setupGrid();
     setupDeaths();
     setupPumps();
-    setupMapCharts();
+    setupCharts();
     setupLegend();
     setupSlider();
 }
@@ -348,28 +340,31 @@ function setupDeaths() {
 }
 
 function setupGrid() {
-    
-    const gg = map.append("g").attr("class", "grid grid--hide")
+    map.append("g").attr("class", "grid grid--hide");
+    updateGrid(5);
+}
+
+function updateGrid(count) {
+    d3.selectAll(`.map .grid *`).remove();
+    const gg = map.select(".grid")
     const minX = Math.min(...xCoords);
     const maxX = Math.max(...xCoords);
     const minY = Math.min(...yCoords);
     const maxY = Math.max(...yCoords);
-    const width = (maxX - minX) / gridCount;
-    const height = (maxY - minY) / gridCount;
-    gridW = width;
-    gridH = height;
+    const width = (maxX - minX) / count;
+    const height = (maxY - minY) / count;
     const grid = [];
 
-    for (let i = 0; i < gridCount; i++) {
+    for (let i = 0; i < count; i++) {
         const row = [];
-        for (let j = 0; j < gridCount; j++) {
+        for (let j = 0; j < count; j++) {
             row.push([minX + j * width, 
                     minY + i * height,
                     minX + (j + 1) * width,
                     minY + (i + 1) * height]);
         }
         grid.push(row);
-        for (let j = 0; j < gridCount; j++) {
+        for (let j = 0; j < count; j++) {
             const x = grid[i][j][0];
             const y = grid[i][j][1];
             const id = `${String.fromCharCode(96 + i + 1).toLocaleUpperCase()}${j + 1}`;
@@ -404,7 +399,7 @@ function setupGrid() {
     });
 }
 
-function setupMapCharts() {
+function setupCharts() {
     const xStart = Math.max(...xCoords) + 35;
     const yStart = Math.min(...yCoords) + 15;
     const g = map.append("g").attr("class", "charts");
@@ -517,7 +512,7 @@ function setupSlider() {
     const max = dataDeathsByDay.length;
     const value = [min, max];
 
-    slider = rangeSlider(document.getElementById("rangeSlider"), {
+    const slider = rangeSlider(document.getElementById("rangeSlider"), {
         value: value,
         min: min,
         max: max,
