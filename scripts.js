@@ -18,8 +18,8 @@ const COLOR_DEFAULT = getComputedStyle(document.body).getPropertyValue('--defaul
 const COLOR_PUMP = getComputedStyle(document.body).getPropertyValue('--pump');
 
 const multiplier = 50;
-const offsetDataX = 0;
-const offsetDataY = 1000;
+const offsetDataX = -140;
+const offsetDataY = 1010;
 const svg = d3.select("#svg");
 const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
@@ -228,6 +228,7 @@ function setupMap() {
         .attr("height", 774)
         .attr("x", 165)
         .attr("y", 110)
+        .attr("transform", `translate(${offsetDataX}, ${offsetDataY - 1000})`)
 
     // streets
     const g = map.append("g").attr("class", "streets");
@@ -262,7 +263,7 @@ function setupMap() {
 function setupPumps() {
     const g = map.insert("g", ".grid").attr("class", "pumps");
     dataPumps.map(d => {
-        const symbol = d3.symbol().type(d3.symbolTriangle).size(36);
+        const symbol = d3.symbol().type(d3.symbolTriangle).size(64);
         g.append("path")
             .attr("data-type", "Pump")
             .attr("d", symbol)
