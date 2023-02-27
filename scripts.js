@@ -530,8 +530,6 @@ function setupSlider() {
 
 function fireUpdate(range) {
 
-    let totalDeaths = dataDeaths.length;
-
     const steps = Array.from({ length: range[1] - range[0] + 1 }, (_, i) => range[0] + i);
     const deaths = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.deaths).reduce((a, b) => a + b, 0);
     const dates = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.date);
@@ -546,6 +544,8 @@ function fireUpdate(range) {
         } else {
             date = `${dateString(start)} – ${dateString(end)}`
         }
+
+        steps.pop();
     
         updateMap(steps);
         updateDate(date);
@@ -604,16 +604,14 @@ function fireUpdate(range) {
     
     function updateLineChart(steps) {
 
-        steps.pop();
-
         const points = Array.from(document.querySelectorAll(".points .point"));
         points.forEach(point => steps.includes(parseInt(point.dataset.step)) ? point.classList.add("show") : point.classList.remove("show"));
 
         const showPoints = Array.from(document.querySelectorAll(".points .point.show"));
         const firstPoint = showPoints[0];
         const lastPoint = showPoints.slice(-1)[0];
-        const xStart = parseInt(firstPoint.getAttribute("cx"));
-        const xEnd = parseInt(lastPoint.getAttribute("cx"));
+        const xStart = parseInt(firstPoint?.getAttribute("cx"));
+        const xEnd = parseInt(lastPoint?.getAttribute("cx"));
 
         const flag = d3.select(".trend .flag")
             .attr("class","flag show")
@@ -860,7 +858,7 @@ function createBarChart(data, id) {
         .attr("x", (d) => x(d.label))
         .attr("y", (d) => y(d.deaths))
         .attr("width", x.bandwidth())
-        .attr("height", (d) => height - y(d.deaths))
+        .attr("height", (d) => !d.deaths ? 0 : height - y(d.deaths))
         .attr("class", (d) => d.id)
         .attr("fill", (d) => d.fill)
     

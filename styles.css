@@ -349,12 +349,12 @@ body {
 	display: none;
 }
 
-.trend .point.show,
+/* .trend .point.show,
 .trend .post.show {
-	/* display: block;
+	display: block;
 	fill: var(--nearBlack);
-	stroke: var(--nearBlack); */
-}
+	stroke: var(--nearBlack);
+} */
 
 .trend .flag {
 	display: none;
