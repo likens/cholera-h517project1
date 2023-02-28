@@ -17,51 +17,43 @@
 				About
 				<a class="block underline text-sm hover:no-underline mt-2" href="index.html">← Return to Visualization</a>
 			</div>
-			<div class="p-4 grid gap-4" id="content">
-				TODO:
-				<ul>
-					<li>Talk more about color choices</li>
-					<li>Talk more about interactive/dynamic features</li>
-					<li>Change data point colors/shapes to show design process</li>
-					<li>Document code integrations, etc</li>
-				</ul>
+			<div class="p-4 grid gap-4 leading-5" id="content">
 				<h2 class="font-bold text-3xl">Video Explanation</h2>
-				<!-- <div><iframe class="aspect-video w-full" src="https://www.youtube.com/embed/lNjrAXGRda4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div> -->
+				<div><iframe class="aspect-video w-full" src="https://www.youtube.com/embed/lNjrAXGRda4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
 				<h2 class="font-bold text-3xl">Introduction</h2>
 				<p>In 1854, a cholera outbreak ravaged the citizens of Soho, London, England and during a period of August 19th to September 29th, took the lives of 571 people. The outbreak led to Dr. John Snow, a physician, studying the causes of the epidemic and discovering that the cholera did not spread via airborne contaminants, but through water that was tainted with various germs. This new approach, noted as "germ theory", was at first dismissed by Dr. Snow's peers and would not become the accepted outcome until years after the global cholera outbreak had subsided.</p>
 				<h2 class="font-bold text-3xl">Visualization</h2>
-				<p>The investigation by Dr. Snow led to many innovations within the public health sector. The visualization found here is a modern approach to what Dr. Snow originally created: a dot map that showcased victims of cholera around the area, namely the Broad Street water pump, where a vast majority of the deaths occurred. This visualization provides a technological edge when compared to the original map and showcases many features not available at the time, such as:
-					<ul>
-						<li>Interactive timelines</li>
-						<li>Demographic charts</li>
-						<li>Pan and zoom functionality</li>
-						<li>Data point filters</li>
-						<li>And much more!</li>
-					</ul>
-				</p>
+				<p>The investigation by Dr. Snow led to many innovations within the public health sector. The visualization found here is a modern approach to what Dr. Snow originally created: a dot map that showcased victims of cholera around the area, namely the Broad Street water pump, where a vast majority of the deaths occurred. This visualization provides a technological edge when compared to the original map and showcases many features not available at the time, such as:</p>
+				<ul class="list-disc ml-5">
+					<li>Interactive timelines</li>
+					<li>Demographic charts</li>
+					<li>Pan and zoom functionality</li>
+					<li>Data point filters</li>
+					<li>And much more!</li>
+				</ul>
 				<h2 class="font-bold text-3xl">The Initial Approach</h2>
-				<p>To start the construction of this visualization, a few pieces of raw data were provided:
-					<ul>
-						<li><em>streets.json</em> - A collection of X/Y coordinates that when linked together, created the lines and paths that made up Soho's intricate street layout</li>
-						<li><em>pumps.csv</em> - Another collection of X/Y coordinates that detailed the exact location of the thirteen (13) water pumps found within this particular area of Soho</li>
-						<li><em>deathdays.csv</em> - The total number of deaths that occurred on each day during the period of Aug-19 to Sep-29</li>
-						<li><em>deaths_age_sex.csv</em> - A collection of individual people that died during the period of Aug-19 to Sep-29, in order of first to last death. Each victim is denoted by the location of their death (in X/Y coordinates), their approximate age group (0-10, 11-20, 21-40, 41-60, 61-80, and > 80 years respectively), and their gender (Male or Female)</li>
-					</ul>
-					While these four (4) pieces of raw data by themselves don't tell the whole story, combining each of their unique data points can paint a picture that is both visually appealing and intriguing. 
-				</p>
-				<p>My first goal was to build out a geographical layout of the streets in order to get an idea of what landscape I would be dealing with. As I painted my first pass of the streets using D3.js, I noticed something a bit peculiar. When compared to the original map from Dr. John Snow, the raw streets data was actually flipped vertically. I wanted to ensure that my visualization was an almost 1 to 1 match of what Dr. Snow originally crafted over 150 years ago. When I plotted the X/Y coordinates of each point within <em>streets.json</em>, I subtracted the value of 1 from each Y coordinate to guarantee proper placement.</p>
-				<p>After the street layout was plotted and colored to my needs, the streets themselves were only unique in shape. I decided to take Dr. Snow's map, find the major streets and locations, and create my own labels that held the X/Y coordinates for accurate plotting, a string of the street name itself, and customized font attributes. Thus, <em>labels.json</em> was crafted and its application added instant recognizability of specific areas.</p>
-				<p>Since the streets and labels were both plotted and provided a sense of scale, my next focus was adding each water pump found within <em>pumps.csv</em>. Simply using provided X/Y coordinates, the pumps themselves were added as dots that were colored a basic blue. To give context to each pump's location, I then utilized the X/Y coordinates of each victim found within <em>deaths_age_sex.csv</em> and plotted those with dots as well, but filled as black. In terms of visualization, the map was complete and offered a modern outlook compared to Dr. Snow's original map, but lacked a specific design direction.</p>
+				<p>To start the construction of this visualization, a few pieces of raw data were provided:</p>
+				<ul class="list-disc ml-5">
+					<li><strong>streets.json</strong> - A collection of X/Y coordinates that when linked together, created the lines and paths that made up Soho's intricate street layout</li>
+					<li><strong>pumps.csv</strong> - Another collection of X/Y coordinates that detailed the exact location of the thirteen (13) water pumps found within this particular area of Soho</li>
+					<li><strong>deathdays.csv</strong> - The total number of deaths that occurred on each day during the period of Aug-19 to Sep-29</li>
+					<li><strong>deaths_age_sex.csv</strong> - A collection of individual people that died during the period of Aug-19 to Sep-29, in order of first to last death. Each victim is denoted by the location of their death (in X/Y coordinates), their approximate age group (0-10, 11-20, 21-40, 41-60, 61-80, and > 80 years respectively), and their gender (Male or Female)</li>
+				</ul>
+				<p>While these four (4) pieces of raw data by themselves don't tell the whole story, combining each of their unique data points can paint a picture that is both visually appealing and intriguing.</p>
+				<p>My first goal was to build out a geographical layout of the streets in order to get an idea of what landscape I would be dealing with. As I painted my first pass of the streets using D3.js, I noticed something a bit peculiar. When compared to the original map from Dr. John Snow, the raw streets data was actually flipped vertically. I wanted to ensure that my visualization was an almost 1 to 1 match of what Dr. Snow originally crafted over 150 years ago. When I plotted the X/Y coordinates of each point within <strong>streets.json</strong>, I subtracted the value of 1 from each Y coordinate to guarantee proper placement.</p>
+				<p>After the street layout was plotted and colored to my needs, the streets themselves were only unique in shape. I decided to take Dr. Snow's map, find the major streets and locations, and create my own labels that held the X/Y coordinates for accurate plotting, a string of the street name itself, and customized font attributes. Thus, <strong>labels.json</strong> was crafted and its application added instant recognizability of specific areas.</p>
+				<p>Since the streets and labels were both plotted and provided a sense of scale, my next focus was adding each water pump found within <strong>pumps.csv</strong>. Simply using provided X/Y coordinates, the pumps themselves were added as dots that were colored a basic blue. To give context to each pump's location, I then utilized the X/Y coordinates of each victim found within <strong>deaths_age_sex.csv</strong> and plotted those with dots as well, but filled as black. In terms of visualization, the map was complete and offered a modern outlook compared to Dr. Snow's original map, but lacked a specific design direction.</p>
 				<h2 class="font-bold text-3xl">Applying Design Principles</h2>
 				<p>Having both deaths and pumps share shapes, but not colors, would lead to users not easily telling the data points apart. I knew I had to update the design direction and utilize the other attributes given to certain pieces of data, such as demographics.</p>
-				<p>The first piece of data I decided to update were the pumps. Since pumps only had X/Y coordinates given to them, that was their one uniqueness. To further that uniqueness from the many deaths found on the map, I iterated through various shapes and ideas that included:
-					<ul>
-						<li>Changing the dot to a square</li>
-						<li>Changing the square to a water drop icon</li>
-						<li>Changing the water drop icon to a triangle</li>
-					</ul>
-					The square shape was quite similar to a dot, especially when looked at from a distance. The water drop icon also shared rounded principles with each death dot. Ultimately, the triangle gave each pump a unique look and helped seperate it from the death dots. It also gave it a "building" type of shape, which further indicated that it was more of a landmark than a victim.
-				</p>
+				<p>The first piece of data I decided to update were the pumps. Since pumps only had X/Y coordinates given to them, that was their one uniqueness. To further that uniqueness from the many deaths found on the map, I iterated through various shapes and ideas that included:</p>
+				
+				<ul class="list-disc ml-5">
+					<li>Changing the dot to a square</li>
+					<li>Changing the square to a water drop icon</li>
+					<li>Changing the water drop icon to a triangle</li>
+				</ul>
+
+				<p>The square shape was quite similar to a dot, especially when looked at from a distance. The water drop icon also shared rounded principles with each death dot. Ultimately, the triangle gave each pump a unique look and helped seperate it from the death dots. It also gave it a "building" type of shape, which further indicated that it was more of a landmark than a victim.</p>
 				
 				<p>Since the pumps were given their own shape, I felt that having each death as a dot worked out well. However, the dots themselves had no uniqueness outside of their X/Y coordinates yet. In order to combat this, I decided to utilize the gender attribute each death had. By denoting a death as Female or Male, I applied a color scheme of electric pink and blue respectively. These colors contrasted each other enough and were accessible to almost every accessibility guideline currently available.</p>
 
@@ -69,54 +61,62 @@
 
 				<p>Now that each data point was unique in not only location, but also shape and color, I felt that something else was lacking. I knew that within this visualization that triangle shapes meant pumps whereas dots meant deaths and their colors indicated their gender. However, a user interacting with this visualization would have to figure that out themselves or at worst, make their own guess to what meant what. This led to the creation of a map legend, which details the difference between the main data points and provides the user with context.</p>
 
+				<p>As I continued to add more interactivity (detailed below), I started to notice that even though every death dot was a male or female, it also wasn't fair to show the blue/pink scheme on load, but instead allow the user to add a color scheme to the dots based on either their gender or age range. This gave each death dot better representation when it came to their demographics. Regarding the color scheme for age range, I wanted to pick colors that were quite different from the gender colors. I found that the scheme of red to seafoam green worked really well and didn't clash with the gender scheme while also being different in color value from each other.</p>
+
 				<h2 class="font-bold text-3xl">The Missing Attribute</h2>
-				<p>Each death within <em>deaths_age_sex.csv</em> held valuable attributes like location, gender, and age but was missing one crucial aspect: the calendar date of the death. The raw data was provided with one small tidbit of information I glanced over originally: the numerical order of these deaths indicated the order in which the casualty was reported. What this meant was that the first death in <em>deaths_age_sex.csv</em> was the first casualty in <em>deathdays.csv</em>, reported on August 19th. Each subsequent death after that would line up with the daily totals in <em>deathdays.csv</em>. In order to properly sync up the correct date with a death, I decided to go through each death and append the date attribute by looping over the daily totals. The outcome of this allowed me to then categorize each death with an age group and allow the deaths to be also measured by age group.</p>
+				<p>Each death within <strong>deaths_age_sex.csv</strong> held valuable attributes like location, gender, and age but was missing one crucial aspect: the calendar date of the death. The raw data was provided with one small tidbit of information I glanced over originally: the numerical order of these deaths indicated the order in which the casualty was reported. What this meant was that the first death in <strong>deaths_age_sex.csv</strong> was the first casualty in <strong>deathdays.csv</strong>, reported on August 19th. Each subsequent death after that would line up with the daily totals in <strong>deathdays.csv</strong>. In order to properly sync up the correct date with a death, I decided to go through each death and append the date attribute by looping over the daily totals. The outcome of this allowed me to then categorize each death with an age group and allow the deaths to be also measured by age group.</p>
 
 				<h2 class="font-bold text-3xl">Adding Interactivity</h2>
-				<p>The map now gave users the ability to easily see the number of deaths, their location in relation to water pumps, and the specific gender of each victim. Although this was a bit of an improvement over Dr. Snow's original map, it lacked features that would increase the value of the visualization tenfold. I won't go into great detail for each feature, but the following controls were added:
+				<p>The map now gave users the ability to easily see the number of deaths, their location in relation to water pumps, and the specific gender of each victim. Although this was a bit of an improvement over Dr. Snow's original map, it lacked features that would increase the value of the visualization tenfold. I won't go into great detail for each feature, but the following controls were added:</p>
 
-					<ul>
-						<li>The ability to pan and zoom on the map, allowing the user to get up close and personal with specific areas</li>
-						<li>The ability to interact with deaths and pumps via mouse hover and receive feedback in the form of a tooltip that explained what the data point was and what attributes it held (gender, approximate age, date of death)</li>
-						<li>A slider timeline control that gave the user the ability to filter the map to a certain date and see the results update in real time</li>
-						<li>Dynamic charts that detailed the gender, age, and date of deaths to help give perspective on each demographic provided</li>
-						<li>Filters that give the user control over what data they want to see on the map, such as gender, age, pumps, streets, and even Dr. Snow's original map for comparison</li>
-						<li>Colorblindness filters that give the user the ability to understand why certain color choices were made and view the visualization from different perspectives</li>
-						<li>Overlaying a grid on the map to the user's preference in order to cluster and interpret data in each grid cell and help localize pockets of data</li>
-						<li>Not knowing each user's immediate environment, a dark and light mode toggle was added to give the user greater control over the visualization's look</li>
-					</ul>
-				</p>
-				
+				<h3 class="font-bold text-2xl">Pan and Zoom</h3>
+				<p>The map by itself was a bit zoomed out and the deaths, pumps, and labels started to get a bit busy. Giving the map the ability to be panned and more importantly zoomable gave an important interactive feature that allowed users to closely investigate specific areas.</p>
+				<h3 class="font-bold text-2xl">Tooltips</h3>
+				<p>Each death and pump received a tooltip that would explain in detail about it. This tooltip contained date, gender, and age range for each death and a simple label for pumps. Additionally, color schemes and iconography were added to provide a better differentiator than just simple labels.</p>
+				<h3 class="font-bold text-2xl">Date Range Slider</h3>
+				<p>To enhance and focus on how the cholera outbreak grew, a date slider was added to give the user the ability to drill down to specific dates and see the map and charts update in real-time. Originally, the date slider was just a single date that showed data from the start of our dataset (August 19th) to the latest date I had in the dataset (September 29th). However, I realized that there might be a want for drilling down a range of dates and not be locked to the beginning of our data. The original range slider received the ability to have two handles as well as move the range itself across the dates.</p>
+				<h3 class="font-bold text-2xl">Data Breakdown Charts</h3>
+				<p>Seeing just the points plotted on the map did not provide the full context of the data. Three charts were added to give a sense of weight to specific demographics and dates. First, a pie chart denoting the breakdown of genders was created. Then, I created a pie chart for the age range breakdown but slowly realized that six (6) data points was not only difficult to label and decipher, but also for color accessibility reasons. I then turned to using a bar chart which not only excelled in allowing easy to use labels and colors, but excelled in providing insight to each bar's value via differing heights. For the final chart, deaths per day, I wanted to utilize a different plot visual. Since the data was a reflection of a date range, using a line/area chart worked out great and provided a great visual of how deaths trended over time, especially with the most deadly day being September 1st with 143 dead. To also help the user focus on what the date range was set at, I added a brush box around the dates that were actively selected and provided labeling to go along with it.</p>
+				<h3 class="font-bold text-2xl">Map Customization</h3>
+				<p>To help the user focus on certain data points, such as certain genders or age ranges, I added filters that could be toggled on and off and would update the map with the appropriate data. I also added the ability for the user to remove deaths, pumps, the streets, and the street labels to help clean up the map if necessary. Another fun filter added was a transparent copy of Dr. Snow's original map to compare against this visualization. Finally, I added a demographic colors control that allowed the user to see all deaths on the map as gendered or aged with their respective color schemes.</p>
+				<h3 class="font-bold text-2xl">Colorblindness Filters</h3>
+				<p>The project had a requirement of ensuring color choices were accessible to various types of colorblindness. At first, I could not find a decent tool that would rate my color and design schemes. Instead, I realized that I could find a library that provided the SVG filters that would render many different types of colorblindness that I could use to check. Going this route proved valuable as it gives the user the ability to see the visualizations from different color perspectives.</p>
+				<h3 class="font-bold text-2xl">Grid Clusters</h3>
+				<p>Finally, I added a control that would toggle a 5x5 grid on top of the map and other data points. When the user hovered each cell, it would provide a tooltip detailing the amount of deaths found within that cell. This feature provides the ability to localize the data in each cell and find useful patterns.</p>
+
+				<h2 class="font-bold text-3xl">Visualization Layout</h2>
+				<p>I wanted to ensure that the map and its charts were the main focus of this application and visualization. With the pan and zoom feature integrated, I was able to take up the full size of the user's screen and allow them to have little to no constraints on the size. Originally, I wanted the timeline date slider, other charts, and visualization settings as floating windows the user could move around, collapse, and interact with. At first, the idea was really neat and allowed the user to customize their own layout without my own inputs. I found out that it became a bit more of hindrance and early user testing proved they either did not care for it or had no idea what these windows would do. I also had to manage multiple SVGs at a time instead of just one monolithic one. I pivoted over to more of a minimal design approach, promoting the name of the event, event location, event dates, and number of current deaths on the screen. I moved the filters and about sections to their own drawers that would float over the top of the map, following modern web design trends. By focusing on minimal distractions over the map and charts, I wanted to give the user the most space as possible to interact with the main visualizations.</p>
+
 				<h2 class="font-bold text-3xl">Discoveries and More</h2>
 				<p>[insert content]</p>
 
 				<h2 class="font-bold text-3xl">References</h2>
 				<div class="grid gap-2">
 					<div class="font-bold text-lg">Data</div>
-					<ul>
-						<li>Street Layout: streets.json</li>
-						<li>Street Labels: labels.json</li>
-						<li>Pump Locations: pumps.csv</li>
-						<li>Death Age/Gender/Location: deaths_age_sex.csv</li>
-						<li>Death Count Per Day: deathdays.csv</li>
-						<li>John Snow's Original Map, 1854: https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</li>
+					<ul class="list-disc ml-5">
+						<li><strong>Street Layout</strong>: <a href="/data/streets.json" class="underline">streets.json</a></li>
+						<li><strong>Street Labels</strong>: <a href="/data/labels.json" class="underline">labels.json</a></li>
+						<li><strong>Pump Locations</strong>: <a href="/data/pumps.csv" class="underline">pumps.csv</a></li>
+						<li><strong>Death Age/Gender/Location</strong>: <a href="/data/deaths_age_sex.csv" class="underline">deaths_age_sex.csv</a></li>
+						<li><strong>Death Count Per Day</strong>: <a href="/data/deathdays.csv" class="underline">deathdays.csv</a></li>
+						<li><strong>John Snow's Original Map, 1854</strong>: <a href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg" class="underline">https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</a></li>
 					</ul>
 				</div>
 				<div class="grid gap-2">
 					<div class="font-bold text-lg">Libraries</div>
-					<ul>
-						<li>d3: https://github.com/d3/d3</li>
-						<li>tailwindcss: https://github.com/tailwindlabs/tailwindcss</li>
-						<li>color-blindness-emulation: https://github.com/hail2u/color-blindness-emulation</li>
-						<li>range-slider-input: https://github.com/n3r4zzurr0/range-slider-input</li>
-						<li>ionicons: https://github.com/ionic-team/ionicons</li>
+					<ul class="list-disc ml-5">
+						<li><strong>d3</strong>: <a href="https://github.com/d3/d3" class="underline">https://github.com/d3/d3</a></li>
+						<li><strong>tailwindcss</strong>: <a href="https://github.com/tailwindlabs/tailwindcss" class="underline">https://github.com/tailwindlabs/tailwindcss</a></li>
+						<li><strong>color-blindness-emulation</strong>: <a href="https://github.com/hail2u/color-blindness-emulation" class="underline">https://github.com/hail2u/color-blindness-emulation</a></li>
+						<li><strong>range-slider-input</strong>: <a href="https://github.com/n3r4zzurr0/range-slider-input" class="underline">https://github.com/n3r4zzurr0/range-slider-input</a></li>
+						<li><strong>ionicons</strong>: <a href="https://github.com/ionic-team/ionicons" class="underline">https://github.com/ionic-team/ionicons</a></li>
 					</ul>
 				</div>
 				<div class="grid gap-2">
 					<div class="font-bold text-lg">Inspiration</div>
-					<ul>
-						<li>The D3.js Graph Gallery: https://d3-graph-gallery.com/</li>
-						<li>D3 on Observable: https://observablehq.com/@d3</li>
+					<ul class="list-disc ml-5">
+						<li><strong>The D3.js Graph Gallery</strong> <a href="ttps://d3-graph-gallery.com" class="underline">https://d3-graph-gallery.com</a></li>
+						<li><strong>D3 on Observable</strong>: <a href="https://observablehq.com/@d3" class="underline">https://observablehq.com/@d3</a></li>
 					</ul>
 				</div>
 
