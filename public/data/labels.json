@@ -12,8 +12,8 @@
     { "name": "Work", "x": 185, "y": 535, "rotate": -27, "spacing": 2, "size": 8 },
     { "name": "House", "x": 185, "y": 550, "rotate": -27, "spacing": 2, "size": 8 },
     { "name": "Brewery", "x": 656, "y": -270, "rotate": 62, "spacing": 2, "size": 5 },
-    { "name": "Soho", "x": 670, "y": 635, "rotate": -27, "spacing": 5, "size": 8 },
-    { "name": "Square", "x": 660, "y": 650, "rotate": -27, "spacing": 5, "size": 8 },
+    { "name": "Soho", "x": 538, "y":  575, "rotate": -27, "spacing": 5, "size": 8 },
+    { "name": "Square", "x": 530, "y": 590, "rotate": -27, "spacing": 5, "size": 8 },
     { "name": "Golden", "x": -34, "y": 785, "rotate": -36, "spacing": 2, "size": 8 },
     { "name": "Square", "x": -34, "y": 800, "rotate": -36, "spacing": 2, "size": 8 }
 ]
