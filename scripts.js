@@ -26,6 +26,7 @@ const tooltip = document.getElementById("tooltip");
 
 const xCoords = [];
 const yCoords = [];
+let cellCount = 10;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -79,9 +80,11 @@ const onMouseOver = function(e) {
             ages.forEach(a => a.classList.add("hover", "ahover"));
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_DEFAULT;
-            const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show:not(.hide)`));
-            html = `<div class="px-2 py-1">${deaths.length} death${deaths.length === 1 ? `` : `s`}</div>`;
-            deaths.forEach(d => d.classList.add("hover"));
+            // const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show:not(.hide)`));
+            // html = `<div class="px-2 py-1">${deaths.length} death${deaths.length === 1 ? `` : `s`}</div>`;
+            // deaths.forEach(d => d.classList.add("hover"));
+            const deaths = e.target.dataset.deaths ? parseInt(e.target.dataset.deaths) : 0;
+            html = `<div class="px-2 py-1">${deaths} death${deaths === 1 ? `` : `s`}</div>`;
         }
     }
     tooltip.style.opacity = 1;
@@ -175,10 +178,14 @@ function setupSettings() {
     const settingChk = Array.from(document.querySelectorAll("#settings input[type=checkbox]"));
     settingChk.forEach(s => {
         s.addEventListener('change', (e) => {
+            const id = e.target.id;
             const checked = e.target.checked;
-            const clazz = `${e.target.id}--hide`;
-            const items = Array.from(document.querySelectorAll(`#svg .${e.target.id}`));
+            const clazz = `${id}--hide`;
+            const items = Array.from(document.querySelectorAll(`#svg .${id}`));
             items.forEach(item => checked ? item.classList.remove(clazz, "hide") : item.classList.add(clazz, "hide"));
+            if (id === "grid") {
+                Array.from(document.querySelectorAll(`#svg .death`)).forEach(item => checked ? item.classList.add("death--hide", "hide") : item.classList.remove("death--hide", "hide"));
+            }
         });
     })
     const colorblindRdo = Array.from(document.querySelectorAll("#settings input[name=colorblind]"));
@@ -207,6 +214,7 @@ function setupSVG() {
     setupMap();
     setupGrid();
     setupDeaths();
+    setupClusters();
     setupPumps();
     setupCharts();
     setupLegend();
@@ -341,7 +349,7 @@ function setupDeaths() {
 
 function setupGrid() {
     map.append("g").attr("class", "grid grid--hide");
-    updateGrid(5);
+    updateGrid(cellCount);
 }
 
 function updateGrid(count) {
@@ -371,10 +379,15 @@ function updateGrid(count) {
             const ggg = gg.append("g")
                 .attr("class", "box")
             ggg.append("text")
-                .attr("x", x + 3)
-                .attr("y", y + 10)
+                .attr("x", x + 4)
+                .attr("y", y + 14)
                 .html(id)
                 .attr("class", "id")
+            ggg.append("circle")
+                .attr("class", "cluster")
+                .attr("r", (width / 2))
+                .attr("cx", x + (width / 2))
+                .attr("cy", y + (height / 2))
             ggg.append("rect")
                 .attr("data-type", "Grid")
                 .attr("data-grid", id)
@@ -383,7 +396,7 @@ function updateGrid(count) {
                 .attr("x", x)
                 .attr("y", y)
                 .on("mouseover", onMouseOver)
-                .on("mouseleave", onMouseLeave);
+                .on("mouseleave", onMouseLeave)
         }
     }
     const boxes = Array.from(document.querySelectorAll(".grid .box rect"));
@@ -397,6 +410,33 @@ function updateGrid(count) {
             left: rect.left
         }
     });
+}
+
+function setupClusters() {
+    updateClusters(cellCount);
+}
+
+function updateClusters(count) {
+    const total = 571;
+    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death"));
+    const clusterMap = new Map();
+    svgDeaths.forEach(d => {
+        const grid = d.dataset.grid;
+        clusterMap.has(grid) ? clusterMap.set(grid, clusterMap.get(grid) + 1) : clusterMap.set(grid, 1);
+    });
+    const gridCells = Array.from(document.querySelectorAll(".grid .box"));
+    gridCells.forEach(c => {
+        const cell = c.querySelector("rect");
+        const grid = cell.dataset.grid;
+        if (clusterMap.has(grid)) {
+            const deaths = clusterMap.get(grid);
+            cell.dataset.deaths = deaths;
+            const cluster = c.querySelector(".cluster");
+            cluster.classList.add("show");
+            const max = parseFloat(cluster.getAttribute("r"));
+            cluster.setAttribute("r", (deaths / total) * max * (count / 3));
+        }
+    })
 }
 
 function setupCharts() {
