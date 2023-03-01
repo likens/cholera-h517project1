@@ -26,7 +26,7 @@ const tooltip = document.getElementById("tooltip");
 
 const xCoords = [];
 const yCoords = [];
-let cellCount = 10;
+let cellCount = 15;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -379,8 +379,8 @@ function updateGrid(count) {
             const ggg = gg.append("g")
                 .attr("class", "box")
             ggg.append("text")
-                .attr("x", x + 4)
-                .attr("y", y + 14)
+                .attr("x", x + 3)
+                .attr("y", y + 10)
                 .html(id)
                 .attr("class", "id")
             ggg.append("circle")
@@ -434,6 +434,8 @@ function updateClusters(count) {
             const cluster = c.querySelector(".cluster");
             cluster.classList.add("show");
             const max = parseFloat(cluster.getAttribute("r"));
+            console.log((deaths / total));
+            cell.setAttribute("style", `opacity:${(deaths / total) * max / 3}`);
             cluster.setAttribute("r", (deaths / total) * max * (count / 3));
         }
     })

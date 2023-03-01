@@ -268,18 +268,22 @@ body {
 }
 
 .map .grid .box {
-	/* stroke: rgba(0,0,0,.15); */
+	stroke: rgba(0,0,0,.15);
 	fill: transparent;
-	/* stroke-width: .5px;
-	stroke-dasharray: 2; */
+	stroke-width: .5px;
+	stroke-dasharray: 2;
 }
 
 .map .grid .id {
 	font-weight: 700;
-	font-size: 12px;
-	fill: rgba(0,0,0,.3);
+	font-size: 8px;
+	fill: rgba(0,0,0,.15);
 	stroke: none;
-	display: none;
+}
+
+.map .grid rect {
+	fill: var(--nearBlack);
+	opacity: 0;
 }
 
 .map .box:hover {
