@@ -23,11 +23,13 @@ const offsetDataY = 1010;
 const svg = d3.select("#svg");
 const map = svg.append('g').attr('class', 'container');
 const tooltip = document.getElementById("tooltip");
+const cellDec = document.getElementById("btnCellDec");
+const cellInc = document.getElementById("btnCellInc");
 
 const xCoords = [];
 const yCoords = [];
 let cellCount = 15;
-let totalCount = 571;
+let totalCount = 0;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -126,6 +128,7 @@ function loadData() {
     });
 
     Promise.all([streets, labels, pumps, deathsByDemo, deathsDays, aboutPage]).then(v => {
+        totalCount = deathsByDemo.length;
         combineData();
         setupLayout();
         setupSVG();
@@ -199,6 +202,25 @@ function setupSettings() {
             }
         });
     });
+    // const cellsBtn = Array.from(document.querySelectorAll("#settings .cells button"));
+    // cellsBtn.forEach(b => {
+    //     b.addEventListener("click", (e) => {
+    //         if (e.target.id === "btnCellDec") {
+    //             cellCount--
+    //         } else {
+    //             cellCount++;
+    //         }
+    //         cellDec.disabled = false;
+    //         cellInc.disabled = false;
+    //         if (cellCount === 1) {
+    //             cellDec.disabled = true;
+    //         } else if (cellCount === 20) {
+    //             cellInc.disabled = true;
+    //         }
+    //         document.getElementById("cells").innerHTML = `${cellCount}x`;
+    //         updateCells();
+    //     });
+    // })
 }
 
 function setupSVG() {
@@ -277,6 +299,7 @@ function setupPumps() {
 }
 
 function setupDeaths() {
+    d3.selectAll(`.map .deaths`).remove();
     const g = map.insert("g", ".grid").attr("class", "deaths");
     dataDeaths.map(d => {
         let gender;
@@ -342,30 +365,30 @@ function setupDeaths() {
 
 function setupGrid() {
     map.append("g").attr("class", "grid grid--hide");
-    updateGrid(cellCount);
+    updateGrid();
 }
 
-function updateGrid(count) {
+function updateGrid() {
     d3.selectAll(`.map .grid *`).remove();
     const gg = map.select(".grid")
     const minX = Math.min(...xCoords);
     const maxX = Math.max(...xCoords);
     const minY = Math.min(...yCoords);
     const maxY = Math.max(...yCoords);
-    const width = (maxX - minX) / count;
-    const height = (maxY - minY) / count;
+    const width = (maxX - minX) / cellCount;
+    const height = (maxY - minY) / cellCount;
     const grid = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < cellCount; i++) {
         const row = [];
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             row.push([minX + j * width, 
                     minY + i * height,
                     minX + (j + 1) * width,
                     minY + (i + 1) * height]);
         }
         grid.push(row);
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             const x = grid[i][j][0];
             const y = grid[i][j][1];
             const id = `${String.fromCharCode(96 + i + 1).toLocaleUpperCase()}${j + 1}`;
@@ -402,30 +425,30 @@ function updateGrid(count) {
 
 function setupClusters() {
     map.append("g").attr("class", "clusters clusters--hide");
-    updateClusters(cellCount);
+    updateClusters();
 }
 
-function updateClusters(count) {
+function updateClusters() {
     d3.selectAll(`.map .clusters *`).remove();
     const gg = map.select(".clusters")
     const minX = Math.min(...xCoords);
     const maxX = Math.max(...xCoords);
     const minY = Math.min(...yCoords);
     const maxY = Math.max(...yCoords);
-    const width = (maxX - minX) / count;
-    const height = (maxY - minY) / count;
+    const width = (maxX - minX) / cellCount;
+    const height = (maxY - minY) / cellCount;
     const grid = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < cellCount; i++) {
         const row = [];
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             row.push([minX + j * width, 
                     minY + i * height,
                     minX + (j + 1) * width,
                     minY + (i + 1) * height]);
         }
         grid.push(row);
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             const x = grid[i][j][0];
             const y = grid[i][j][1];
             const cgg = gg.append("g").attr("class", "cluster")
@@ -456,7 +479,7 @@ function updateClusters(count) {
             const circle = c.querySelector("circle");
             circle.classList.add("show");
             const max = parseFloat(cluster.getAttribute("r"));
-            const size = (deaths / totalCount) * max * (count / 3);
+            const size = (deaths / totalCount) * max * (cellCount / 3);
             circle.setAttribute("r", isNaN(size) ? 0 : size);
         }
     })
@@ -467,27 +490,27 @@ function setupHeatmap() {
     updateHeatmap(cellCount);
 }
 
-function updateHeatmap(count) {
+function updateHeatmap() {
     d3.selectAll(`.map .heatmap *`).remove();
     const gg = map.select(".heatmap")
     const minX = Math.min(...xCoords);
     const maxX = Math.max(...xCoords);
     const minY = Math.min(...yCoords);
     const maxY = Math.max(...yCoords);
-    const width = (maxX - minX) / count;
-    const height = (maxY - minY) / count;
+    const width = (maxX - minX) / cellCount;
+    const height = (maxY - minY) / cellCount;
     const grid = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < cellCount; i++) {
         const row = [];
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             row.push([minX + j * width, 
                     minY + i * height,
                     minX + (j + 1) * width,
                     minY + (i + 1) * height]);
         }
         grid.push(row);
-        for (let j = 0; j < count; j++) {
+        for (let j = 0; j < cellCount; j++) {
             const x = grid[i][j][0];
             const y = grid[i][j][1];
             const hgg = gg.append("g").attr("class", "pixel")                
@@ -634,6 +657,13 @@ function setupSlider() {
     })
 }
 
+// function updateCells() {
+//     updateGrid();
+//     setupDeaths();
+//     updateClusters();
+//     updateHeatmap();
+// }
+
 function fireUpdate(range) {
 
     const steps = Array.from({ length: range[1] - range[0] + 1 }, (_, i) => range[0] + i);
@@ -659,9 +689,9 @@ function fireUpdate(range) {
         updateDeathCount(deathString(deaths));
         updatePieChart(dataDeaths.slice(0, deaths));
         updateBarChart(dataDeaths.slice(0, deaths));
-        updateGrid(cellCount);
-        updateClusters(cellCount);
-        updateHeatmap(cellCount);
+        updateGrid();
+        updateClusters();
+        updateHeatmap();
         updateLineChart(steps);
     }
 

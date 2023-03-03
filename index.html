@@ -17,11 +17,8 @@
 		<!-- 
 			TODO:
 			- Add trend point on hover per each day
-			- Add grid cell sizing
-			- phantom circle!!!
 			- Flesh out about page
 			- Make video
-			- ??? Add dark mode
 		-->
 
         <div id="master" class="relative w-full h-full overflow-hidden">
@@ -71,9 +68,9 @@
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					</div>
 					<div class="p-4 grid gap-6">
-	
+
 						<div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Filter By Gender</div>
+							<div class="font-bold text-lg uppercase">Filters</div>
 							<label for="male" class="male flex gap-2 cursor-pointer">
 								<input type="checkbox" id="male" checked />
 								<span>Male</span>
@@ -82,10 +79,6 @@
 								<input type="checkbox" id="female" checked />
 								<span>Female</span>
 							</label>
-						</div>
-
-						<div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Filter By Age</div>
 							<label for="age0" class="flex gap-2 cursor-pointer">
 								<input type="checkbox" id="age0" checked />
 								0-10 years
@@ -130,6 +123,10 @@
 								<input type="checkbox" id="label" checked />
 								Labels
 							</label>
+							<label for="snowmap" class="snowmap flex gap-2 cursor-pointer">
+								<input type="checkbox" id="snowmap" />
+								Snow's Map
+							</label>
 							<label for="grid" class="grid !flex gap-2 cursor-pointer">
 								<input type="checkbox" id="grid" />
 								Grid
@@ -142,10 +139,15 @@
 								<input type="checkbox" id="heatmap" />
 								Heatmap
 							</label>
-							<label for="snowmap" class="snowmap flex gap-2 cursor-pointer">
-								<input type="checkbox" id="snowmap" />
-								Snow's Map
-							</label>
+						</div>
+
+						<div class="grid gap-2 content-start">
+							<div class="font-bold text-lg uppercase">Cells</div>
+							<!-- <div class="cells flex gap-2 items-center">
+								<button type="button" id="btnCellDec" class="border border-neutral-500 rounded h-4 w-4 flex items-center justify-center bg-white text-neutral-500">-</button>
+								<span id="cells" class="w-8 text-center">10x</span>
+								<button type="button" id="btnCellInc" class="border border-neutral-500 rounded h-4 w-4 flex items-center justify-center bg-white text-neutral-500">+</button>
+							</div> -->
 						</div>
 
 						<div class="grid gap-2 content-start">
