@@ -194,7 +194,9 @@ body {
 .map .snowmap--hide,
 .map .label--hide,
 .map .grid--hide,
-.map .death.death--hide {
+.map .death.death--hide,
+.map .clusters--hide,
+.map .heatmap--hide {
 	display: none;
 }
 
@@ -268,7 +270,7 @@ body {
 }
 
 .map .grid .box {
-	stroke: rgba(0,0,0,.15);
+	stroke: rgba(0,0,0,.2);
 	fill: transparent;
 	stroke-width: .5px;
 	stroke-dasharray: 2;
@@ -276,14 +278,9 @@ body {
 
 .map .grid .id {
 	font-weight: 700;
-	font-size: 8px;
-	fill: rgba(0,0,0,.15);
+	font-size: 6px;
+	fill: rgba(0,0,0,.4);
 	stroke: none;
-}
-
-.map .grid rect {
-	fill: var(--nearBlack);
-	opacity: 0;
 }
 
 .map .box:hover {
@@ -380,7 +377,7 @@ body {
 	font-weight: 700;
 }
 
-.cluster {
+.cluster circle {
 	display: none;
 	fill: var(--default);
 	stroke: var(--nearBlack);
@@ -388,8 +385,21 @@ body {
 	stroke-dasharray: 0;
 }
 
-.cluster.show {
+.cluster circle:hover {
+	opacity: .5;
+}
+
+.cluster circle.show {
 	display: block;
+}
+
+.pixel rect {
+	fill: var(--default);
+	opacity: 0;
+}
+
+.pixel rect:hover {
+	fill: var(--black);
 }
 
 .drawer.active {
@@ -405,4 +415,3 @@ body {
 	background-repeat: no-repeat;
 	background-position: center;
 }
-  

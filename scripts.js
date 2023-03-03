@@ -27,6 +27,7 @@ const tooltip = document.getElementById("tooltip");
 const xCoords = [];
 const yCoords = [];
 let cellCount = 15;
+let totalCount = 571;
 
 let dataStreets =[];
 let dataLabels = [];
@@ -67,22 +68,18 @@ const onMouseOver = function(e) {
                     </div>
                 </div>`
         } else if (e.target.parentNode.dataset.type === "Gender") {
-            // html = `<div class="${e.target.parentNode.dataset.gender.toLocaleLowerCase()} px-2 py-1">
-            //     Click to Filter Deaths by ${e.target.parentNode.dataset.gender}
-            // </div>`;
             const genders = Array.from(document.querySelectorAll(`.death[data-gender=${e.target.parentNode.dataset.gender}].show`));
             genders.forEach(g => g.classList.add("hover", "ghover"));
         } else if (e.target.parentNode.dataset.type === "Age") {
-            // html = `<div class="${e.target.parentNode.dataset.id} px-2 py-1">
-            //     Click to Filter Deaths by ${e.target.parentNode.dataset.age} years
-            // </div>`;
             const ages = Array.from(document.querySelectorAll(`.death[data-id=${e.target.parentNode.dataset.id}].show`));
             ages.forEach(a => a.classList.add("hover", "ahover"));
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_DEFAULT;
-            // const deaths = Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show:not(.hide)`));
-            // html = `<div class="px-2 py-1">${deaths.length} death${deaths.length === 1 ? `` : `s`}</div>`;
-            // deaths.forEach(d => d.classList.add("hover"));
+            const deaths = e.target.dataset.deaths ? parseInt(e.target.dataset.deaths) : 0;
+            html = `<div class="px-2 py-1">${deaths} death${deaths === 1 ? `` : `s`}</div>`;
+            Array.from(document.querySelectorAll(`.death[data-grid=${e.target.dataset.grid}].show:not(.hide)`)).forEach(d => d.classList.add("hover"));
+        } else if (e.target.dataset.type === "Cluster" || e.target.dataset.type === "Heatmap") {
+            tooltip.style.background = COLOR_DEFAULT;
             const deaths = e.target.dataset.deaths ? parseInt(e.target.dataset.deaths) : 0;
             html = `<div class="px-2 py-1">${deaths} death${deaths === 1 ? `` : `s`}</div>`;
         }
@@ -168,8 +165,6 @@ function setupDrawers() {
             drawers.forEach(d => d.classList.remove("active"));
             document.getElementById(b.id.replace("btn", "").toLocaleLowerCase()).classList.add("active");
         });
-        // b.addEventListener("mouseover", (e) => onMouseOver(e));
-        // b.addEventListener("mouseleave", (e) => onMouseLeave(e));
     });
     drawerClose.forEach(b => b.addEventListener("click", () => drawers.forEach(d => d.classList.remove("active"))));
 }
@@ -183,9 +178,6 @@ function setupSettings() {
             const clazz = `${id}--hide`;
             const items = Array.from(document.querySelectorAll(`#svg .${id}`));
             items.forEach(item => checked ? item.classList.remove(clazz, "hide") : item.classList.add(clazz, "hide"));
-            if (id === "grid") {
-                Array.from(document.querySelectorAll(`#svg .death`)).forEach(item => checked ? item.classList.add("death--hide", "hide") : item.classList.remove("death--hide", "hide"));
-            }
         });
     })
     const colorblindRdo = Array.from(document.querySelectorAll("#settings input[name=colorblind]"));
@@ -215,6 +207,7 @@ function setupSVG() {
     setupGrid();
     setupDeaths();
     setupClusters();
+    setupHeatmap();
     setupPumps();
     setupCharts();
     setupLegend();
@@ -341,7 +334,7 @@ function setupDeaths() {
             .attr("cx", x)
             .attr("cy", y)
             .attr("r", 1.5)
-            .attr("class", `death ${gender.toLocaleLowerCase()} age${d.age}`)
+            .attr("class", `death ${gender.toLocaleLowerCase()} age${d.age} show`)
             .on("mouseover", onMouseOver)
             .on("mouseleave", onMouseLeave)
     });
@@ -380,14 +373,9 @@ function updateGrid(count) {
                 .attr("class", "box")
             ggg.append("text")
                 .attr("x", x + 3)
-                .attr("y", y + 10)
+                .attr("y", y + 9)
                 .html(id)
                 .attr("class", "id")
-            ggg.append("circle")
-                .attr("class", "cluster")
-                .attr("r", (width / 2))
-                .attr("cx", x + (width / 2))
-                .attr("cy", y + (height / 2))
             ggg.append("rect")
                 .attr("data-type", "Grid")
                 .attr("data-grid", id)
@@ -413,30 +401,122 @@ function updateGrid(count) {
 }
 
 function setupClusters() {
+    map.append("g").attr("class", "clusters clusters--hide");
     updateClusters(cellCount);
 }
 
 function updateClusters(count) {
-    const total = 571;
-    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death"));
+    d3.selectAll(`.map .clusters *`).remove();
+    const gg = map.select(".clusters")
+    const minX = Math.min(...xCoords);
+    const maxX = Math.max(...xCoords);
+    const minY = Math.min(...yCoords);
+    const maxY = Math.max(...yCoords);
+    const width = (maxX - minX) / count;
+    const height = (maxY - minY) / count;
+    const grid = [];
+
+    for (let i = 0; i < count; i++) {
+        const row = [];
+        for (let j = 0; j < count; j++) {
+            row.push([minX + j * width, 
+                    minY + i * height,
+                    minX + (j + 1) * width,
+                    minY + (i + 1) * height]);
+        }
+        grid.push(row);
+        for (let j = 0; j < count; j++) {
+            const x = grid[i][j][0];
+            const y = grid[i][j][1];
+            const cgg = gg.append("g").attr("class", "cluster")
+            cgg.append("circle")
+                .attr("r", (width / 2))
+                .attr("cx", x + (width / 2))
+                .attr("cy", y + (height / 2))
+                .attr("data-grid", `${String.fromCharCode(96 + i + 1).toLocaleUpperCase()}${j + 1}`)
+                .attr("data-type", "Cluster")
+                .on("mouseover", onMouseOver)
+                .on("mouseleave", onMouseLeave)
+        }
+    }
+    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show"));
     const clusterMap = new Map();
     svgDeaths.forEach(d => {
         const grid = d.dataset.grid;
         clusterMap.has(grid) ? clusterMap.set(grid, clusterMap.get(grid) + 1) : clusterMap.set(grid, 1);
     });
-    const gridCells = Array.from(document.querySelectorAll(".grid .box"));
-    gridCells.forEach(c => {
-        const cell = c.querySelector("rect");
-        const grid = cell.dataset.grid;
+    const clusterCells = Array.from(document.querySelectorAll("#svg .cluster"));
+    clusterCells.forEach(c => {
+        const cluster = c.querySelector("circle");
+        const grid = cluster.dataset.grid;
         if (clusterMap.has(grid)) {
             const deaths = clusterMap.get(grid);
-            cell.dataset.deaths = deaths;
-            const cluster = c.querySelector(".cluster");
-            cluster.classList.add("show");
+            cluster.dataset.deaths = deaths;
+            document.querySelector(`.grid .box rect[data-grid=${grid}]`).dataset.deaths = deaths;
+            const circle = c.querySelector("circle");
+            circle.classList.add("show");
             const max = parseFloat(cluster.getAttribute("r"));
-            console.log((deaths / total));
-            cell.setAttribute("style", `opacity:${(deaths / total) * max / 3}`);
-            cluster.setAttribute("r", (deaths / total) * max * (count / 3));
+            const size = (deaths / totalCount) * max * (count / 3);
+            circle.setAttribute("r", isNaN(size) ? 0 : size);
+        }
+    })
+}
+
+function setupHeatmap() {
+    map.append("g").attr("class", "heatmap heatmap--hide");
+    updateHeatmap(cellCount);
+}
+
+function updateHeatmap(count) {
+    d3.selectAll(`.map .heatmap *`).remove();
+    const gg = map.select(".heatmap")
+    const minX = Math.min(...xCoords);
+    const maxX = Math.max(...xCoords);
+    const minY = Math.min(...yCoords);
+    const maxY = Math.max(...yCoords);
+    const width = (maxX - minX) / count;
+    const height = (maxY - minY) / count;
+    const grid = [];
+
+    for (let i = 0; i < count; i++) {
+        const row = [];
+        for (let j = 0; j < count; j++) {
+            row.push([minX + j * width, 
+                    minY + i * height,
+                    minX + (j + 1) * width,
+                    minY + (i + 1) * height]);
+        }
+        grid.push(row);
+        for (let j = 0; j < count; j++) {
+            const x = grid[i][j][0];
+            const y = grid[i][j][1];
+            const hgg = gg.append("g").attr("class", "pixel")                
+            hgg.append("rect")
+                .attr("data-type", "Heatmap")
+                .attr("data-grid", `${String.fromCharCode(96 + i + 1).toLocaleUpperCase()}${j + 1}`)
+                .attr("width", width)
+                .attr("height", height)
+                .attr("x", x)
+                .attr("y", y)
+                .on("mouseover", onMouseOver)
+                .on("mouseleave", onMouseLeave)
+        }
+    }
+    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show"));
+    const heatMap = new Map();
+    svgDeaths.forEach(d => {
+        const grid = d.dataset.grid;
+        heatMap.has(grid) ? heatMap.set(grid, heatMap.get(grid) + 1) : heatMap.set(grid, 1);
+    });
+    const heatMapPixels = Array.from(document.querySelectorAll("#svg .pixel"));
+    heatMapPixels.forEach(h => {
+        const pixel = h.querySelector("rect");
+        const grid = pixel.dataset.grid;
+        if (heatMap.has(grid)) {
+            const deaths = heatMap.get(grid);
+            pixel.dataset.deaths = deaths;
+            const max = parseFloat(pixel.getAttribute("width"));
+            pixel.setAttribute("style", `opacity:${(deaths / totalCount) * 10}`);
         }
     })
 }
@@ -511,21 +591,6 @@ function setupLegend() {
         .attr("height", 75)
         .attr("x", xStart)
         .attr("y", yStart)
-    // const lg = g.append("defs")
-    //         .append("linearGradient")
-    //         .attr("id", "genderFill")
-    //     lg.append("stop")
-    //         .attr("offset", "0%")
-    //         .attr("stop-color", COLOR_MALE)
-    //     lg.append("stop")
-    //         .attr("offset", "50%")
-    //         .attr("stop-color", COLOR_MALE)
-    //     lg.append("stop")
-    //         .attr("offset", "50%")
-    //         .attr("stop-color", COLOR_FEMALE)
-    //     lg.append("stop")
-    //         .attr("offset", "100%")
-    //         .attr("stop-color", COLOR_FEMALE)
     g.append("text")
         .html("Death")
         .attr("x", xStart + 45)
@@ -542,7 +607,6 @@ function setupLegend() {
         .attr("d", d3.symbol().type(d3.symbolCircle).size(200))
         .attr("transform", `translate(${xStart + 25}, ${yStart + 24})`)
         .attr("fill", COLOR_DEFAULT)
-        // .attr("fill", "url(#genderFill)")
 }
 
 function setupSlider() {
@@ -588,12 +652,16 @@ function fireUpdate(range) {
         }
 
         steps.pop();
-    
+        
+        totalCount = deaths;
         updateMap(steps);
         updateDate(date);
         updateDeathCount(deathString(deaths));
         updatePieChart(dataDeaths.slice(0, deaths));
         updateBarChart(dataDeaths.slice(0, deaths));
+        updateGrid(cellCount);
+        updateClusters(cellCount);
+        updateHeatmap(cellCount);
         updateLineChart(steps);
     }
 
@@ -608,7 +676,6 @@ function fireUpdate(range) {
         } else if (val?.includes("Sep")) {
             date = `September ${val.replace("-Sep", "")}`
         }
-        // date = `${date}, 1854`;
         return date;
     }
 
@@ -679,9 +746,6 @@ function fireUpdate(range) {
         flag.select(".fdeath")
             .attr("transform", `translate(${xStart + 3}, 21)`)
             .html(deathsHtml)
-
-        // const posts = Array.from(document.querySelectorAll(".posts .post"));
-        // posts.forEach(post => steps.includes(parseInt(post.dataset.step)) ? post.classList.add("show") : post.classList.remove("show"));
 
     }
 
