@@ -82,14 +82,20 @@
 				<p>To help the user focus on certain data points, such as certain genders or age ranges, I added filters that could be toggled on and off and would update the map with the appropriate data. I also added the ability for the user to remove deaths, pumps, the streets, and the street labels to help clean up the map if necessary. Another fun filter added was a transparent copy of Dr. Snow's original map to compare against this visualization. Finally, I added a demographic colors control that allowed the user to see all deaths on the map as gendered or aged with their respective color schemes.</p>
 				<h3 class="font-bold text-2xl">Colorblindness Filters</h3>
 				<p>The project had a requirement of ensuring color choices were accessible to various types of colorblindness. At first, I could not find a decent tool that would rate my color and design schemes. Instead, I realized that I could find a library that provided the SVG filters that would render many different types of colorblindness that I could use to check. Going this route proved valuable as it gives the user the ability to see the visualizations from different color perspectives.</p>
-				<h3 class="font-bold text-2xl">Grid, Clusters, and Heatmap</h3>
-				<p>Finally, I added a control that would toggle a 5x5 grid on top of the map and other data points. When the user hovered each cell, it would provide a tooltip detailing the amount of deaths found within that cell. This feature provides the ability to localize the data in each cell and find useful patterns.</p>
+				<h3 class="font-bold text-2xl">Grid Cells, Clusters, and Heatmap</h3>
+				<p>Finally, I added some controls that would attempt to focus and localize pockets and clusters of data. First, an 10x10 grid was added to the map and each cell was mapped with the number of deaths it self contained. After that, I added a rudimentary clustering visualization that would attempt to size the cluster circle depending on the ratio of cell deaths to total deaths. Finally, I added the third visualization tool, heatmap, that went with a basic shading scheme to indicate the deaths within a cell in comparison to the total deaths. These three extra controls help the user find important bits of data and highlight certain cells within the grid that had more deaths.</p>
 
 				<h2 class="font-bold text-3xl">Visualization Layout</h2>
 				<p>I wanted to ensure that the map and its charts were the main focus of this application and visualization. With the pan and zoom feature integrated, I was able to take up the full size of the user's screen and allow them to have little to no constraints on the size. Originally, I wanted the timeline date slider, other charts, and visualization settings as floating windows the user could move around, collapse, and interact with. At first, the idea was really neat and allowed the user to customize their own layout without my own inputs. I found out that it became a bit more of hindrance and early user testing proved they either did not care for it or had no idea what these windows would do. I also had to manage multiple SVGs at a time instead of just one monolithic one. I pivoted over to more of a minimal design approach, promoting the name of the event, event location, event dates, and number of current deaths on the screen. I moved the filters and about sections to their own drawers that would float over the top of the map, following modern web design trends. By focusing on minimal distractions over the map and charts, I wanted to give the user the most space as possible to interact with the main visualizations.</p>
 
 				<h2 class="font-bold text-3xl">Discoveries and More</h2>
-				<p>[insert content]</p>
+				<p>
+					[insert content]
+					<img src="/img/gender.gif" />
+					<img src="/img/age.gif" />
+					<img src="/img/day.gif" />
+					<img src="/img/map.gif" />
+				</p>
 
 				<h2 class="font-bold text-3xl">References</h2>
 				<div class="grid gap-2">

@@ -26,10 +26,12 @@ const tooltip = document.getElementById("tooltip");
 const cellDec = document.getElementById("btnCellDec");
 const cellInc = document.getElementById("btnCellInc");
 
+let activeFilters = [];
 const xCoords = [];
 const yCoords = [];
-let cellCount = 15;
+let cellCount = 10;
 let totalCount = 0;
+let currentRange = [0, 42];
 
 let dataStreets =[];
 let dataLabels = [];
@@ -70,10 +72,10 @@ const onMouseOver = function(e) {
                     </div>
                 </div>`
         } else if (e.target.parentNode.dataset.type === "Gender") {
-            const genders = Array.from(document.querySelectorAll(`.death[data-gender=${e.target.parentNode.dataset.gender}].show`));
+            const genders = Array.from(document.querySelectorAll(`.death[data-gender=${e.target.parentNode.dataset.gender}].show:not(.hide)`));
             genders.forEach(g => g.classList.add("hover", "ghover"));
         } else if (e.target.parentNode.dataset.type === "Age") {
-            const ages = Array.from(document.querySelectorAll(`.death[data-id=${e.target.parentNode.dataset.id}].show`));
+            const ages = Array.from(document.querySelectorAll(`.death[data-id=${e.target.parentNode.dataset.id}].show:not(.hide)`));
             ages.forEach(a => a.classList.add("hover", "ahover"));
         } else if (e.target.dataset.type === "Grid") {
             tooltip.style.background = COLOR_DEFAULT;
@@ -180,7 +182,12 @@ function setupSettings() {
             const checked = e.target.checked;
             const clazz = `${id}--hide`;
             const items = Array.from(document.querySelectorAll(`#svg .${id}`));
-            items.forEach(item => checked ? item.classList.remove(clazz, "hide") : item.classList.add(clazz, "hide"));
+            if (id === "death") {
+                items.forEach(item => checked ? item.classList.remove(clazz, "invis") : item.classList.add(clazz, "invis"));
+            } else {
+                items.forEach(item => checked ? item.classList.remove(clazz, "hide") : item.classList.add(clazz, "hide"));
+            }
+            fireUpdate(currentRange, {id: id, checked: checked});
         });
     })
     const colorblindRdo = Array.from(document.querySelectorAll("#settings input[name=colorblind]"));
@@ -462,7 +469,7 @@ function updateClusters() {
                 .on("mouseleave", onMouseLeave)
         }
     }
-    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show"));
+    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show:not(.hide)"));
     const clusterMap = new Map();
     svgDeaths.forEach(d => {
         const grid = d.dataset.grid;
@@ -525,7 +532,7 @@ function updateHeatmap() {
                 .on("mouseleave", onMouseLeave)
         }
     }
-    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show"));
+    const svgDeaths = Array.from(document.querySelectorAll(".deaths .death.show:not(.hide)"));
     const heatMap = new Map();
     svgDeaths.forEach(d => {
         const grid = d.dataset.grid;
@@ -664,13 +671,34 @@ function setupSlider() {
 //     updateHeatmap();
 // }
 
-function fireUpdate(range) {
+function fireUpdate(range, filter = undefined) {
 
     const steps = Array.from({ length: range[1] - range[0] + 1 }, (_, i) => range[0] + i);
     const deaths = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.deaths).reduce((a, b) => a + b, 0);
     const dates = dataDeathsByDay.slice(steps[0], steps.slice(-1)[0]).map(d => d.date);
 
     if (range[1] - range[0] > 0) {
+
+        if (!filter?.checked && filter?.id) {
+            activeFilters.push(filter?.id);
+        } else if (filter?.checked) {
+            activeFilters = activeFilters.filter(f => f !== filter?.id);
+        }
+
+        let filteredDeaths = dataDeaths.slice(0, deaths);
+
+        // prefilter out data for graphs
+        activeFilters.forEach(f => {
+            if (f === "male") {
+                filteredDeaths = filteredDeaths.filter(d => d.gender !== "0");
+            } else if (f === "female") {
+                filteredDeaths = filteredDeaths.filter(d => d.gender !== "1");
+            } else if (f.includes("age")) {
+                filteredDeaths = filteredDeaths.filter(d => d.age !== f.split("age").pop())
+            }
+        })
+
+        currentRange = range;
 
         let date;
         const start = dates[0];
@@ -687,8 +715,8 @@ function fireUpdate(range) {
         updateMap(steps);
         updateDate(date);
         updateDeathCount(deathString(deaths));
-        updatePieChart(dataDeaths.slice(0, deaths));
-        updateBarChart(dataDeaths.slice(0, deaths));
+        updatePieChart(filteredDeaths);
+        updateBarChart(filteredDeaths);
         updateGrid();
         updateClusters();
         updateHeatmap();
