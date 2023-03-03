@@ -88,8 +88,10 @@ const onMouseOver = function(e) {
             html = `<div class="px-2 py-1">${deaths} death${deaths === 1 ? `` : `s`}</div>`;
         }
     }
-    tooltip.style.opacity = 1;
-    tooltip.innerHTML = html;
+    if (e.target.parentNode.dataset.type !== "Gender" && e.target.parentNode.dataset.type !== "Age") {
+        tooltip.style.opacity = 1;
+        tooltip.innerHTML = html;
+    }
 }
 
 const onMouseLeave = function(e) {
@@ -124,12 +126,17 @@ function loadData() {
             deaths: parseInt(d.deaths) 
         }
     }).then(deaths => dataDeathsByDay = deaths);
+
     const aboutPage = fetch('/about.html').then(resp => resp.text()).then(html => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         document.getElementById("about").append(doc.getElementById("content"));
     });
+    const videoPage = fetch('/video.html').then(resp => resp.text()).then(html => {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        document.getElementById("video").append(doc.getElementById("content"));
+    });
 
-    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays, aboutPage]).then(v => {
+    Promise.all([streets, labels, pumps, deathsByDemo, deathsDays, aboutPage, videoPage]).then(v => {
         totalCount = deathsByDemo.length;
         combineData();
         setupLayout();

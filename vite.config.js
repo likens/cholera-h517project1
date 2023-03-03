@@ -7,6 +7,7 @@ export default defineConfig({
             input: {
                 main: resolve(__dirname, 'index.html'),
                 about: resolve(__dirname, 'about.html'),
+                video: resolve(__dirname, 'video.html'),
             },
         },
     },

@@ -17,7 +17,6 @@
 		<!-- 
 			TODO:
 			- Add trend point on hover per each day
-			- Flesh out about page
 			- Make video
 		-->
 
@@ -39,13 +38,19 @@
 
 			<div class="fixed top-0 grid right-0 z-50 select-none justify-items-end">
 				<div class="text-2xl">
-					<a href="about.html" class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open" id="btnAbout">
+					<a href="about.html" class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open hover:bg-zinc-600 w-48" id="btnAbout">
 						<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 56C145.72 56 56 145.72 56 256s89.72 200 200 200 200-89.72 200-200S366.28 56 256 56zm0 82a26 26 0 11-26 26 26 26 0 0126-26zm64 226H200v-32h44v-88h-32v-32h64v120h44z"/></svg>
 						About
 					</a>
 				</div>
 				<div class="text-2xl">
-					<button class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open" id="btnSettings">
+					<a href="video.html" class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open hover:bg-zinc-600 w-48" id="btnVideo">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 48C141.31 48 48 141.31 48 256s93.31 208 208 208 208-93.31 208-208S370.69 48 256 48zm-56 296V168l144 88z"/></svg>
+						Video
+					</a>
+				</div>
+				<div class="text-2xl">
+					<button class="inline-flex items-center justify-center text-white bg-zinc-900 font-bold px-4 py-2 open hover:bg-zinc-600 w-48" id="btnSettings">
 						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 fill-white mr-2" viewBox="0 0 512 512"><path d="M256 176a80 80 0 1080 80 80.24 80.24 0 00-80-80zm172.72 80a165.53 165.53 0 01-1.64 22.34l48.69 38.12a11.59 11.59 0 012.63 14.78l-46.06 79.52a11.64 11.64 0 01-14.14 4.93l-57.25-23a176.56 176.56 0 01-38.82 22.67l-8.56 60.78a11.93 11.93 0 01-11.51 9.86h-92.12a12 12 0 01-11.51-9.53l-8.56-60.78A169.3 169.3 0 01151.05 393L93.8 416a11.64 11.64 0 01-14.14-4.92L33.6 331.57a11.59 11.59 0 012.63-14.78l48.69-38.12A174.58 174.58 0 0183.28 256a165.53 165.53 0 011.64-22.34l-48.69-38.12a11.59 11.59 0 01-2.63-14.78l46.06-79.52a11.64 11.64 0 0114.14-4.93l57.25 23a176.56 176.56 0 0138.82-22.67l8.56-60.78A11.93 11.93 0 01209.94 26h92.12a12 12 0 0111.51 9.53l8.56 60.78A169.3 169.3 0 01361 119l57.2-23a11.64 11.64 0 0114.14 4.92l46.06 79.52a11.59 11.59 0 01-2.63 14.78l-48.69 38.12a174.58 174.58 0 011.64 22.66z"/></svg>
 						Settings
 					</button>
@@ -56,13 +61,21 @@
 			<div id="tooltip" class="tooltip absolute text-white bg-zinc-900 pointer-events-none z-[100] opacity-0 left-0 top-0 text-sm border-solid border-black border-2 rounded drop-shadow-lg font-bold"></div>
 
 			<div id="drawers">
-				<div id="about" class="about drawer fixed top-0 right-0 h-full w-full max-w-3xl z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900 overflow-auto">
+				<div id="about" class="about drawer fixed top-0 right-0 h-full w-full max-w-3xl z-50 backdrop-blur-xl transition-all bg-zinc-200/75 translate-x-full border-l-2 border-solid border-zinc-900 overflow-auto">
 					<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
 						About This Visualization
+						<a class="block underline text-sm hover:no-underline mt-2" href="about.html" target="blank">Open in New Tab 🡕</a>
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
 					</div>
 				</div>
-				<div id="settings" class="settings drawer fixed top-0 right-0 w-full max-w-sm z-50 backdrop-blur transition-all bg-zinc-200/75 translate-x-full border-l-2 border-b-2 border-solid border-zinc-900 overflow-auto">
+				<div id="video" class="video drawer fixed top-0 right-0 w-full max-w-7xl z-50 backdrop-blur-xl transition-all bg-zinc-200/75 translate-x-full border-l-2 border-b-2 border-solid border-zinc-900 overflow-auto">
+					<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
+						Video Explanation
+						<a class="block underline text-sm hover:no-underline mt-2" href="video.html" target="blank">Open in New Tab 🡕</a>
+						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>
+					</div>
+				</div>
+				<div id="settings" class="settings drawer fixed top-0 right-0 w-full max-w-sm z-50 backdrop-blur-xl transition-all bg-zinc-200/75 translate-x-full border-l-2 border-b-2 border-solid border-zinc-900 overflow-auto">
 					<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800 sticky top-0 left-0">
 						Settings
 						<button class="close absolute rounded top-6 left-4 bg-red-500 text-white border-2 border-solid border-zinc-900 outline-0 cursor-pointer font-bold w-6 h-6 flex items-center justify-center text-lg hover:bg-zinc-800 transition-all" title="Close">X</button>

@@ -13,14 +13,11 @@
 
 	<body>
 		<div id="about">
-			<div class="font-bold text-3xl text-center py-5 bg-zinc-600 text-white border-b-2 border-solid border-zinc-800">
+			<div class="font-bold text-3xl text-center py-5 bg-zinc-900 text-white border-b-2 border-solid border-zinc-800">
 				About
 				<a class="block underline text-sm hover:no-underline mt-2" href="index.html">← Return to Visualization</a>
 			</div>
-			<div class="p-4 grid gap-4 leading-5" id="content">
-				<h2 class="font-bold text-3xl">Video Explanation</h2>
-				[insert video]
-				<!-- <div><iframe class="aspect-video w-full" src="https://www.youtube.com/embed/lNjrAXGRda4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div> -->
+			<div class="p-4 grid gap-4 leading-6 text-lg" id="content">
 				<h2 class="font-bold text-3xl">Introduction</h2>
 				<p>In 1854, a cholera outbreak ravaged the citizens of Soho, London, England and during a period of August 19th to September 29th, took the lives of 571 people. The outbreak led to Dr. John Snow, a physician, studying the causes of the epidemic and discovering that the cholera did not spread via airborne contaminants, but through water that was tainted with various germs. This new approach, noted as "germ theory", was at first dismissed by Dr. Snow's peers and would not become the accepted outcome until years after the global cholera outbreak had subsided.</p>
 				<h2 class="font-bold text-3xl">Visualization</h2>
@@ -89,13 +86,39 @@
 				<p>I wanted to ensure that the map and its charts were the main focus of this application and visualization. With the pan and zoom feature integrated, I was able to take up the full size of the user's screen and allow them to have little to no constraints on the size. Originally, I wanted the timeline date slider, other charts, and visualization settings as floating windows the user could move around, collapse, and interact with. At first, the idea was really neat and allowed the user to customize their own layout without my own inputs. I found out that it became a bit more of hindrance and early user testing proved they either did not care for it or had no idea what these windows would do. I also had to manage multiple SVGs at a time instead of just one monolithic one. I pivoted over to more of a minimal design approach, promoting the name of the event, event location, event dates, and number of current deaths on the screen. I moved the filters and about sections to their own drawers that would float over the top of the map, following modern web design trends. By focusing on minimal distractions over the map and charts, I wanted to give the user the most space as possible to interact with the main visualizations.</p>
 
 				<h2 class="font-bold text-3xl">Discoveries and More</h2>
-				<p>
-					[insert content]
-					<img src="/img/gender.gif" />
-					<img src="/img/age.gif" />
-					<img src="/img/day.gif" />
-					<img src="/img/map.gif" />
-				</p>
+				<div class="grid gap-8">
+					<div class="flex gap-6">
+						<img class="block max-w-[25%] mx-auto" src="/img/gender.gif" />
+						<div class="w-full grid gap-4 self-start items-start content-start">
+							<h3 class="font-bold text-2xl">Gender Breakdown</h3>
+							<p>Within this dataset, cholera did not affect one gender more over the other and towards the end of this outbreak, the deaths were almost a 50/50 split between male and female. This also shows that the population within Soho is probably the same, with about a 50/50 split with those still living.</p>
+						</div>
+					</div>
+					<div class="flex gap-6">
+						<div class="w-full grid gap-4 self-start items-start content-start">
+							<h3 class="font-bold text-2xl">Age Breakdown</h3>
+							<p>A common trend with other pandemics and outbreaks before modern medicine, cholera's death count affected more younger and older aged groups. Deaths within the 0-10 years age range accounted for 25% of the total whereas deaths over the age of 60 (61-80 and &gt;80 respectively) accounted for almost half of the total deaths. These three age ranges combined made up 71.4% of the total deaths.</p>
+						</div>
+						<img class="block max-w-[60%] mx-auto self-start" src="/img/age.gif" />
+					</div>
+					<div class="flex flex-wrap gap-6">
+						<img class="block max-w-full mx-auto self-start" src="/img/day.gif" />
+						<div class="w-full grid gap-4 self-start items-start content-start">
+							<h3 class="font-bold text-2xl">Day by Day Breakdown</h3>
+							<p>The dataset showed an interesting premise when it came to daily deaths. 87.4% (499) of all the deaths in this dataset came from 7 days between August 31st and September 7th. The death totals before and after this period did not contribute near as much to the totals and brought up and interesting question with a possible answer: Could we find out about when cholera entered the water pump system from how fast the majority of individuals perished? This breakdown feels quite different compared to the other two given that most of the "action" happened within a brief period of time within the dataset.</p>
+						</div>
+					</div>
+					<div class="flex flex-wrap gap-6">
+						<img class="block max-w-full mx-auto self-start" src="/img/map.gif" />
+						<div class="w-full grid gap-4 self-start items-start content-start">
+							<h3 class="font-bold text-2xl">Map Breakdown</h3>
+							<p>Just like Dr. Snow's original map, the majority of deaths were concentrated around the infamous Broad Street pump. However, the deadliest date within the dataset, September 1st at 143 deaths, shows that those who died were not concentrated around the Broad Street pump. In fact, this death population was spread out quite evenly within the Soho area. This discovery could lead to other questions: can cholera spread to different waterways? Or is it localized to the original area? Another interesting thing to look at it is the deaths around the Brewery. It seems that its location, on Broad Street and close to the pump, may have provided an outlet for cholera to spread.</p>
+						</div>
+					</div>
+				</div>
+
+				<h2 class="font-bold text-3xl">Conclusion</h2>
+				<p>To conclude this visualization, what Dr. Snow was able to accomplish almost 170 years ago was not only revolutionary for its time, but also paved the way to create solutions that other similar medical incidents could follow. By discovering that cholera was not spread via airborne contaminants, Dr. Snow was able to to pinpoint the exact reason why an abnormally large number of people were perishing. The use of geographical visualizations truly can draw a picture and uncover different trends, outliers, and discoveries that raw data cannot. By improving upon Dr. Snow's original visualization, I finished this project with a larger knowledge base when it comes to visualizing bits of data and feel satisified knowing that future datasets could also receive similar treatments. I look forward to applying these skills and ideas in future projects. Thank you for interacting and reading into this visualization!</p>
 
 				<h2 class="font-bold text-3xl">References</h2>
 				<div class="grid gap-2">
@@ -106,7 +129,7 @@
 						<li><strong>Pump Locations</strong>: <a href="/data/pumps.csv" class="underline">pumps.csv</a></li>
 						<li><strong>Death Age/Gender/Location</strong>: <a href="/data/deaths_age_sex.csv" class="underline">deaths_age_sex.csv</a></li>
 						<li><strong>Death Count Per Day</strong>: <a href="/data/deathdays.csv" class="underline">deathdays.csv</a></li>
-						<li><strong>John Snow's Original Map, 1854</strong>: <a href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg" class="underline">https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</a></li>
+						<li><strong>John Snow's Original Map, 1854</strong>: <a class="break-all underline" href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg">https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak#/media/File:Snow-cholera-map-1.jpg</a></li>
 					</ul>
 				</div>
 				<div class="grid gap-2">
@@ -124,9 +147,20 @@
 					<ul class="list-disc ml-5">
 						<li><strong>The D3.js Graph Gallery</strong> <a href="ttps://d3-graph-gallery.com" class="underline">https://d3-graph-gallery.com</a></li>
 						<li><strong>D3 on Observable</strong>: <a href="https://observablehq.com/@d3" class="underline">https://observablehq.com/@d3</a></li>
+						<li><strong>Wikipedia</strong>: <a href="https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak" class="underline">https://en.wikipedia.org/wiki/1854_Broad_Street_cholera_outbreak</a></li>
 					</ul>
 				</div>
 
+				<div class="grid gap-2">
+					<div class="font-bold text-lg">Purpose</div>
+					<ul class="list-disc ml-5">
+						<li><strong>H517 - Visualization Design, Analysis, and Evaluation - Project 1</strong></li>
+						<li><strong>IUPUI Human-Computer Interaction Master's Program, Spring 2023</strong></li>
+						<li><strong>Caleb Likens</strong>: <a href="https://likens.dev" class="underline">https://likens.dev</a></li>
+						<li><strong>Source Code</strong>: <a href="https://github.com/likens/h517project1" class="underline">https://github.com/likens/h517project1</a></li>
+						<li><strong>Video</strong>: <a href="https://github.com/likens/h517project1" class="underline">[insert video]</a></li>
+					</ul>
+				</div>
 			</div>
         </div>
 	</body>

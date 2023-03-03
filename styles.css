@@ -339,11 +339,15 @@ body {
 	stroke: none;
 }
 
+.trend .points {
+	pointer-events: all;
+}
+
 .trend .point {
 	fill: var(--nearBlack);
 	fill-opacity: .75;
 	stroke: none;
-	display: none;
+	opacity: 0;
 }
 
 .trend .post {
