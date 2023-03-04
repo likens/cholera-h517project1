@@ -83,7 +83,7 @@
 					<div class="p-4 grid gap-6">
 
 						<div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Filters</div>
+							<div class="font-bold text-lg uppercase">Death Filters</div>
 							<label for="male" class="male flex gap-2 cursor-pointer">
 								<input type="checkbox" id="male" checked />
 								<span>Male</span>
@@ -114,8 +114,26 @@
 							</label>
 							<label for="age5" class="flex gap-2 cursor-pointer">
 								<input type="checkbox" id="age5" checked />
-								> 80 years
+								&gt; 80 years
 							</label>
+						</div>
+
+						<div class="grid gap-2 content-start">
+							<div class="font-bold text-lg uppercase">Death Color Scheme</div>
+							<div class="flex gap-4">
+								<label class="flex gap-2 cursor-pointer col-span-2">
+									<input type="radio" id="rnone" value="dnone" name="demographics" checked>
+									<span>None</span>
+								</label>
+								<label class="flex gap-2 cursor-pointer col-span-2">
+									<input type="radio" id="rgender" value="dgender" name="demographics">
+									<span>Gender</span>
+								</label>
+								<label class="flex gap-2 cursor-pointer">
+									<input type="radio" id="rage" value="dage" name="demographics">
+									<span>Age</span>
+								</label>
+							</div>
 						</div>
 
 						<div class="grid gap-2 content-start">
@@ -151,31 +169,6 @@
 							<label for="heatmap" class="heatmap flex gap-2 cursor-pointer">
 								<input type="checkbox" id="heatmap" />
 								Heatmap
-							</label>
-						</div>
-
-						<!-- <div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Cells</div>
-							<div class="cells flex gap-2 items-center">
-								<button type="button" id="btnCellDec" class="border border-neutral-500 rounded h-4 w-4 flex items-center justify-center bg-white text-neutral-500">-</button>
-								<span id="cells" class="w-8 text-center">10x</span>
-								<button type="button" id="btnCellInc" class="border border-neutral-500 rounded h-4 w-4 flex items-center justify-center bg-white text-neutral-500">+</button>
-							</div>
-						</div> -->
-
-						<div class="grid gap-2 content-start">
-							<div class="font-bold text-lg uppercase">Demographic Colors</div>
-							<label class="flex gap-2 cursor-pointer col-span-2">
-								<input type="radio" id="rnone" value="dnone" name="demographics" checked>
-								<span>None</span>
-							</label>
-							<label class="flex gap-2 cursor-pointer col-span-2">
-								<input type="radio" id="rgender" value="dgender" name="demographics">
-								<span>Gender</span>
-							</label>
-							<label class="flex gap-2 cursor-pointer">
-								<input type="radio" id="rage" value="dage" name="demographics">
-								<span>Age</span>
 							</label>
 						</div>
 
